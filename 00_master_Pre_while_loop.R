@@ -6,7 +6,7 @@ packages_install = function(library_string){
   pacman::p_load(library_string, character.only = TRUE)    
   print("Packages fully installed and loaded")
 }
-Test
+
 ######################
 #Packages
 ######################
@@ -50,7 +50,7 @@ printer = function(value,by=50){
 #Prep
 ######################
 wk_data = read_dta(paste0(readpath,"WK_allVersionsLabels.dta"))
-names(wk_data)
+
 #shrink data to necessary
 berlin_only = 
   wk_data %>%
@@ -113,7 +113,7 @@ for(i in 1:100){
   outer_dummy = outer_dummy[order(outer_dummy$ajahrmonat),]
   unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
   
-  printer(i,by=10)
+  printer(i,by = 10)
 
   j = 1
   while(j <= length(unique_wohnflaeche)){
