@@ -49,53 +49,51 @@ printer = function(value,by=50){
 ######################
 #Prep
 ######################
-wk_data = read_dta(paste0(readpath,"WK_allVersionsLabels.dta"))
-
-#shrink data to necessary
-berlin_only = 
-  wk_data %>%
-  filter(
-    # berlin
-    blid == 11, 
-    # remove missings
-    as.character(lat_utm) != "-9",
-    as.character(lon_utm) != "-9",
-    na.rm = TRUE
-    ) %>%
-  select(
-    obid,
-    uniqueID_gen,
-    mietekalt,
-    mietewarm,
-    kaufpreis,
-    wohnflaeche,
-    etage,
-    zimmeranzahl,
-    dupID_gen,
-    ajahr,
-    amonat,
-    ejahr,
-    emonat,
-    lat_utm,
-    lon_utm,
-    lat_gps,
-    lon_gps
-  ) %>%
-  #new var
-  mutate(
-    latlon_utm = paste0(lat_utm,lon_utm),
-    #monat + 12 to avoid sorting issues in same year
-    ajahrmonat = paste0(ajahr,amonat+12),
-    ejahrmonat = paste0(ejahr,emonat+12)
-  )
-rm(wk_data)
+# wk_data = read_dta(paste0(readpath,"WK_allVersionsLabels.dta"))
+# 
+# #shrink data to necessary
+# berlin_only = 
+#   wk_data %>%
+#   filter(
+#     # berlin
+#     blid == 11, 
+#     # remove missings
+#     as.character(lat_utm) != "-9",
+#     as.character(lon_utm) != "-9",
+#     na.rm = TRUE
+#     ) %>%
+#   select(
+#     obid,
+#     uniqueID_gen,
+#     mietekalt,
+#     mietewarm,
+#     kaufpreis,
+#     wohnflaeche,
+#     etage,
+#     zimmeranzahl,
+#     dupID_gen,
+#     ajahr,
+#     amonat,
+#     ejahr,
+#     emonat,
+#     lat_utm,
+#     lon_utm
+#   ) %>%
+#   #new var
+#   mutate(
+#     latlon_utm = paste0(lat_utm,lon_utm),
+#     #monat + 12 to avoid sorting issues in same year
+#     ajahrmonat = paste0(ajahr,amonat+12),
+#     ejahrmonat = paste0(ejahr,emonat+12)
+#   )
+# rm(wk_data)
 
 ######################
 #Declarations
 ######################
 #vars are allowed to deviate up to this factor in both directions
 wohnflaeche_offset_factor = 0.1
-etage_offset_factor = 0
+etage_offset_factor = 99
 zimmeranzahl_offset_factor = 1
 time_offset_factor = 6
 
@@ -114,21 +112,26 @@ for(i in 1:100){
   unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
   
   printer(i,by = 10)
-
+  #print(i)
   j = 1
   while(j <= length(unique_wohnflaeche)){
     
-    #at least one exact match
-    if(sum(outer_dummy$wohnflaeche == unique_wohnflaeche[j]) >= 2){
-      inner_dummy = filter(outer_dummy, wohnflaeche == unique_wohnflaeche[j])
-      inner_dummy$match_type = "exact"
+    if(!exists("inner_dummy")){
+      #at least one exact match
+      if(sum(outer_dummy$wohnflaeche == unique_wohnflaeche[j]) >= 2){
+        inner_dummy = filter(outer_dummy, wohnflaeche == unique_wohnflaeche[j])
+        inner_dummy$match_type = "exact"
         
-    } else {
-      #range match
-      inner_dummy = filter(outer_dummy, rangeChecker(wohnflaeche, unique_wohnflaeche[j], wohnflaeche_offset_factor, "multi"))
-      inner_dummy$match_type = "range"
-    } 
-    
+      } else {
+        #range match
+        inner_dummy = filter(outer_dummy, rangeChecker(wohnflaeche, unique_wohnflaeche[j], wohnflaeche_offset_factor, "multi"))
+        inner_dummy$match_type = "range"
+        
+        #cutoff all preceding offerings
+        inner_dummy = inner_dummy[match(unique_wohnflaeche[j],inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
+      } 
+    }
+
     #extract inital offering
     baseline = inner_dummy[1,]
     
@@ -176,11 +179,11 @@ for(i in 1:100){
       if("1" %in% inner_dummy$update_id){
         
         earliest_sale = match("1", inner_dummy$update_id)
-        last_update_before_sale = inner_dummy$counting_id[which.max(inner_dummy$counting_id[1:earliest_sale - 1])]
+        last_update_before_sale = inner_dummy$counting_id[which.max(inner_dummy$counting_id[1:(earliest_sale - 1)])]
         
-        remove_counting_ids = inner_dummy$counting_id[!(inner_dummy$counting_id == last_update_before_sale) & inner_dummy$update_id %in% c("0","2")]
+        remove_counting_ids = inner_dummy$counting_id[(!inner_dummy$counting_id == last_update_before_sale) & inner_dummy$update_id %in% c("0","2")]
       
-        outer_dummy = outer_dummy %>% filter(!counting_id %in% remove_counting_ids)
+        inner_dummy = inner_dummy %>% filter(!counting_id %in% remove_counting_ids)
         next
         
       } else {
@@ -189,10 +192,10 @@ for(i in 1:100){
         
         #find last update
         latest_update = which.max(inner_dummy$counting_id)
-        preceding_counting_ids = inner_dummy$counting_id[1:latest_update - 1]
+        preceding_counting_ids = inner_dummy$counting_id[1:(latest_update - 1)]
         
         #remove all preceding updates, set last one as new baseline and redo loop step
-        outer_dummy = outer_dummy %>% filter(!counting_id %in% preceding_counting_ids)
+        inner_dummy = inner_dummy %>% filter(!counting_id %in% preceding_counting_ids)
         next
       }
     }
