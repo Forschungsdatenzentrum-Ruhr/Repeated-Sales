@@ -94,8 +94,10 @@ printer = function(value,by=50){
 #vars are allowed to deviate up to this factor in both directions
 wohnflaeche_offset_factor = 0.1
 etage_offset_factor = 99
-zimmeranzahl_offset_factor = 1
+zimmeranzahl_offset_factor = 0.5
 time_offset_factor = 6
+
+data_end_date = max(berlin_only$ejahrmonat)
 
 final_list = c()
 ######################
@@ -104,7 +106,7 @@ final_list = c()
 unique_latlon = unique(berlin_only$latlon_utm)
 berlin_only$counting_id = 1:dim(berlin_only)[1]
 #length(unique_latlon)
-
+table(final_list$repeated_id)
 for(i in 1:100){
   #subset by unique coordination combination
   outer_dummy = filter(berlin_only, latlon_utm == unique_latlon[i])
@@ -152,8 +154,8 @@ for(i in 1:100){
       .$etage == baseline$etage & .$zimmeranzahl == baseline$zimmeranzahl ~ "1",
       
       #one matches, one similar, half-true repeated offering
-      .$etage == baseline$etage & .$zimmeranzahl_similar ~ "2",
-      .$etage_similar & .$zimmeranzahl == baseline$zimmeranzahl ~ "2",
+      .$etage == baseline$etage & .$zimmeranzahl_similar ~ "1",
+      #.$etage_similar & .$zimmeranzahl == baseline$zimmeranzahl ~ "2",
       
       #both are similar, similar repeated offering
       .$etage_similar & .$zimmeranzahl_similar ~ "3",
@@ -163,7 +165,7 @@ for(i in 1:100){
     )
     ) %>% mutate(update_id = case_when(
       #same obj
-      .$repeated_id == 0 ~ "0",
+      .$repeated_id == 0 ~ "Inital",
       
       #more than specified
       .$time_diff >= as.numeric((time_offset_factor)) ~ "1", 
@@ -173,12 +175,10 @@ for(i in 1:100){
     )
     )  %>% mutate(obj_parent = ifelse(repeated_id != 4,baseline$counting_id,NA))
     
-    #filter out repeated offerings that are only updates
-    #gets stuck in loop here somewhere
     if(sum("2" == inner_dummy$update_id & "1" == inner_dummy$repeated_id) >= 1){
       if("1" %in% inner_dummy$update_id){
         
-        earliest_sale = match("1", inner_dummy$update_id)
+        sales = ("1" == inner_dummy$update_id)
         last_update_before_sale = inner_dummy$counting_id[which.max(inner_dummy$counting_id[1:(earliest_sale - 1)])]
         
         remove_counting_ids = inner_dummy$counting_id[(!inner_dummy$counting_id == last_update_before_sale) & inner_dummy$update_id %in% c("0","2")]
@@ -209,7 +209,8 @@ for(i in 1:100){
 }
 
 
-
+694 402 633 358
+table(final_list$repeated_id)
 
 #5824292.09293933793584.658496123
 #1.5 to 1 rooms
