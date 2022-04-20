@@ -20,7 +20,7 @@ packages_install(library_string)
 ######################
 path = paste0(here(),"/")
 readpath = "M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v6/"
-writepath = paste0(path,"Data/Output/")
+writepath = paste0(path,"Output/")
 
 ######################
 #Functions
@@ -45,6 +45,20 @@ printer = function(value,by=50){
     print(value)
   }
 }
+######################
+#Declarations
+######################
+#vars are allowed to deviate up to this factor in both directions
+wohnflaeche_offset_factor = 0.1
+etage_offset_factor = 99
+zimmeranzahl_offset_factor = 0.5
+time_offset_factor = 6
+
+
+missings = c(-5:-11)
+final_outer = c()
+final_inner = c()
+final_list = c()
 
 ######################
 #Prep
@@ -55,23 +69,15 @@ wk_data = read_dta(paste0(readpath,"WK_allVersionsLabels.dta"))
 berlin_only =
   wk_data %>%
   filter(
-    # berlin
-    blid == 11,
-    # remove missings
-    as.character(lat_utm) != "-9",
-    as.character(lon_utm) != "-9",
-    na.rm = TRUE
-    ) %>%
+    # berlin only
+    blid == 11
+  ) %>%
   select(
-    obid,
-    uniqueID_gen,
     mietekalt,
-    mietewarm,
     kaufpreis,
     wohnflaeche,
     etage,
     zimmeranzahl,
-    dupID_gen,
     ajahr,
     amonat,
     ejahr,
@@ -81,44 +87,53 @@ berlin_only =
   ) %>%
   #new var
   mutate(
+    #coordinate combination
     latlon_utm = paste0(lat_utm,lon_utm),
-    #monat + 12 to avoid sorting issues in same year
-    ajahrmonat = paste0(ajahr,amonat+12),
-    ejahrmonat = paste0(ejahr,emonat+12)
+    #transform years into months and add running years months
+    amonths = ajahr * 12 + amonat,
+    emonths = ejahr * 12 + emonat 
+  ) %>%
+  #drop unused columns
+  select(
+    -ajahr,
+    -amonat,
+    -ejahr,
+    -emonat,
+    -lat_utm,
+    -lon_utm
   )
 rm(wk_data)
 
-######################
-#Declarations
-######################
-#vars are allowed to deviate up to this factor in both directions
-wohnflaeche_offset_factor = 0.1
-etage_offset_factor = 99
-zimmeranzahl_offset_factor = 0.5
-time_offset_factor = 6
-
-data_end_date = max(berlin_only$ejahrmonat)
-
-final_list = c()
-
 unique_latlon = unique(berlin_only$latlon_utm)
 berlin_only$counting_id = 1:dim(berlin_only)[1]
+data_end_date = max(berlin_only$emonths)
 
 ######################
 #Classifcations
 ######################
-
 #length(unique_latlon)
 for(i in 1:100){
-  #subset by unique coordination combination
+  printer(i,by = 1)
+  #subset by unique coordinate combination
   outer_dummy = filter(berlin_only, latlon_utm == unique_latlon[i])
-  outer_dummy = outer_dummy[order(outer_dummy$ajahrmonat),]
+  
+  #catch coordinates with only one observation
+  if(nrow(outer_dummy)==1){next}
+  
+  #sort by offering start
+  outer_dummy = outer_dummy[order(outer_dummy$amonths),]
+  
+  #drop non applicable price column as well as observations with missings in key values
+  miss_matrix = as.data.frame(apply(outer_dummy, 2 ,function(x) as.integer(x %in% missings)))
+  outer_dummy = outer_dummy[rowSums(miss_matrix) == 1,]#!colSums(miss_matrix) == nrow(miss_matrix)
+  
+  #catch coordinates only incomplete key variables
+  if(nrow(outer_dummy)==0){next}
+  
+  #get unique values for living space and drop missings
   unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
-
-  printer(i,by = 10)
-  #print(i)
+  
   for(j in 1:length(unique_wohnflaeche)){
-    
     ##subset by exact/range match in wohnflaeche
     #at least one exact match
     if(sum(outer_dummy$wohnflaeche == unique_wohnflaeche[j]) >= 2){
@@ -128,12 +143,10 @@ for(i in 1:100){
       #range match
       inner_dummy = filter(outer_dummy, rangeChecker(wohnflaeche, unique_wohnflaeche[j], wohnflaeche_offset_factor, "multi"))
       inner_dummy$match_type = "range"
-        
-      #cutoff all preceding offerings
-      #these cannot be repeated offerings since they were offered before candidate
-      inner_dummy = inner_dummy[match(unique_wohnflaeche[j],inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
     } 
-
+    #cutoff all preceding offerings
+    #these cannot be repeated offerings since they were offered before candidate
+    inner_dummy = inner_dummy[match(unique_wohnflaeche[j],inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
 
 #Updates
 ######################   
@@ -142,9 +155,9 @@ for(i in 1:100){
     inner_dummy = inner_dummy %>% mutate(
       
       #to last date in data
-      td_to_end = (as.numeric(data_end_date) - as.numeric(inner_dummy$ajahrmonat)),
+      td_to_end = (as.numeric(data_end_date) - as.numeric(inner_dummy$amonths)),
       #of leading offering
-      td_of_lead = (lead(as.numeric(inner_dummy$ejahrmonat)) - as.numeric(inner_dummy$ajahrmonat))
+      td_of_lead = (lead(as.numeric(inner_dummy$amonths)) - as.numeric(inner_dummy$emonths))
     )
     
     #replace last td_of_lead with td_to_end
@@ -186,7 +199,7 @@ for(i in 1:100){
           
           #floor matches, rooms similar; half-true repeated offering
           #change to 1 later
-          .$etage == baseline$etage & .$zimmeranzahl_similar ~ "2",
+          .$etage == baseline$etage & .$zimmeranzahl_similar ~ "1",
           
           #both are similar, resembling repeated offering
           .$etage_similar & .$zimmeranzahl_similar ~ "3",
@@ -195,32 +208,36 @@ for(i in 1:100){
           TRUE ~ "4"
       ),
         ##gen proposed object parent
-        obj_parent = ifelse(repeated_id != 4,baseline$counting_id,NA)
+        obj_parent = ifelse(repeated_id != 4,baseline$counting_id,NA),
+        ##gen price difference to parent
+        #this needs to be variable depending on object type
+        kp_pd_to_parent = kaufpreis - baseline$kaufpreis,
+        rent_pd_to_parent = mietekalt - baseline$mietekalt,
+        ##gen time difference to parent
+        td_to_parent =  (as.numeric(amonths) - as.numeric(baseline$emonths))
     )
     ##final cleanup        
     final_inner = inner_dummy %>% 
       #drop offerings without parent
       filter(!is.na(obj_parent)) %>%
       #drop all colums but those of interest
-      select(counting_id,obj_parent,repeated_id,match_type,wohnflaeche,etage,zimmeranzahl,latlon_utm)
+      select(counting_id,obj_parent,repeated_id,kaufpreis,kp_pd_to_parent,mietekalt,rent_pd_to_parent,amonths,emonths,td_to_parent,match_type,wohnflaeche,etage,zimmeranzahl,latlon_utm)
     
     #append to master and remove wohnflaeche subset array
-    final_list = rbind(final_list, final_inner)
+    if(nrow(final_inner)>1){
+      final_outer = rbind(final_outer, final_inner)
+    }
     rm(inner_dummy)
   }
   #remove unique coordination combination subset array
   rm(outer_dummy)
 }
-
-#stopped here
-sum(final_list$counting_id[2] == final_list$obj_parent)
-
-######################
-#Variables of interest
-######################
-#to inital offering
-#td_to_start = (as.numeric(inner_dummy$ajahrmonat) - as.numeric(baseline$ejahrmonat)),
-
+#count occurences of parent objects
+final_outer = distinct(final_outer)
+count_parents = count(final_outer,obj_parent)
+keep_parents = count_parents[1][count_parents[2] > 1]
+#drop if object is only its own parent
+final_list = final_outer %>% filter(obj_parent %in% keep_parents) %>% arrange(obj_parent,counting_id)
 
 ######################
 #Cleanup 
