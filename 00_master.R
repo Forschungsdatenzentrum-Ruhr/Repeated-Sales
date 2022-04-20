@@ -70,7 +70,10 @@ berlin_only =
   wk_data %>%
   filter(
     # berlin only
-    blid == 11
+    blid == 11,
+    #missings coordinates
+    as.character(lat_utm) != "-9",
+    as.character(lon_utm) != "-9"
   ) %>%
   select(
     mietekalt,
@@ -111,9 +114,8 @@ data_end_date = max(berlin_only$emonths)
 ######################
 #Classifcations
 ######################
-#length(unique_latlon)
-for(i in 1:100){
-  printer(i,by = 1)
+for(i in 1:length(unique_latlon)){
+  printer(i,by = 100)
   #subset by unique coordinate combination
   outer_dummy = filter(berlin_only, latlon_utm == unique_latlon[i])
   
@@ -124,9 +126,8 @@ for(i in 1:100){
   outer_dummy = outer_dummy[order(outer_dummy$amonths),]
   
   #drop non applicable price column as well as observations with missings in key values
-  miss_matrix = as.data.frame(apply(outer_dummy, 2 ,function(x) as.integer(x %in% missings)))
+  miss_matrix = as.data.frame(apply(outer_dummy, 2 ,function(x) as.integer(as.integer(x) %in% missings)))
   outer_dummy = outer_dummy[rowSums(miss_matrix) == 1,]#!colSums(miss_matrix) == nrow(miss_matrix)
-  
   #catch coordinates only incomplete key variables
   if(nrow(outer_dummy)==0){next}
   
@@ -147,7 +148,6 @@ for(i in 1:100){
     #cutoff all preceding offerings
     #these cannot be repeated offerings since they were offered before candidate
     inner_dummy = inner_dummy[match(unique_wohnflaeche[j],inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
-
 #Updates
 ######################   
     
@@ -238,9 +238,9 @@ count_parents = count(final_outer,obj_parent)
 keep_parents = count_parents[1][count_parents[2] > 1]
 #drop if object is only its own parent
 final_list = final_outer %>% filter(obj_parent %in% keep_parents) %>% arrange(obj_parent,counting_id)
-
+write_dta(final_list,paste0(writepath,"repeated_offerings_20042022.dta"))
 ######################
 #Cleanup 
 ######################
 #rm(list = setdiff(setdiff(ls(),c("readpath","writepath","path")), lsf.str()))
-
+table(final_list$repeated_id)
