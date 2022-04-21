@@ -12,7 +12,8 @@ packages_install = function(library_string){
 ######################
 library_string = c("here", # creating dynamic paths based on script location
                    "haven", # reading/writing of dta files
-                   "tidyverse" # data manipulation/wrangeling
+                   "tidyverse", # data manipulation/wrangeling
+                   "doParallel"
 )
 packages_install(library_string)
 ######################
@@ -54,8 +55,6 @@ etage_offset_factor = 99
 zimmeranzahl_offset_factor = 0.5
 time_offset_factor = 6
 
-
-missings = c(-5:-11)
 final_outer = c()
 final_inner = c()
 final_list = c()
@@ -72,8 +71,7 @@ berlin_only =
     # berlin only
     blid == 11,
     #missings coordinates
-    as.character(lat_utm) != "-9",
-    as.character(lon_utm) != "-9"
+    !lat_utm < 0 | !lon_utm < 0
   ) %>%
   select(
     mietekalt,
@@ -111,6 +109,7 @@ unique_latlon = unique(berlin_only$latlon_utm)
 berlin_only$counting_id = 1:dim(berlin_only)[1]
 data_end_date = max(berlin_only$emonths)
 
+options(warn=2)
 ######################
 #Classifcations
 ######################
@@ -120,20 +119,20 @@ for(i in 1:length(unique_latlon)){
   outer_dummy = filter(berlin_only, latlon_utm == unique_latlon[i])
   
   #catch coordinates with only one observation
-  if(nrow(outer_dummy)==1){next}
+  if(nrow(outer_dummy) == 1){next}
   
   #sort by offering start
   outer_dummy = outer_dummy[order(outer_dummy$amonths),]
   
   #drop non applicable price column as well as observations with missings in key values
-  miss_matrix = as.data.frame(apply(outer_dummy, 2 ,function(x) as.integer(as.integer(x) %in% missings)))
+  miss_matrix = as.data.frame(apply(outer_dummy, 2 ,function(x) as.integer(x < 0)))
   outer_dummy = outer_dummy[rowSums(miss_matrix) == 1,]#!colSums(miss_matrix) == nrow(miss_matrix)
   #catch coordinates only incomplete key variables
-  if(nrow(outer_dummy)==0){next}
+  if(nrow(outer_dummy) <= 1){next}
   
   #get unique values for living space and drop missings
   unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
-  
+
   for(j in 1:length(unique_wohnflaeche)){
     ##subset by exact/range match in wohnflaeche
     #at least one exact match
@@ -145,6 +144,7 @@ for(i in 1:length(unique_latlon)){
       inner_dummy = filter(outer_dummy, rangeChecker(wohnflaeche, unique_wohnflaeche[j], wohnflaeche_offset_factor, "multi"))
       inner_dummy$match_type = "range"
     } 
+    
     #cutoff all preceding offerings
     #these cannot be repeated offerings since they were offered before candidate
     inner_dummy = inner_dummy[match(unique_wohnflaeche[j],inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
@@ -159,7 +159,7 @@ for(i in 1:length(unique_latlon)){
       #of leading offering
       td_of_lead = (lead(as.numeric(inner_dummy$amonths)) - as.numeric(inner_dummy$emonths))
     )
-    
+
     #replace last td_of_lead with td_to_end
     inner_dummy$td_of_lead[is.na(inner_dummy$td_of_lead)] = inner_dummy$td_to_end[is.na(inner_dummy$td_of_lead)]
 
@@ -216,6 +216,7 @@ for(i in 1:length(unique_latlon)){
         ##gen time difference to parent
         td_to_parent =  (as.numeric(amonths) - as.numeric(baseline$emonths))
     )
+    
     ##final cleanup        
     final_inner = inner_dummy %>% 
       #drop offerings without parent
@@ -244,3 +245,5 @@ write_dta(final_list,paste0(writepath,"repeated_offerings_20042022.dta"))
 ######################
 #rm(list = setdiff(setdiff(ls(),c("readpath","writepath","path")), lsf.str()))
 table(final_list$repeated_id)
+
+test = read_dta("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/Output/repeated_offerings_20042022.dta")
