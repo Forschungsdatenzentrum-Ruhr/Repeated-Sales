@@ -22,7 +22,7 @@ packages_install(library_string)
 path = paste0(here(),"/")
 readpath = "M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v6/"
 writepath = paste0(path,"Output/")
-
+names(wk_data)
 ######################
 #Functions
 ######################
@@ -58,12 +58,12 @@ time_offset_factor = 6
 final_outer = c()
 final_inner = c()
 final_list = c()
-
+with_updates = c()
 ######################
 #Prep
 ######################
 wk_data = read_dta(paste0(readpath,"WK_allVersionsLabels.dta"))
-
+names(wk_data)
 #shrink data to necessary
 berlin_only =
   wk_data %>%
@@ -92,7 +92,8 @@ berlin_only =
     latlon_utm = paste0(lat_utm,lon_utm),
     #transform years into months and add running years months
     amonths = ajahr * 12 + amonat,
-    emonths = ejahr * 12 + emonat 
+    emonths = ejahr * 12 + emonat,
+    price_var = pmax(mietekalt,kaufpreis)
   ) %>%
   #drop unused columns
   select(
@@ -101,8 +102,11 @@ berlin_only =
     -ejahr,
     -emonat,
     -lat_utm,
-    -lon_utm
+    -lon_utm,
+    -mietekalt,
+    -kaufpreis
   )
+
 rm(wk_data)
 
 unique_latlon = unique(berlin_only$latlon_utm)
@@ -113,7 +117,8 @@ options(warn=2)
 ######################
 #Classifcations
 ######################
-for(i in 1:length(unique_latlon)){
+#length(unique_latlon)
+for(i in 1:1000){
   printer(i,by = 100)
   #subset by unique coordinate combination
   outer_dummy = filter(berlin_only, latlon_utm == unique_latlon[i])
@@ -125,8 +130,8 @@ for(i in 1:length(unique_latlon)){
   outer_dummy = outer_dummy[order(outer_dummy$amonths),]
   
   #drop non applicable price column as well as observations with missings in key values
-  miss_matrix = as.data.frame(apply(outer_dummy, 2 ,function(x) as.integer(x < 0)))
-  outer_dummy = outer_dummy[rowSums(miss_matrix) == 1,]#!colSums(miss_matrix) == nrow(miss_matrix)
+  outer_dummy[outer_dummy < 0] = NA
+  outer_dummy = drop_na(outer_dummy)
   #catch coordinates only incomplete key variables
   if(nrow(outer_dummy) <= 1){next}
   
@@ -148,9 +153,9 @@ for(i in 1:length(unique_latlon)){
     #cutoff all preceding offerings
     #these cannot be repeated offerings since they were offered before candidate
     inner_dummy = inner_dummy[match(unique_wohnflaeche[j],inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
+    
 #Updates
 ######################   
-    
     ##gen time differences
     inner_dummy = inner_dummy %>% mutate(
       
@@ -211,10 +216,10 @@ for(i in 1:length(unique_latlon)){
         obj_parent = ifelse(repeated_id != 4,baseline$counting_id,NA),
         ##gen price difference to parent
         #this needs to be variable depending on object type
-        kp_pd_to_parent = kaufpreis - baseline$kaufpreis,
-        rent_pd_to_parent = mietekalt - baseline$mietekalt,
+        pd_to_parent = price_var - baseline$price_var,
         ##gen time difference to parent
-        td_to_parent =  (as.numeric(amonths) - as.numeric(baseline$emonths))
+        td_start_to_parent_end =  (as.numeric(amonths) - as.numeric(baseline$emonths)),
+        td_end_to_parent_end =  (as.numeric(emonths) - as.numeric(baseline$emonths))
     )
     
     ##final cleanup        
@@ -222,7 +227,7 @@ for(i in 1:length(unique_latlon)){
       #drop offerings without parent
       filter(!is.na(obj_parent)) %>%
       #drop all colums but those of interest
-      select(counting_id,obj_parent,repeated_id,kaufpreis,kp_pd_to_parent,mietekalt,rent_pd_to_parent,amonths,emonths,td_to_parent,match_type,wohnflaeche,etage,zimmeranzahl,latlon_utm)
+      select(counting_id,obj_parent,repeated_id,price_var,pd_to_parent,amonths,emonths,td_start_to_parent_end,td_end_to_parent_end,match_type,wohnflaeche,etage,zimmeranzahl,latlon_utm)
     
     #append to master and remove wohnflaeche subset array
     if(nrow(final_inner)>1){
@@ -235,15 +240,13 @@ for(i in 1:length(unique_latlon)){
 }
 #count occurences of parent objects
 final_outer = distinct(final_outer)
-count_parents = count(final_outer,obj_parent)
+count_parents = count(obj_parent)
 keep_parents = count_parents[1][count_parents[2] > 1]
 #drop if object is only its own parent
 final_list = final_outer %>% filter(obj_parent %in% keep_parents) %>% arrange(obj_parent,counting_id)
-write_dta(final_list,paste0(writepath,"repeated_offerings_20042022.dta"))
+file_name = paste0("repeated_offerings_",Sys.Date(),".dta")
+write_dta(final_list,paste0(writepath,file_name))
 ######################
 #Cleanup 
 ######################
 #rm(list = setdiff(setdiff(ls(),c("readpath","writepath","path")), lsf.str()))
-table(final_list$repeated_id)
-
-test = read_dta("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/Output/repeated_offerings_20042022.dta")
