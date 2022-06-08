@@ -22,7 +22,7 @@ packages_install(library_string)
 path = paste0(here(),"/")
 readpath = "M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v6/"
 writepath = paste0(path,"Output/")
-names(wk_data)
+
 ######################
 #Functions
 ######################
@@ -46,6 +46,7 @@ printer = function(value,by=50){
     print(value)
   }
 }
+
 ######################
 #Declarations
 ######################
@@ -58,12 +59,14 @@ time_offset_factor = 6
 final_outer = c()
 final_inner = c()
 final_list = c()
-with_updates = c()
+
+states =  c("Initial with complete coordinates","Post missing drop","Post update drop","Post classification drop","Post duplicate drop")
+obs_counter = data.frame(state = states, count = rep(0,length(states)))
 ######################
 #Prep
 ######################
-wk_data = read_dta(paste0(readpath,"WK_allVersionsLabels.dta"))
-names(wk_data)
+wk_data = read_dta(paste0(readpath,"Wm_allVersionsLabels.dta"))
+
 #shrink data to necessary
 berlin_only =
   wk_data %>%
@@ -73,19 +76,7 @@ berlin_only =
     #missings coordinates
     !lat_utm < 0 | !lon_utm < 0
   ) %>%
-  select(
-    mietekalt,
-    kaufpreis,
-    wohnflaeche,
-    etage,
-    zimmeranzahl,
-    ajahr,
-    amonat,
-    ejahr,
-    emonat,
-    lat_utm,
-    lon_utm
-  ) %>%
+  #select(mietekalt,kaufpreis,wohnflaeche,etage,zimmeranzahl,ajahr,amonat,ejahr,emonat,lat_utm,lon_utm) %>%
   #new var
   mutate(
     #coordinate combination
@@ -95,19 +86,15 @@ berlin_only =
     emonths = ejahr * 12 + emonat,
     price_var = pmax(mietekalt,kaufpreis)
   ) %>%
-  #drop unused columns
   select(
-    -ajahr,
-    -amonat,
-    -ejahr,
-    -emonat,
-    -lat_utm,
-    -lon_utm,
-    -mietekalt,
-    -kaufpreis
-  )
+    -freiab,
+    -mietekaution,
+    -courtage
+)
 
 rm(wk_data)
+
+obs_counter$count[obs_counter$state == "Initial with complete coordinates"] = nrow(berlin_only)
 
 unique_latlon = unique(berlin_only$latlon_utm)
 berlin_only$counting_id = 1:dim(berlin_only)[1]
@@ -117,9 +104,8 @@ options(warn=2)
 ######################
 #Classifcations
 ######################
-#length(unique_latlon)
-for(i in 1:1000){
-  printer(i,by = 100)
+for(i in 1:length(unique_latlon)){
+  printer(i,by = 10000)
   #subset by unique coordinate combination
   outer_dummy = filter(berlin_only, latlon_utm == unique_latlon[i])
   
@@ -131,12 +117,15 @@ for(i in 1:1000){
   
   #drop non applicable price column as well as observations with missings in key values
   outer_dummy[outer_dummy < 0] = NA
-  outer_dummy = drop_na(outer_dummy)
+  outer_dummy = drop_na(outer_dummy,wohnflaeche,amonths,emonths,zimmeranzahl,etage,price_var)
   #catch coordinates only incomplete key variables
   if(nrow(outer_dummy) <= 1){next}
   
   #get unique values for living space and drop missings
   unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
+
+  #observation counter. this includes NAs and coordinates with less than 2 observations
+  obs_counter$count[obs_counter$state == "Post missing drop"] = obs_counter$count[obs_counter$state == "Post missing drop"] + nrow(outer_dummy)
 
   for(j in 1:length(unique_wohnflaeche)){
     ##subset by exact/range match in wohnflaeche
@@ -177,10 +166,12 @@ for(i in 1:1000){
       #drop unused columns
       -td_to_end
     )
-    
+
+    #observation counter
+    obs_counter$count[obs_counter$state == "Post update drop"] = obs_counter$count[obs_counter$state == "Post update drop"] + nrow(inner_dummy)
+
 #Repeated
 ###################### 
-    
     #extract inital offering
     baseline = inner_dummy[1,]
     
@@ -226,27 +217,41 @@ for(i in 1:1000){
     final_inner = inner_dummy %>% 
       #drop offerings without parent
       filter(!is.na(obj_parent)) %>%
-      #drop all colums but those of interest
-      select(counting_id,obj_parent,repeated_id,price_var,pd_to_parent,amonths,emonths,td_start_to_parent_end,td_end_to_parent_end,match_type,wohnflaeche,etage,zimmeranzahl,latlon_utm)
+      mutate(
+        changed_ausstattung = case_when(as.numeric(ausstattung) - lag(as.numeric(ausstattung)) > 0 ~ "1", TRUE ~ "0"),
+        changed_objektzustand = case_when(as.numeric(objektzustand) - lag(as.numeric(objektzustand)) > 0 ~ "1", TRUE ~ "0"),
+        changed_heizungsart = case_when(as.numeric(heizungsart) - lag(as.numeric(heizungsart)) > 0 ~ "1", TRUE ~ "0"),
+        changed_einbaukueche = case_when(as.numeric(einbaukueche) - lag(as.numeric(einbaukueche)) > 0 ~ "1", TRUE ~ "0"),
+        changed_garten = case_when(as.numeric(garten) - lag(as.numeric(garten)) > 0 ~ "1", TRUE ~ "0"),
+        changed_keller = case_when(as.numeric(keller) - lag(as.numeric(keller)) > 0 ~ "1", TRUE ~ "0")
+      )
     
     #append to master and remove wohnflaeche subset array
     if(nrow(final_inner)>1){
       final_outer = rbind(final_outer, final_inner)
     }
+    #observation counter
+    obs_counter$count[obs_counter$state == "Post classification drop"] = obs_counter$count[obs_counter$state == "Post classification drop"] + nrow(final_inner)
+    
     rm(inner_dummy)
   }
   #remove unique coordination combination subset array
   rm(outer_dummy)
 }
+
 #count occurences of parent objects
 final_outer = distinct(final_outer)
-count_parents = count(obj_parent)
+count_parents = final_outer %>% count(obj_parent)
 keep_parents = count_parents[1][count_parents[2] > 1]
 #drop if object is only its own parent
 final_list = final_outer %>% filter(obj_parent %in% keep_parents) %>% arrange(obj_parent,counting_id)
+
+obs_counter$count[obs_counter$state =="Post duplicate drop"] = nrow(final_list)
+
 file_name = paste0("repeated_offerings_",Sys.Date(),".dta")
 write_dta(final_list,paste0(writepath,file_name))
+write.csv2(obs_counter,paste0(writepath,"obs_counter.csv"))
 ######################
 #Cleanup 
 ######################
-#rm(list = setdiff(setdiff(ls(),c("readpath","writepath","path")), lsf.str()))
+rm(list = setdiff(setdiff(ls(),c("readpath","writepath","path")), lsf.str()))
