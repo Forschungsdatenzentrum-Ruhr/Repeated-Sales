@@ -9,3 +9,5 @@
 *.xlsx
 *.dta
 *.fst
+*.do
+*.log
