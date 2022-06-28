@@ -15,7 +15,7 @@ library_string = c("here", # creating dynamic paths based on script location
                    "tidyverse", # data manipulation/wrangeling
                    "doParallel", #parallel processing
                    "foreach", #parallel looping
-                    "magrittr" #two sided pipe
+                   "magrittr" #two sided pipe
 )
 packages_install(library_string)
 ######################
@@ -65,8 +65,6 @@ registerDoParallel(numCores)
 ######################
 #Prep
 ######################
-#.inorder = F
-# .packages = "dplyr"
 for(d in 1:length(data_types)){
   
   #load inital data
@@ -134,36 +132,37 @@ for(d in 1:length(data_types)){
       if(nrow(outer_dummy) <= 1){next}
       
       #get unique values for living space and drop missings
-      unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
+      unique_wohnflaeche = unique(zap_labels(outer_dummy$wohnflaeche))
       
       #observation counter. this includes NAs and coordinates with less than 2 observations
       obs_counter$count[obs_counter$state == "Post missing drop"] = obs_counter$count[obs_counter$state == "Post missing drop"] + nrow(outer_dummy)
       
-      for(j in 1:length(unique_wohnflaeche)){
-        
+      #for(j in 1:length(unique_wohnflaeche)){
+      x = foreach(wohn_j = unique_wohnflaeche, .combine = "rbind", .inorder = F, .packages = library_string) %dopar%{
+
         ##subset by range match in wohnflaeche
-        inner_dummy = filter(outer_dummy, rangeChecker(wohnflaeche, unique_wohnflaeche[j], wohnflaeche_offset_factor, "multi"))
-  
+        inner_dummy = filter(outer_dummy, rangeChecker(wohnflaeche, wohn_j, wohnflaeche_offset_factor, "multi"))
+      
         #cutoff all preceding offerings
         #these cannot be repeated offerings since they were offered before candidate
-        inner_dummy = inner_dummy[match(unique_wohnflaeche[j],inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
+        inner_dummy = inner_dummy[match(wohn_j,inner_dummy$wohnflaeche):length(inner_dummy$wohnflaeche),]
         
         #Updates
         ######################   
         ##gen time differences
-        inner_dummy = inner_dummy %>% mutate(
+        inner_dummy %<>% mutate(
           
           #to last date in data
           td_to_end = (as.numeric(data_end_date) - as.numeric(inner_dummy$amonths)),
           #of leading offering
           td_of_lead = (lead(as.numeric(inner_dummy$amonths)) - as.numeric(inner_dummy$emonths))
         )
-        
+      
         #replace last td_of_lead with td_to_end
         inner_dummy$td_of_lead[is.na(inner_dummy$td_of_lead)] = inner_dummy$td_to_end[is.na(inner_dummy$td_of_lead)]
         
         #drops updates
-        inner_dummy = inner_dummy %>% filter(
+        inner_dummy %<>% filter(
           .$td_of_lead >= as.numeric((time_offset_factor))
           
           ##intermediary cleanup    
@@ -171,9 +170,9 @@ for(d in 1:length(data_types)){
           #drop unused columns
           -td_to_end
         )
-        
+      
         #observation counter
-        obs_counter$count[obs_counter$state == "Post update drop"] = obs_counter$count[obs_counter$state == "Post update drop"] + nrow(inner_dummy)
+        #obs_counter$count[obs_counter$state == "Post update drop"] = obs_counter$count[obs_counter$state == "Post update drop"] + nrow(inner_dummy)
         
         #Repeated
         ###################### 
@@ -181,7 +180,7 @@ for(d in 1:length(data_types)){
         baseline = inner_dummy[1,]
         
         ##gen similarity dummys
-        inner_dummy = inner_dummy %>% mutate(
+        inner_dummy %<>% mutate(
           
           #rooms
           zimmeranzahl_similar = rangeChecker(inner_dummy$zimmeranzahl, baseline$zimmeranzahl, zimmeranzahl_offset_factor, "add"),
@@ -219,9 +218,9 @@ for(d in 1:length(data_types)){
           td_start_to_parent_end =  (as.numeric(amonths) - as.numeric(baseline$emonths)),
           td_end_to_parent_end =  (as.numeric(emonths) - as.numeric(baseline$emonths))
         )
-        
+      
         ##final cleanup        
-        final_inner = inner_dummy %>% 
+        inner_dummy %>% 
           
           #drop offerings without parent
           filter(!is.na(obj_parent)) %>%
@@ -235,20 +234,18 @@ for(d in 1:length(data_types)){
             changed_garten = case_when(as.numeric(garten) - lag(as.numeric(garten)) > 0 ~ "1", TRUE ~ "0"),
             changed_keller = case_when(as.numeric(keller) - lag(as.numeric(keller)) > 0 ~ "1", TRUE ~ "0")
           )
-        
+      }
         #append to master and remove wohnflaeche subset array
-        if(nrow(final_inner) > 1){
-          final_outer = rbind(final_outer, final_inner)
-        }
+        #if(nrow(final_inner) > 1){
+        #  final_outer = rbind(final_outer,final_inner)
+        #}
         #observation counter
-        obs_counter$count[obs_counter$state == "Post classification drop"] = obs_counter$count[obs_counter$state == "Post classification drop"] + nrow(final_inner)
-        
-        rm(inner_dummy)
+        #obs_counter$count[obs_counter$state == "Post classification drop"] = obs_counter$count[obs_counter$state == "Post classification drop"] + nrow(final_inner)
+
       }
       #remove unique coordination combination subset array
       rm(outer_dummy)
   }
-    ?foreach
     #count occurences of parent objects
     final_outer = distinct(final_outer)
     count_parents = final_outer %>% count(obj_parent)

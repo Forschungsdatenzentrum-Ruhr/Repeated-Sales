@@ -1,0 +1,20 @@
+rangeChecker = function(test_value,baseline_value,offset_value,offset_type="multi"){
+  
+  test_value = as.numeric(test_value)
+  baseline_value = as.numeric(baseline_value)
+  offset_value = as.numeric(offset_value)
+  
+  range = case_when(
+    offset_type == "add" ~ c(baseline_value - offset_value, baseline_value + offset_value),
+    offset_type == "multi" ~ c(baseline_value*(1 - offset_value), baseline_value*(1 + offset_value)),
+    TRUE ~ c(0,0)
+  )
+  check = between(test_value,range[1],range[2])
+  return(check)
+}
+
+printer = function(value,by=50){
+  if(value %% by == 0){
+    print(value)
+  }
+}

@@ -1,0 +1,7 @@
+Für jeweils 10000 Koordinaten in Berlin
+
+Parallel:
+1675.67 sec elapsed
+
+No Parallel:
+4806.14 sec elapsed
