@@ -37,8 +37,8 @@ source(paste0(path,"HelperFunctions.R"))
 numCores = detectCores()
 registerDoParallel(cores = numCores)
 var_of_interest = c("wohnflaeche","amonths","emonths","zimmeranzahl","etage","price_var")
-#,"Wm"
-data_types = c("Wk")
+#
+data_types = c("Wk","Wm")
 ######################
 #Prep
 ######################
@@ -47,9 +47,9 @@ for(d in 1:length(data_types)){
   
   #load inital data
   type = data_types[d]
-  data = read_dta(paste0(readpath,type,"_allVersionsLabels.dta"))
+  t_data = read_dta(paste0(readpath,type,"_allVersionsLabels.dta"))
   
-  for(bl_id in 1:1){
+  for(bl_id in 1:16){
     
     #Var Preperation
     final_outer = c()
@@ -57,7 +57,7 @@ for(d in 1:length(data_types)){
     
     #Data Preperation
     #shrink data to necessary
-    bl = data %>%
+    bl = t_data %>%
       filter(
         # subset to federal state
         blid == bl_id,
@@ -89,19 +89,9 @@ for(d in 1:length(data_types)){
     unique_latlon = unique(bl$latlon_utm)
     data_end_date = max(bl$emonths)
     
-    pb <- progress_bar$new(
-      format = "[:bar] :elapsed | eta: :eta",
-      total = length(unique_latlon[1:1000]),
-      width = 60)
     
-    progress <- function(n){
-      pb$tick()
-    } 
-    
-    opts <- list(progress = progress)
-    
-    final_outer = foreach(latlon = unique_latlon[1:1000], .combine = "rbind", .inorder = F, .packages = library_string, .options.snow = opts) %dopar%{
-      
+    final_outer = foreach(latlon = unique_latlon, .combine = "rbind",.noexport = t_data, .inorder = F, .packages = library_string) %dopar%{
+
       #subset by unique coordinate combination
       outer_dummy = filter(bl, latlon_utm == latlon)
       
@@ -112,18 +102,20 @@ for(d in 1:length(data_types)){
       unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
       
       classification(unique_wohnflaeche = unique_wohnflaeche, outer_dummy = outer_dummy)
-      
-    }
-  }
-  #count occurences of parent objects
-  final_outer = distinct(final_outer)
-  count_parents = final_outer %>% count(obj_parent)
-  keep_parents = count_parents[1][count_parents[2] > 1]
-  #drop if object is only its own parent
-  final_list = final_outer %>% filter(obj_parent %in% keep_parents) %>% arrange(obj_parent,counting_id)
   
-  file_name = paste0(type,"_",bl_id,"_repeated_offerings_",Sys.Date(),".dta")
-  write_dta(final_list,paste0(writepath,file_name))
+    }
+    print(paste0(type,"_",bl_id," done"))
+    
+    #count occurences of parent objects
+    final_outer = distinct(final_outer)
+    count_parents = final_outer %>% count(obj_parent)
+    keep_parents = count_parents[1][count_parents[2] > 1]
+    #drop if object is only its own parent
+    final_list = final_outer %>% filter(obj_parent %in% keep_parents) %>% arrange(obj_parent,counting_id)
+    
+    file_name = paste0(type,"_",bl_id,"_repeated_offerings_",Sys.Date(),".dta")
+    write_dta(final_list,paste0(writepath,file_name))
+  }
 }
 stopImplicitCluster()
     

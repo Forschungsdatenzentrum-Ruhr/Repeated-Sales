@@ -208,6 +208,7 @@ for(d in 1:length(data_types)){
             TRUE ~ "4"
           ),
           ##gen proposed object parent
+          #shouldnt happen??
           obj_parent = ifelse(repeated_id != 4,baseline$counting_id,NA),
           
           ##gen price difference to parent

@@ -1,0 +1,2 @@
+INFO [2022-07-07 12:16:02] Start type: Wk
+INFO [2022-07-07 12:21:30] Start bl_id: 1

@@ -6,6 +6,8 @@ classification = function(unique_wohnflaeche,outer_dummy){
   zimmeranzahl_offset_factor = 0.5
   time_offset_factor = 6
   
+
+# living_space_loop -------------------------------------------------------
   final_inner = foreach(wohn = unique_wohnflaeche, .combine = "rbind", .inorder = F, .packages = c("tidyverse","magrittr")) %do%{
     
     #subset by range match in wohnflaeche
@@ -40,7 +42,6 @@ classification = function(unique_wohnflaeche,outer_dummy){
       -td_to_end
     )
     
-
     #Repeated
     ###################### 
     #extract inital offering

@@ -1,27 +1,26 @@
 {
-    "id": "4F021DDC",
+    "id": "28785376",
     "path": "N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/Split_Parallel.R",
     "project_path": "Split_Parallel.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "395963163",
     "contents": "",
     "dirty": false,
-    "created": 1655818473050.0,
+    "created": 1656929166880.0,
     "source_on_save": false,
-    "relative_order": 3,
+    "relative_order": 2,
     "properties": {
-        "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "13,58",
-        "scrollLine": "1"
+        "cursorPosition": "190,4",
+        "scrollLine": "159"
     },
     "folds": "",
-    "lastKnownWriteTime": 1656550112,
+    "lastKnownWriteTime": 1657202743,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1656550112413,
+    "last_content_update": 1657202743684,
     "read_only": false,
     "read_only_alternatives": []
 }
