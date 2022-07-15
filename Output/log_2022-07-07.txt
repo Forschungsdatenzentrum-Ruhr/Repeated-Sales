@@ -1,2 +1,19 @@
 INFO [2022-07-07 12:16:02] Start type: Wk
 INFO [2022-07-07 12:21:30] Start bl_id: 1
+INFO [2022-07-07 16:08:55] Start type: Wk
+INFO [2022-07-07 16:14:47] Start bl_id: 1
+INFO [2022-07-07 17:49:46] End bl_id: 1
+INFO [2022-07-07 17:49:46] Runtime: 94.9764mins
+INFO [2022-07-07 17:49:47] Start bl_id: 2
+INFO [2022-07-07 22:00:51] End bl_id: 2
+INFO [2022-07-07 22:00:51] Runtime: 251.0603mins
+INFO [2022-07-07 22:00:53] Start bl_id: 3
+INFO [2022-07-08 15:55:37] End bl_id: 3
+INFO [2022-07-08 15:55:37] Runtime: 1074.7348mins
+INFO [2022-07-08 15:55:42] Start bl_id: 4
+INFO [2022-07-08 17:09:31] End bl_id: 4
+INFO [2022-07-08 17:09:31] Runtime: 73.8173mins
+INFO [2022-07-08 17:09:31] Start bl_id: 5
+INFO [2022-07-10 10:46:58] End bl_id: 5
+INFO [2022-07-10 10:46:58] Runtime: 2497.4421mins
+INFO [2022-07-10 10:47:16] Start bl_id: 6

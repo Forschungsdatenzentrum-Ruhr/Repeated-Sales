@@ -11,8 +11,6 @@
 # strict non duplicates during preselection
 # kernels ? 
 
-
-
 ######################
 #Notation
 ######################
@@ -104,7 +102,7 @@ for(d in 1:length(data_types)){
   
 
 # federal_state_loop ------------------------------------------------------
-  for(bl_id in 1:16){
+  for(bl_id in 11:11){
     
     #log
     log_info(paste0("Start bl_id: ",bl_id))
@@ -160,7 +158,7 @@ for(d in 1:length(data_types)){
       #sort by offering start
       outer_dummy = outer_dummy[order(outer_dummy$amonths),]
       
-      #get unique values for living space and drop missings
+      #get unique values for living space
       unique_wohnflaeche = unique(outer_dummy$wohnflaeche)
       
       #classify coordinate
@@ -187,7 +185,8 @@ for(d in 1:length(data_types)){
   }
 }
 stopImplicitCluster()
-    
+
+q(save = "no")    
     
     
     

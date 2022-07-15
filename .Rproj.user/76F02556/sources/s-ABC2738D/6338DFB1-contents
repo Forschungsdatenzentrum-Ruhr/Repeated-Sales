@@ -1,0 +1,5 @@
+data = read_dta(paste0(writepath,"wm_11_repeated_offerings_2022-07-15.dta"))
+
+table(data$obj_parent)[table(data$obj_parent)== 12]
+
+test = data %>% filter(obj_parent == 6471)
