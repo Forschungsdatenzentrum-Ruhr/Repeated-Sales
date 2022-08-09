@@ -71,11 +71,10 @@ classify_data <- function(latlon_utm) {
     "zimmeranzahl", 0.5, 0, "add",
     "time", 0, 6, NA
   )
-  mandatory  = c("latlon_utm","balkon")
   
   repeated_offerings <- c()
 
-  latlon_utm %<>% group_by(mandatory) %>% arrange(amonths)
+  latlon_utm %<>% arrange(amonths)
 
   # extract time offset for readability
   time_offset <- range_offsets$exact_offset[range_offsets$rowname == "time"]
@@ -107,5 +106,7 @@ classify_data <- function(latlon_utm) {
       bind_rows(repeated_offerings)
   }
   # throw out similar dups based on jaccard index?
+  
+  tar_delete(starts_with("classification"))
   return(repeated_offerings)
 }

@@ -1,4 +1,5 @@
 library(targets)
-tar_make_future(workers = 10)
+tar_make()
+tar_visnetwork(targets_only = T)
 
 

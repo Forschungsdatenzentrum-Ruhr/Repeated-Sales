@@ -74,20 +74,16 @@ lapply(list.files("R", full.names = TRUE, recursive = TRUE), source)
 blid_targets = tar_map(
   values = list(.bl_id = 1:1),
   tar_fst_tbl(bl, load_data(filename, bl_id = .bl_id )),
-  tar_group_by(group, bl, plz),
-  tar_fst_tbl(classification, classify_data(group), pattern = map(group), sto)
+  tar_group_by(plz_group, bl, plz),
+  tar_group_by(coord_group, plz_group, latlon_utm, balkon),
+  tar_fst_tbl(classification, classify_data(coord_group), pattern = map(coord_group))
 )
 
-# Replace the target list below with your own:
 list(
   tar_target(filename, construct_file_name("v6","Wk"),format = "file"),
   blid_targets,
-  tar_combine(repeated,blid_targets[[3]], command = bind_rows(!!!.x))
+  tar_combine(repeated,blid_targets[[4]], command = bind_rows(!!!.x), format = "fst_dt")
 )
-# ?tar_group_by
-# tar_target(latlon_utm, split_data(data)),
-# tar_group_by(classification, classify_data(latlon_utm),groups)
-tar_destroy()
 
 
 
