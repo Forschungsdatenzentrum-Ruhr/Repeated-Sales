@@ -1,0 +1,512 @@
+# tar_target(latlon_utm, split_data(data)),
+# tar_group_by(classification, classify_data(latlon_utm),groups)
+tar_read(classification_1_19f46ba3)
+# ?tar_group_by
+# tar_target(latlon_utm, split_data(data)),
+# tar_group_by(classification, classify_data(latlon_utm),groups)
+a = tar_read(classification_1_19f46ba3)
+View(a)
+# ?tar_group_by
+# tar_target(latlon_utm, split_data(data)),
+# tar_group_by(classification, classify_data(latlon_utm),groups)
+a = tar_read(classification_1_52a5fabf)
+# ?tar_group_by
+# tar_target(latlon_utm, split_data(data)),
+# tar_group_by(classification, classify_data(latlon_utm),groups)
+a = tar_read(classification_1_60cca3cb)
+View(a)
+# ?tar_group_by
+# tar_target(latlon_utm, split_data(data)),
+# tar_group_by(classification, classify_data(latlon_utm),groups)
+a = tar_read(classification_1_1da219b9)
+View(a)
+?tar_target
+library(fst)
+install.packages(fst)
+install.packages("fst")
+######################
+#Options and parallel
+######################
+?folder_info
+######################
+#Options and parallel
+######################
+??folder_info
+?tar_resources_fst
+?tar_fst_dt
+tar_visnetwork(targets_only = T)
+?tar_fst
+tar_visnetwork(targets_only = T)
+tar_visnetwork(targets_only = T)
+?tar_make_future
+nbrOfWorkers()
+tar_make_future(workers = 2)
+tar_timestamp(classification_1_1da219b9)
+tar_visnetwork(targets_only = T)
+tar_make_future(workers = 2)
+timestamp()
+##------ Mon Jul 18 16:58:33 2022 ------##
+tar_make_future(workers = 2)
+tar_make_future(workers = 2)
+?fst
+tar_make_future(workers = 2)
+a
+latlon_utm  = a
+latlon_utm %<>% arrange(amonths)
+View(latlon_utm)
+# declare necessary non-missing entries in the data
+var_of_interest = c("wohnflaeche","amonths","emonths","zimmeranzahl","etage","price_var")
+latlon_utm %<>% arrange(amonths) %>% select(var_of_interest)
+View(latlon_utm)
+latlon_utm  = a
+latlon_utm %<>%
+arrange(amonths) %>%
+select(var_of_interest) %>%
+mutate(
+#to last date in data
+td_to_end = (as.numeric(data_end_date) - as.numeric(inner_dummy$amonths)),
+#of leading offering
+td_of_lead = (lead(as.numeric(inner_dummy$amonths)) - as.numeric(inner_dummy$emonths)),
+#replace last td_of_lead with td_to_end
+td_of_lead = replace_na(td_of_lead, td_to_end[is.na(td_of_lead)])
+)
+latlon_utm %<>%
+arrange(amonths) %>%
+select(var_of_interest) %>%
+mutate(
+#to last date in data
+td_to_end = (as.numeric(data_end_date) - as.numeric(amonths)),
+#of leading offering
+td_of_lead = (lead(as.numeric(amonths)) - as.numeric(emonths)),
+#replace last td_of_lead with td_to_end
+td_of_lead = replace_na(td_of_lead, td_to_end[is.na(td_of_lead)])
+)
+latlon_utm  = a
+latlon_utm %<>%
+arrange(amonths) %>%
+select(var_of_interest,data_end_date) %>%
+mutate(
+#to last date in data
+td_to_end = (as.numeric(data_end_date) - as.numeric(amonths)),
+#of leading offering
+td_of_lead = (lead(as.numeric(amonths)) - as.numeric(emonths)),
+#replace last td_of_lead with td_to_end
+td_of_lead = replace_na(td_of_lead, td_to_end[is.na(td_of_lead)])
+)
+latlon_utm$etage
+rangeChecker = function(col = NA, offset_value = 0.1 , offset_type="multi"){
+test_value = col[-1]
+baseline_value = col[1]
+offset_value = as.numeric(offset_value)
+range = case_when(
+offset_type == "add" ~ c(baseline_value - offset_value, baseline_value + offset_value),
+offset_type == "multi" ~ c(baseline_value*(1 - offset_value), baseline_value*(1 + offset_value)),
+TRUE ~ stop("invalid offset typing")
+)
+check = between(test_value,range[1],range[2])
+return(check)
+}
+rangeChecker(a$etage)
+debugSource("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/03_classify_data.R")
+debugSource("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/03_classify_data.R")
+offset_type == "multi"
+source("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/03_classify_data.R")
+debugSource("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/03_classify_data.R")
+body(between)
+body(dplyr_between)
+getAnywhere(between)
+[3]
+getAnywhere(between)[3]
+rangeChecker(a$etage , a$zimmeranzahl)
+debugSource("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/03_classify_data.R")
+rangeChecker(cols = as.tbl(a$etage, a$zimmeranzahl))
+debugSource("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/03_classify_data.R")
+rangeChecker = function(cols = NA, offset_value = 0.1 , offset_type="multi"){
+test_value = cols[-1,]
+baseline_value = cols[1,]
+offset_value = as.numeric(offset_value)
+range = case_when(
+offset_type == "add" ~ c(baseline_value - offset_value, baseline_value + offset_value),
+offset_type == "multi" ~ c(baseline_value*(1 - offset_value), baseline_value*(1 + offset_value))
+)
+check = between(test_value,range[1],range[2])
+return(check)
+}
+debugSource("N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/03_classify_data.R")
+rangeChecker = function(col = NA, offset_value = 0.1 , offset_type="multi"){
+test_value = col[-1]
+baseline_value = cols[1]
+offset_value = as.numeric(offset_value)
+range = case_when(
+offset_type == "add" ~ c(baseline_value - offset_value, baseline_value + offset_value),
+offset_type == "multi" ~ c(baseline_value*(1 - offset_value), baseline_value*(1 + offset_value))
+)
+similar_check = between(test_value,range[1],range[2])
+return(similar_check)
+}
+rangeChecker(a$etage)
+rangeChecker = function(col = NA, offset_value = 0.1 , offset_type="multi"){
+test_value = col[-1]
+baseline_value = col[1]
+offset_value = as.numeric(offset_value)
+range = case_when(
+offset_type == "add" ~ c(baseline_value - offset_value, baseline_value + offset_value),
+offset_type == "multi" ~ c(baseline_value*(1 - offset_value), baseline_value*(1 + offset_value))
+)
+similar_check = between(test_value,range[1],range[2])
+return(similar_check)
+}
+rangeChecker(a$etage)
+?!!!
+#exchange rangeChecker for triple output between (-1,0,1 or similar) github.com/tidyverse/dplyr/blob/main/R/funs.R
+# taken from: https://github.com/tidyverse/dplyr/blob/main/R/funs.R
+between <- function(x, left, right) {
+args <- list(left = left, right = right)
+args <- vec_cast_common(!!!args, .to = x)
+args <- vec_recycle_common(!!!args, .size = vec_size(x))
+left <- args[[1L]]
+right <- args[[2L]]
+left <- vec_compare(x, left)
+left <- left >= 0L
+right <- vec_compare(x, right)
+right <- right <= 0L
+left & right
+}
+?"!!!"
+col_list = latlon %>%  list(etage, zimmeranzahl)
+col_list = latlon_utm %>%  list(etage, zimmeranzahl)
+col_list = latlon_utm %>% across(etage:zimmeranzahl, list())
+col_list = latlon_utm %>% across(etage, list())
+?across
+?across
+col_list =  across(latlon_utm, etage, list())
+col_list =  across(latlon_utm$etage, list())
+col_list =  list(latlon_utm$etage)
+col_list =  list(latlon_utm$etage, latlon_utm$zimmeranzahl)
+View(col_list)
+inital = map(col_list,1)
+View(inital)
+#vars are allowed to deviate up to this factor in both directions
+offsets = c(
+wohnflaeche_offset_multi = 0.1,
+etage_offset = 99,
+zimmeranzahl_offset = 0.5,
+time_offset = 6
+)
+inital[[1]]
+col_list =  as_tibble(latlon_utm$etage, latlon_utm$zimmeranzahl)
+inital = map(col_list,1)
+View(inital)
+View(col_list)
+col_list =  as_tibble(latlon_utm$etage, latlon_utm$zimmeranzahl)
+col_list =  cbind(latlon_utm$etage, latlon_utm$zimmeranzahl)
+View(col_list)
+?cbind
+col_list =  latlon_utm %>%  cbind(etage, zimmeranzahl)
+col_list =  latlon_utm %>% cbind(.$etage, .$zimmeranzahl)
+View(col_list)
+col_list =  latlon_utm %>% cbind(.etage, .zimmeranzahl)
+col_list =  latlon_utm %>% cbind($etage, $zimmeranzahl)
+col_list =  latlon_utm %>% select(etage,zimmeranzahl)
+View(col_list)
+inital = map(col_list,1)
+View(inital)
+inital = col_list[1,]
+View(inital)
+#vars are allowed to deviate up to this factor in both directions
+offsets = c(
+wohnflaeche_offset_multi = 0.1,
+etage_offset = 99,
+zimmeranzahl_offset = 0.5,
+time_offset = 6
+)
+names(inital) %in% names(offset)
+names(offset)
+names(offsets)
+?split
+str_split(names(offsets),"_"
+?split
+offset = offset_list
+left = inital * (1 - offset_value)
+args <- list(left = left, right = right)
+args <- vec_cast_common(!!!args, .to = x)
+args <- vec_recycle_common(!!!args, .size = vec_size(x))
+left <- args[[1L]]
+right <- args[[2L]]
+left <- vec_compare(x, left)
+left <- left >= 0L
+right <- vec_compare(x, right)
+right <- right <= 0L
+left & right
+}
+classify_data = function(latlon_utm){
+latlon_utm  = a
+latlon_utm %<>%
+arrange(amonths) %>%
+select(var_of_interest,data_end_date) %>% across(etage, rangeChecker())
+timestamp()
+}
+str_split(names(offsets),"_")
+offsets_split = str_split(names(offsets),"_")
+map(offsets_split,1)
+View(offsets_split)
+?tribble
+offsets = tibble:tribble(
+~name, ~value, ~type,
+"wohnflaeche", 0.1, "multi",
+"etage", 99, "add",
+"zimmeranzahl", 0.5, "add",
+"time", 6, "add",
+)
+offsets = tibble:tribble(
+~name, ~value, ~type,
+"wohnflaeche", 0.1, "multi",
+"etage", 99, "add",
+"zimmeranzahl", 0.5, "add",
+"time", 6, "add"
+)
+offsets = tibble:tribble(
+~name, ~value, ~type,
+"wohnflaeche", 0.1, "multi"
+)
+offsets = tibble:tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche", 0.1, "multi",
+"etage", 99, "add",
+"zimmeranzahl", 0.5, "add",
+"time", 6, "add"
+)
+offsets = tibble:tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche", 0.1, "multi"
+)
+offsets = tibble:tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche", 1, "multi"
+)
+offsets = tibble:tribble(
+~offset_name, ~offset_value,
+"wohnflaeche",  "multi"
+)
+offsets = tribble:tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche",  "multi"
+)
+offsets = tribble:tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche" ,0.1 ,  "multi",
+"etage"       ,99  , "add",
+"zimmeranzahl",0.5 , "add",
+"time"        ,6   , "add"
+)
+offsets = tibble:tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche" ,0.1 ,  "multi",
+"etage"       ,99  , "add",
+"zimmeranzahl",0.5 , "add",
+"time"        ,6   , "add"
+)
+offsets = tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche" ,0.1 ,  "multi",
+"etage"       ,99  , "add",
+"zimmeranzahl",0.5 , "add",
+"time"        ,6   , "add"
+)
+offsets = tibble::tribble(
+~offset_name, ~offset_value, ~offset_type,
+"wohnflaeche" ,0.1 ,  "multi",
+"etage"       ,99  , "add",
+"zimmeranzahl",0.5 , "add",
+"time"        ,6   , "add"
+)
+offsets$offset_name
+which(offsets$offset_name,names(inital))
+names(inital) %in% offsets$offset_name
+match(names(inital), offsets$offset_name)
+offsets$offset_value[match(names(inital), offsets$offset_name)]
+t(inital)$offsets = offsets$offset_value[match(names(inital), offsets$offset_name)]
+t(inital)
+inital = t(col_list[1,])
+inital
+?t
+inital$offsets = offsets$offset_value[match(names(inital), offsets$offset_name)]
+inital
+inital$offsets = offsets$offset_value[match(rownames(inital), offsets$offset_name)]
+inital = t(col_list[1,])
+inital$offsets = offsets$offset_value[match(rownames(inital), offsets$offset_name)]
+inital = t(col_list[1,])
+rownames((inital))
+offsets$offset_value[match(rownames(inital), offsets$offset_name)]
+col_list =  latlon_utm %>% select(etage,zimmeranzahl) %>% as_tibble()
+inital = t(col_list[1,])
+inital$offsets = offsets$offset_value[match(rownames(inital), offsets$offset_name)]
+col_list =  latlon_utm %>% select(etage,zimmeranzahl)
+inital = t(col_list[1,]) %>% as_tibble()
+inital$offsets = offsets$offset_value[match(rownames(inital), offsets$offset_name)]
+inital
+inital = t(col_list[1,]) %>% as_tibble()
+inital
+col_list =  latlon_utm %>% select(etage,zimmeranzahl)
+offset_names = names(col_list)
+inital = t(col_list[1,]) %>% as_tibble()
+?as_tibble
+inital = t(col_list[1,]) %>% as_tibble(rownames = names(col_list))
+col_list =  latlon_utm %>% select(etage,zimmeranzahl)
+inital = t(col_list[1,]) %>% as_tibble(rownames = names(col_list))
+inital = t(col_list[1,]) %>% as_tibble(rownames =offset_names)
+inital = t(col_list[1,]) %>% as_tibble()
+View(inital)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA, column_name = "baseline")
+View(inital)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA, column_name	 = "baseline")
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% names(.) = "baseline"
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline")
+View(offsets)
+View(inital)
+inital$offsets = offsets$offset_value[match(rownames(inital), offsets$offset_name)]
+View(inital)
+inital$offsets = offsets[2:3,pos_vector]
+pos_vector = match(rownames(inital), offsets$offset_name)
+offsets[2:3,pos_vector]
+offsets[pos_vector, ]
+View(offsets)
+offsets[,pos_vector]
+pos_vector = match(rownames(inital), offsets$offset_name)
+rownames(inital)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline")
+rownames(inital)
+pos_vector = match(rownames(inital), offsets$offset_name)
+offsets[pos_vector,]
+test = merge(inital, offset, by.x = "row.names",by.y = "offset_name")
+test = merge(inital, offset, by.x =0,by.y = "offset_name")
+inital
+offest
+offset
+offsets
+test = merge(inital, offsets, by.x =0,by.y = "offset_name")
+View(test)
+test = merge(inital, offsets, by.x = 0 , by.y = "offset_name", all = T)
+View(test)
+View(test)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline")
+test = merge(inital, offsets, by.x = 0 , by.y = "offset_name", all = T)
+View(test)
+View(inital)
+test = merge(inital, offsets, by.x = 0 , by.y = "offset_name", all.x = T)
+View(test)
+rownames(offsets)
+rownames(inital)
+?merge
+test = merge(offsets, inital, by.x = 0 , by.y = "offset_name", all.x = T)
+test = merge(inital,offsets , by.x = 0 , by.y = "offset_name", all.x = T)
+View(test)
+merge(inital,offsets , by.x = 0 , by.y = "offset_name", all.x = T)
+row.names(inital)
+test = merge(inital,offsets , by.x = 0 , by.y = "offset_name", all = T)
+View(test)
+merge(inital,offsets , by.x = "row.names" , by.y = "offset_name", all.x = T)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline") %>% rownames_to_column()
+View(inital)
+offsets = tibble::tribble(
+~rowname, ~offset_value, ~offset_type,
+"wohnflaeche" ,0.1 ,  "multi",
+"etage"       ,99  , "add",
+"zimmeranzahl",0.5 , "add",
+"time"        ,6   , "add"
+)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline") %>% rownames_to_column()
+merge(inital,offsets , by = "rowname", all.x = T)
+inital %<>% merge(offsets , by = "rowname", all.x = T)
+View(inital)
+col_list =  latlon_utm %>% select(etage,zimmeranzahl,wohnflaeche)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline") %>% rownames_to_column()
+inital %<>% merge(offsets , by = "rowname", all.x = T)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline") %>% rownames_to_column()
+inital %<>% merge(offsets , by = "rowname", all.x = T) %>% mutate(
+left = case_when(
+offset_type == "add" ~ baseline - offset_value,
+offset_type == "multi" ~ baseline * (1- offset_value)
+),
+right = case_when(
+offset_type == "add" ~ baseline + offset_value,
+offset_type == "multi" ~ baseline * (1 + offset_value)
+)
+)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline") %>% rownames_to_column()
+inital %<>% merge(offsets , by = "rowname", all.x = T) %>% mutate(
+similar_left = case_when(
+offset_type == "add" ~ baseline - similar_offset,
+offset_type == "multi" ~ baseline * (1- similar_offset)
+),
+similar_right = case_when(
+offset_type == "add" ~ baseline + similar_offset,
+offset_type == "multi" ~ baseline * (1 + similar_offset)
+),
+exact_left = case_when(
+offset_type == "add" ~ baseline - exact_offset,
+offset_type == "multi" ~ baseline * (1- exact_offset)
+),
+exact_right = case_when(
+offset_type == "add" ~ baseline + exact_offset,
+offset_type == "multi" ~ baseline * (1 + exact_offset)
+)
+)
+offsets = tibble::tribble(
+~rowname      ,~similar_offset , ~exact_offset , ~offset_type,
+"wohnflaeche" , 0.1            , 0.05          ,  "multi",
+"etage"       , 99             , 0             , "add",
+"zimmeranzahl", 0.5            , 0             , "add",
+"time"        , 0              , 6             , NA
+)
+inital = t(col_list[1,]) %>% as_tibble(rownames = NA) %>% set_colnames("baseline") %>% rownames_to_column()
+inital %<>% merge(offsets , by = "rowname", all.x = T) %>% mutate(
+similar_left = case_when(
+offset_type == "add" ~ baseline - similar_offset,
+offset_type == "multi" ~ baseline * (1- similar_offset)
+),
+similar_right = case_when(
+offset_type == "add" ~ baseline + similar_offset,
+offset_type == "multi" ~ baseline * (1 + similar_offset)
+),
+exact_left = case_when(
+offset_type == "add" ~ baseline - exact_offset,
+offset_type == "multi" ~ baseline * (1- exact_offset)
+),
+exact_right = case_when(
+offset_type == "add" ~ baseline + exact_offset,
+offset_type == "multi" ~ baseline * (1 + exact_offset)
+)
+)
+View(col_list)
+?across
+View(inital)
+test = col_list %>% mutate(similar_id =
+between(etage, inital["etage","similar_left"],inital["etage","similar_right"])
+)
+View(test)
+inital["etage","similar_left"],inital["etage","similar_right"]
+inital["etage","similar_left"]
+inital["etage"]
+inital[,"etage"]
+inital["etage",]
+inital$rowname["etage"]
+col_list[1,]
+between(col_list[1,],inital$similar_left,inital$similar_right)
+inital$similar_left
+args = inital %>%  list(x = col_list[1,], left =similar_left, right = similar_right )
+args = list(x = col_list[1,], left = inital$similar_left, right = inital$similar_right )
+View(args)
+args = list(x = as.list(col_list[1,]), left = inital$similar_left, right = inital$similar_right )
+as.list(col_list[1,])
+args = list(x = unlist(col_list[1,]), left = inital$similar_left, right = inital$similar_right )
+args = list(x = c(col_list[1,]), left = inital$similar_left, right = inital$similar_right )
+args = list(x = col_list, left = inital$similar_left, right = inital$similar_right )
+args = list(x = col_list, left = inital$similar_left, right = inital$similar_right )
+View(args)
+!!!args
+vec_compare(!!!args$x, args$left)
+?vec_compare
+install.packages("vctrs")
+install.packages("vctrs")

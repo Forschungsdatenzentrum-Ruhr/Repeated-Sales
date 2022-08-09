@@ -1,0 +1,36 @@
+# Created by use_targets().
+# Follow the comments below to fill in this target script.
+# Then follow the manual to check and run the pipeline:
+#   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline # nolint
+
+# Load packages required to define the pipeline:
+library(targets)
+
+# Set target options:
+library_string = c("here", # creating dynamic paths based on script location
+                   "haven", # reading/writing of dta files
+                   "tidyverse", # data manipulation/wrangeling
+                   "doParallel", #parallel processing
+                   "foreach", #parallel looping
+                   "magrittr", #two sided pipe
+                   "logger"
+)
+
+tar_option_set(
+  packages = library_string, # packages that your targets need to run
+  format = "dta" # default storage format
+)
+
+# tar_make_clustermq() configuration (okay to leave alone):
+options(clustermq.scheduler = "multiprocess")
+
+# tar_make_future() configuration (okay to leave alone):
+# Install packages {{future}}, {{future.callr}}, and {{future.batchtools}} to allow use_targets() to configure tar_make_future() options.
+
+# Load the R scripts with your custom functions:
+lapply(list.files("R", full.names = TRUE, recursive = TRUE), source)
+
+# Replace the target list below with your own:
+list(
+  tar_target(
+)
