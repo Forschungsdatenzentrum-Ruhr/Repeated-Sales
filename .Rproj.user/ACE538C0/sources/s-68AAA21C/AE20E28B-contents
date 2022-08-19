@@ -35,6 +35,7 @@ suppressPackageStartupMessages({
   library(here)
   library(haven)
   library(magrittr)
+  library(vegan)
   
   #used during setup of pipeline
   library(targets)
@@ -69,20 +70,19 @@ lapply(list.files("R", full.names = TRUE, recursive = TRUE), source)
 ######################
 #Pipeline
 ######################
-#break this up less to reduce overhead
-# split by plz? maybe grid ? 5x5? 1x1?
+#break this up less to reduce overhead ?
 blid_targets = tar_map(
   values = list(.bl_id = 1:1),
   tar_fst_tbl(bl, load_data(filename, bl_id = .bl_id )),
   tar_group_by(plz_group, bl, plz),
-  tar_group_by(coord_group, plz_group, latlon_utm, balkon),
-  tar_fst_tbl(classification, classify_data(coord_group), pattern = map(coord_group))
+  #tar_group_by(coord_group, plz_group, latlon_utm, balkon),
+  tar_fst_tbl(classification, classify_data(plz_group), pattern = map(plz_group))
 )
 
 list(
   tar_target(filename, construct_file_name("v6","Wk"),format = "file"),
   blid_targets,
-  tar_combine(repeated,blid_targets[[4]], command = bind_rows(!!!.x), format = "fst_dt")
+  tar_combine(repeated,blid_targets[[3]], command = bind_rows(!!!.x), format = "fst_dt")
 )
 
 
