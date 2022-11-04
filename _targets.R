@@ -21,14 +21,6 @@ pipeline_library = c(
   "fst" # logging utilites
 )
 
-#rerun this if packages are changed/missing
-# full_library = c(req_library,pipeline_library)
-# 
-# for(package in 1:length(full_library)){
-#   install.packages(full_library[package])
-# 
-# }
-
 suppressPackageStartupMessages({
   #used during execution of pipeline
   library(tidyverse)
@@ -62,26 +54,55 @@ tar_option_set(
 # tar_make_future() configuration:
 plan(callr)
 
+# script settings
+range_offsets <<- tibble::tribble(
+  ~rowname, ~resembling_offset, ~exact_offset, ~offset_type,
+  "wohnflaeche", 0.1, 0.05, "multi",
+  "etage", 99, 0, "add",
+  "zimmeranzahl", 0.5, 0, "add",
+  "time", 0, 6, NA
+)
+# extract time offset for readability
+time_offset <- range_offsets$exact_offset[range_offsets$rowname == "time"]
+
+
+
 ######################
 #Sourcing
 ######################
 # Load the R scripts with your custom functions:
 lapply(list.files("R", full.names = TRUE, recursive = TRUE), source)
+
 ######################
 #Pipeline
 ######################
-#break this up less to reduce overhead ?
+
+## create targets for each federal states
 blid_targets = tar_map(
+  # federal state static ids   
   values = list(.bl_id = 1:1),
+  
+  # load data, do basic cleaning
   tar_fst_tbl(bl, load_data(filename, bl_id = .bl_id )),
+  
+  # group data by zip code
+  # this could be any group larger than lat+lon
+  # smaller granularity leads to more intermediary files and therefore scaling issues
   tar_group_by(plz_group, bl, plz),
-  #tar_group_by(coord_group, plz_group, latlon_utm, balkon),
+  
+  # classify data
   tar_fst_tbl(classification, classify_data(plz_group), pattern = map(plz_group))
 )
 
+## combine to main pipeline
 list(
+  # generates filename used, version and type can be specified
   tar_target(filename, construct_file_name("v6","Wk"),format = "file"),
+  
+  #federal state targets
   blid_targets,
+  
+  # combine last step of federal state targets together into single output
   tar_combine(repeated,blid_targets[[3]], command = bind_rows(!!!.x), format = "fst_dt")
 )
 
