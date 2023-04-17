@@ -8,31 +8,31 @@
 #' A unlabeled data frame containing data for specified federal state
 #' 
 #' @param filename file name of data to be used
-#' @param bl_id static id of federal state. Has to be 1:16
+#' @param federal_state_id static id of federal state. Has to be 1:16
 #' 
 #' 
-load_data <- function(filename, bl_id = NA) {
+load_data <- function(filename = NA, federal_state_id = NA) {
 
   # declare necessary non-missing entries in the data
   # this might be useful to specify in _target
   var_of_interest <- c("wohnflaeche", "amonths", "emonths", "zimmeranzahl", "etage", "price_var")
 
   ### read inital data
-  bl <- read_dta(filename) %>%
+  bl <- read_dta(filename)|> 
     ## subset
     filter(
       # to given federal state
-      blid == bl_id,
+      blid == federal_state_id,
 
       # drop missing coordinates
       !lat_utm < 0 | !lon_utm < 0
-    ) %>%
+    ) |>
     # drop text variables
     select(
       -freiab,
       -mietekaution,
       -courtage
-    ) %>%
+    ) |>
     ## gen static variables
     mutate(
       # coordinate combination
@@ -54,7 +54,7 @@ load_data <- function(filename, bl_id = NA) {
 
   # recode and drop relevant missings
   bl[bl < 0] <- NA
-  bl %<>% drop_na(var_of_interest) %>% zap_labels(.)
+  bl %<>% drop_na(var_of_interest) |> zap_labels(.)
 
   return(bl)
 }

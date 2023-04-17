@@ -10,7 +10,7 @@
 #' @param t_offset time offset values
 #'
 #'
-.data = data
+#.data = data
 removal <- function(.data, t_offset = time_offset) {
   # empty object to store repeated offerings
   repeated_offerings <- c()

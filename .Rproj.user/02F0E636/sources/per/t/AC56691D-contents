@@ -1,0 +1,14 @@
+classify_data <- function(latlon_utm) {
+  
+
+  # group_mapping
+  repeated_offerings <- latlon_utm %>%
+    group_by(latlon_utm, balkon) %>%
+    arrange(amonths) %>%
+    group_modify(
+      ~ removal(.x)
+    )
+
+  return(repeated_offerings)
+}
+
