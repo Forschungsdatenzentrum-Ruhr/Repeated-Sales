@@ -1,17 +1,17 @@
-#' Load data
-
-#' @description
-#' 'load_data ' reads in data, subsets to requested federal state and
-#' does preliminary cleanup/generation
-#' 
-#' @return
-#' A unlabeled data frame containing data for specified federal state
-#' 
-#' @param filename file name of data to be used
-#' @param federal_state_id static id of federal state. Has to be 1:16
-#' 
-#' 
-load_data <- function(filename = NA, federal_state_id = NA) {
+read_federal_state <- function(filename = NA, federal_state_id = NA) {
+  #' @title Reading of RED and subsetting to federal_state
+  #'
+  #' @description reads in data, subsets to requested federal state and
+  #' does preliminary cleanup/mutation
+  #' 
+  #' @param filename file name of data to be used
+  #' @param federal_state_id static id of federal state. Has to be 1:16
+  #'
+  #' @note
+  #'
+  #' @return A unlabeled data table for specified federal state
+  #' @author Thorben Wiebe 
+  #----------------------------------------------
 
   # declare necessary non-missing entries in the data
   # this might be useful to specify in _target
