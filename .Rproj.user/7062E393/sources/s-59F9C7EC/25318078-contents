@@ -1,0 +1,18 @@
+read_federal_state <- function(file_path = NA, RED_dummy = NA) {
+  #' @title Reading of RED and subsetting to federal_state
+  #'
+  #' @description reads in data, subsets to requested federal state and
+  #' does preliminary cleanup/mutation
+  #' 
+  #' @param filename file name of data to be used
+  #' @param RED_dummy static id of federal state. Has to be 1:16
+  #'
+  #' @note
+  #'
+  #' @return A unlabeled data table for specified federal state
+  #' @author Thorben Wiebe 
+  #----------------------------------------------
+  out = fst::read.fst(file_path)
+  
+  return(out)
+}

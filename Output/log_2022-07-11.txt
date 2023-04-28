@@ -1,8 +1,0 @@
-INFO [2022-07-11 18:46:14] Start type: Wk
-INFO [2022-07-11 18:49:43] Start bl_id: 11
-INFO [2022-07-13 02:26:23] End bl_id: 11
-INFO [2022-07-13 02:26:24] Runtime: 1896.6743mins
-INFO [2022-07-13 02:26:34] Start type: Wm
-INFO [2022-07-13 02:36:03] Start bl_id: 11
-INFO [2022-07-15 06:30:45] End bl_id: 11
-INFO [2022-07-15 06:30:46] Runtime: 3114.7038mins

@@ -1,0 +1,60 @@
+# removal <- function(geo_grouped_data = NA) {
+#' @title WIP
+#'
+#' @description WIP
+#' @param WIP
+#' @param WIP
+#' @note
+#'
+#' @return WIP
+#' @author Thorben Wiebe
+#----------------------------------------------
+categories <- range_offsets["category"] |> pull()
+
+# tst = geo_grouped_data[latlon_utm == "5878499.91877856482091.18037048"]
+
+
+b <- unique(tst[, ..categories])
+
+
+out_1 = out_2 <- list()
+
+for (i in 1:nrow(b)) {
+  
+  # percentage of rooms scaled values are allowed to be off
+  # e.g. what percentage of 8 rooms is 0.5 rooms
+  # this feels way to complicated
+  scaled_zimmeranzahl_r_o <- b[,
+    (as.numeric(b[i, "zimmeranzahl"]) + zimmeranzahl_r_o)
+    / as.numeric(b[i, "zimmeranzahl"]) - 1
+  ]
+
+  data_to_sim <- scale(b, center = F, scale = b[i]) |> as.data.table()
+  
+  out_1[[i]] = data_to_sim[, .(fcase(
+    ## exact repeat
+    # percentage deviation acceptable
+    abs(1 - wohnflaeche) <= wohnflaeche_e_o &
+      # zimmeranzahl and etage are exact matches
+      zimmeranzahl == 1 &
+      etage == 1,
+    2,
+
+    ## similar repeat
+    # percentage deviation acceptable
+    abs(1 - wohnflaeche) <= wohnflaeche_r_o &
+      # zimmeranzahl deviation acceptable
+      abs(1 - zimmeranzahl) <= scaled_zimmeranzahl_r_o,
+    1,
+
+    # no matches
+    default = 0
+  ))] |> as.matrix()
+
+  out_2[[i]] <- 1 - as.matrix(dist(data_to_sim, method = "euclidean"))[i, ]
+  
+
+}
+
+
+# }
