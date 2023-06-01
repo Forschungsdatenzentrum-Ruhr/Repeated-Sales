@@ -1,0 +1,28 @@
+{
+    "id": "3D6C9D1B",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1685638305092.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "id": "c47f10e7dedf4708911933f2fa76d124",
+        "name": "tst",
+        "title": "tst",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 292468435776,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1685638305092,
+    "read_only": false,
+    "read_only_alternatives": []
+}
