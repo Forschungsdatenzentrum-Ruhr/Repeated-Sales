@@ -35,7 +35,7 @@ removal <- function(geo_grouped_data = NA) {
   # geo_grouped_data = classification_77a61db3[latlon_utm == "5875229.20871175489859.109419092"]
 
   # example of overlapping parents/children
-  # geo_grouped_data = federal_state |>  filter(latlon_utm == "5914872.28545209603584.936611244") |> setDT()
+#geo_grouped_data = federal_state |>  filter(latlon_utm == "5914872.28545209603584.936611244") |> setDT()
 
   ## Preperation
   #setkey(geo_grouped_data, wohnflaeche, etage, zimmeranzahl)
@@ -49,6 +49,13 @@ removal <- function(geo_grouped_data = NA) {
   
   # does order matter here? key = amonths?
   unique_combinations <- geo_grouped_data[!duplicates, ..categories]
+  
+  # assign id to exact duplicate combination based on first occurrence
+  geo_grouped_data = geo_grouped_data[
+    cbind(first_occurence_ids,unique_combinations),
+    on = categories
+  ]
+  
   similarity_index_list <- similarity_dist_list <- list()
 
 if(!nrow(unique_combinations) == 1){
@@ -88,7 +95,9 @@ if(!nrow(unique_combinations) == 1){
         ## similar repeat [larger percentage deviation acceptable]
         abs(1 - wohnflaeche) <= wohnflaeche_r_o &
           # zimmeranzahl deviation acceptable / etage arbitrary
-          abs(1 - zimmeranzahl) <= scaled_zimmeranzahl_r_o,
+          abs(1 - zimmeranzahl) <= scaled_zimmeranzahl_r_o &
+          # etage exact match
+          etage == 1,
         1,
         
         # no matches
@@ -147,23 +156,40 @@ if(!nrow(unique_combinations) == 1){
   )
   
 }
-  # connect listings via duration inbetween
-
   
-# Unit-Test ---------------------------------------------------------------
+  # Unit-Test ---------------------------------------------------------------
   
   # make sure every combination got clustered
   tar_assert_true(nrow(clustering$centers) == nrow(unique_combinations))
   
   
-  
   # merge cluster results to inital data and return
   out <- geo_grouped_data[
     clustering$centers,
-    on = "counting_id",
+    on = .(first_occurence_ids = counting_id),
     allow.cartesian = T
   ]
-
-
+  # use fcase for d
+  # <=0  ~ miss class?
+  # >0 & <=6 ~ update
+  # >6 & NA assuming curr.date is more than 6 months away? ~ sold
+  
+  # this could be its own target as well?
+  # connect listings via duration inbetween
+  out[,
+    ":="(
+      non_list_duration = shift(amonths,1, type = "lead") - emonths,
+      non_list_duration = fifelse(
+        is.na(non_list_duration),
+        emonths - data_end_date,
+        non_list_duration
+        )
+         
+    ),
+    by = parent
+  ]
+  out
+  
+  
   return(out)
 }

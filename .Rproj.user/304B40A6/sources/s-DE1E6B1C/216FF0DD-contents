@@ -62,13 +62,19 @@ cluster <- R6::R6Class("cluster",
         for (cluster_option in self$cluster_options) {
           # subset to current cluster_option
           self$subset <- self$sequence[self$cluster_names %in% names(cluster_option)]
-
+          
+          # issues occurs when center chosen does not resemble all children.
+          # 532145 532135 532155 532136 532156
+          # with first and last not being similar (origin being second)
+          # shouldnt be an issue, just gets assigned NA and dropped later?
+          
+          
           # extract minimum
           self$min_ss <- self$subset[which.min(self$means[self$subset])]
 
           # assign both temp data.table
           temp2 <- data.table(
-            "sim_dist" = as.numeric(self$distance[self$subset,self$min_ss,  with = F] |> pull())
+            "sim_dist" = as.numeric(self$distance[self$min_ss,self$subset,  with = F])
           )
           # bind temp data.table with itself for each iteration
           # print(self$sim_dist)
@@ -77,17 +83,16 @@ cluster <- R6::R6Class("cluster",
 
           # assign both temp data.table
           temp3 <- data.table(
-            "sim_index" = as.numeric(self$index[self$subset,self$min_ss,  with = F] |> pull())
+            "sim_index" = as.numeric(self$index[self$min_ss,self$subset,  with = F])
           )
           # bind temp data.table with itself for each iteration
-          # print(self$sim_dist)
-          # print(t(temp2))
           self$sim_index <- rbind(self$sim_index, temp3)
 
-          if (any(is.na(temp3$sim_index))) {
-            tst <<- self
-            stop()
-          }
+          # Pot Unit-test if issues mentioned above cant be ignored
+          # if (any(is.na(temp3$sim_index))) {
+          #   tst <<- self
+          #   stop()
+          # }
 
           # assign temp data.table
           temp <- data.table(

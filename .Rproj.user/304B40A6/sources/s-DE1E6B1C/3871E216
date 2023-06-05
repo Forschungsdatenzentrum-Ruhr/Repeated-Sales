@@ -3,7 +3,7 @@
     "path": "N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/removal_new.R",
     "project_path": "R/removal_new.R",
     "type": "r_source",
-    "hash": "2463465664",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1685458494321.0,
@@ -12,17 +12,17 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "122,2",
-        "scrollLine": "95",
+        "cursorPosition": "186,9",
+        "scrollLine": "174",
         "docOutlineVisible": "0",
         "rmdVisualCollapsedChunks": ""
     },
     "folds": "",
-    "lastKnownWriteTime": 1685637775,
+    "lastKnownWriteTime": 1685982944,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1685637776142,
+    "last_content_update": 1685982944420,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -3,7 +3,7 @@
     "path": "N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/R/cluster_class.R",
     "project_path": "R/cluster_class.R",
     "type": "r_source",
-    "hash": "3067837839",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1685464272281.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "66,72",
-        "scrollLine": "41"
+        "cursorPosition": "74,39",
+        "scrollLine": "59"
     },
     "folds": "",
-    "lastKnownWriteTime": 1685638718,
+    "lastKnownWriteTime": 1685975448,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1685638719000,
+    "last_content_update": 1685975449053,
     "read_only": false,
     "read_only_alternatives": []
 }
