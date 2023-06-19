@@ -1,23 +1,4 @@
-#TODO:
-# arrange amonths/emonths within clusters
-# add similarity index back to out
-# remerge results back to non-unqiue input
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-removal <- function(geo_grouped_data = NA) {
+similarity_classification <- function(geo_grouped_data = NA) {
   #' @title WIP
   #'
   #' @description WIP
@@ -35,11 +16,9 @@ removal <- function(geo_grouped_data = NA) {
   # geo_grouped_data = classification_77a61db3[latlon_utm == "5875229.20871175489859.109419092"]
 
   # example of overlapping parents/children
-#geo_grouped_data = federal_state |>  filter(latlon_utm == "5914872.28545209603584.936611244") |> setDT()
+  #geo_grouped_data = federal_state |>  filter(latlon_utm == "5914872.28545209603584.936611244") |> setDT()
 
   ## Preperation
-  #setkey(geo_grouped_data, wohnflaeche, etage, zimmeranzahl)
-  
   
   # find duplicates
   duplicates <- duplicated(geo_grouped_data[, ..categories])
@@ -51,17 +30,16 @@ removal <- function(geo_grouped_data = NA) {
   unique_combinations <- geo_grouped_data[!duplicates, ..categories]
   
   # assign id to exact duplicate combination based on first occurrence
-  geo_grouped_data = geo_grouped_data[
+  geo_grouped_data = copy(geo_grouped_data)[
     cbind(first_occurence_ids,unique_combinations),
     on = categories
   ]
+  setkey(geo_grouped_data, wohnflaeche, etage, zimmeranzahl)
   
   similarity_index_list <- similarity_dist_list <- list()
 
 if(!nrow(unique_combinations) == 1){
-  
-  
-  
+
   # increase etage by one to avoid scaling around 0
   
   unique_combinations[, etage := etage + 1]
@@ -114,17 +92,17 @@ if(!nrow(unique_combinations) == 1){
   similarity_index_list <- as.data.table(similarity_index_list)
   
   # enforce zero diagonal(allows classification of zero observations which otherwise are fully NA)
-  #diag(similarity_index_list) = 0
+  diag(similarity_index_list) = 0
   
   setnames(similarity_index_list, as.character(first_occurence_ids))
   setnames(similarity_dist_list, as.character(first_occurence_ids))
   
   # setup and run the actual clustering
   clustering <- cluster$new(
-    #just transpose this??
     # since apply performs action on rows while all other functions use columns
     cluster_options = similarity_index_list,
-    distance = similarity_dist_list*similarity_index_list,
+    #*similarity_index_list
+    distance = similarity_dist_list,
     means = rowMeans(similarity_index_list * similarity_dist_list, na.rm = T)
   )
   clustering$determine_cluster_centers()
@@ -169,27 +147,12 @@ if(!nrow(unique_combinations) == 1){
     on = .(first_occurence_ids = counting_id),
     allow.cartesian = T
   ]
-  # use fcase for d
-  # <=0  ~ miss class?
-  # >0 & <=6 ~ update
-  # >6 & NA assuming curr.date is more than 6 months away? ~ sold
   
-  # this could be its own target as well?
-  # connect listings via duration inbetween
-  out[,
-    ":="(
-      non_list_duration = shift(amonths,1, type = "lead") - emonths,
-      non_list_duration = fifelse(
-        is.na(non_list_duration),
-        emonths - data_end_date,
-        non_list_duration
-        )
-         
-    ),
-    by = parent
-  ]
-  out
-  
+  # make sure we dont output more obs than we input
+  tar_assert_true(nrow(geo_grouped_data) == nrow(out))
+  # check if no NAs were created somewhere
+  tar_assert_true(!out[,anyNA(.SD), .SDcols = c("sim_index","sim_dist","parent")])
   
   return(out)
 }
+
