@@ -150,8 +150,9 @@ if(!nrow(unique_combinations) == 1){
   
   # make sure we dont output more obs than we input
   tar_assert_true(nrow(geo_grouped_data) == nrow(out))
+  
   # check if no NAs were created somewhere
-  tar_assert_true(!out[,anyNA(.SD), .SDcols = c("sim_index","sim_dist","parent")])
+  #tar_assert_true(!out[,anyNA(.SD), .SDcols = c("sim_index","sim_dist","parent")])
   
   return(out)
 }

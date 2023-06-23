@@ -51,6 +51,7 @@ suppressPackageStartupMessages({
   library(rlang)
   library(styler)
   library(docstring)
+  library(jsonlite)
 
   # used during execution of pipeline
   library(here)
@@ -65,6 +66,7 @@ suppressPackageStartupMessages({
   library(modelsummary)
   library(janitor)
   library(kableExtra)
+  library(htmlTable)
 })
 
 
@@ -80,6 +82,14 @@ tar_option_set(
 
 # tar_make_future() configuration:
 #plan(callr)
+
+
+# Paths and Global: -------------------------------------------------------------------
+
+# for now only can run one type at once
+RED_version <- "v8"
+RED_type <- "WM"
+
 
 ## similarity settings
 categories = c("wohnflaeche", "etage", "zimmeranzahl")
@@ -101,23 +111,30 @@ zimmeranzahl_e_o =  0
 time_offset <- 6
 
 
-
-# Paths and Global: -------------------------------------------------------------------
+exportJSON = data.table(
+  "RED_type" = RED_type,
+  "RED_version" = RED_version,
+  "categories" = categories,
+  "wohnflaeche_r_o" = wohnflaeche_r_o,
+  "etage_r_o" = etage_r_o,
+  "zimmeranzahl_r_o" = zimmeranzahl_r_o,
+  "wohnflaeche_e_o" = wohnflaeche_e_o,
+  "zimmeranzahl_e_o" =  zimmeranzahl_e_o,
+  "time_offset" = time_offset
+)
 
 # data-path
 data_path <- here::here("data")
 
 # output path
-output_path = here::here("output")
+output_path = here::here("output",RED_type,RED_version)
 
-# for now only can run one type at once
-RED_version <- "v6"
-RED_type <- "Wk"
+
 
 # logging setup
 logger::log_appender(
   logger::appender_file(
-    paste0(here::here("log"), Sys.Date(), "_log.log")
+    paste0(here::here("log"), "/", Sys.Date(), "_log.log")
   )
 )
 
@@ -132,6 +149,13 @@ lapply(list.files("R", pattern = "\\.R$", full.names = TRUE), source)
 
 file_targets <- rlang::list2(
 
+  tar_target(
+    settings_used,
+    output_path_json(
+      output_path
+    )
+  ),
+  
   # read RED data and
   tar_file_read(
     RED,
@@ -180,20 +204,33 @@ federal_state_targets <- rlang::list2(
     blid
   ),
   # classify data
-  tar_fst_dt(
-    classification,
-    make_classification(
-      geo_grouped_data = federal_states
+  tar_eval(
+    tar_fst_dt(
+      classification,
+      make_classification(
+        geo_grouped_data = federal_states
+      ),
+      pattern = map(federal_states)
     ),
-    pattern = map(federal_states)
+    values = list(classification = glue::glue("classification_blid_{1:16}"))
   )
+  
 )
 
 
 ###########################################################################
 # Summary --------------------------------------------------------------
 ###########################################################################
+
+cross_tabyl_arguments = data.table(
+    arg1 = c("blid","sim_index","blid"), 
+    arg2 = c("sim_index","non_list_reason","non_list_reason")
+)[,
+  target_name := paste0("summary_table","_",arg1,"_",arg2)
+]
+
 summary_targets = rlang::list2(
+  
   tar_target(
     summary_skim_numeric,
     datasummary_skim_numerical(
@@ -206,11 +243,16 @@ summary_targets = rlang::list2(
       combined_federal_states
     )
   ),
-  tar_target(
-    summary_table_non_list_reason,
-    summary_tables(
-      combined_federal_states
-    )
+  tar_eval(
+    tar_target(
+      target_name,
+      custom_cross_tabyl(
+        combined_federal_states,
+        arg1 = arg1,
+        arg2 = arg2
+      )
+    ),
+    values = cross_tabyl_arguments
   )
   
   
@@ -229,7 +271,8 @@ rlang::list2(
   # # combine last step of federal state targets together into single output
   tar_combine(
     combined_federal_states,
-    classification,
+    federal_state_targets[[length(federal_state_targets)]],
+    command = bind_rows(!!!.x),
     format = "fst_dt"
   ),
   summary_targets

@@ -19,7 +19,8 @@ make_RED_file_name <- function(data_version = NA, data_type = c("Wk", "Wm")) {
   path <- paste0("M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site", "/", data_version, "/")
 
   # construct full file path based on path and file name
-  file_name <- paste0(path, data_type, "_allVersionsLabels.dta")
+  #prior: "_allVersionsLabels.dta"
+  file_name <- paste0(path, data_type, "_allVersions_ohneText.dta")
 
 
   return(file_name)

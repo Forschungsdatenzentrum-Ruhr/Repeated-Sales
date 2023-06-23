@@ -5,15 +5,17 @@
 #' Section and debugging
 #'
 
-tbl_transpose <- function(data_to_transpose, ...) {
-  return(as_tibble(t(data_to_transpose), ...))
+output_path_json = function(output_path = NA){
+  if(!dir.exists(output_path)){
+    dir.create(output_path)
+  }
+  
+  write_json(
+    exportJSON, 
+    paste0(output_path,"/","settings_used.json")
+  )
+  
 }
-
-# debug_Helper <- function(latlon = "5930063.7517479582065.965598572") {
-#   test <- tar_read(plz_group_1)
-#   test <- filter(test, as.character(latlon_utm) == latlon)
-#   data <<- test
-# }
 
 
 
