@@ -43,3 +43,14 @@ which_range = function(non_list_reason_vec = NA){
   
   return(list(returner_start,returner_end))
 }
+
+custom_progress_bar = function(.GRP = NA,.GRPN = NA, mod = 100){
+  if(!(.GRP %% mod)){
+    cli::cli_alert_info(glue::glue("progress {.GRP/.GRPN*100}"))
+  }
+  
+  
+  
+  
+  
+}
