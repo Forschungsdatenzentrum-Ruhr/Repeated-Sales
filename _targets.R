@@ -75,9 +75,10 @@ suppressPackageStartupMessages({
 # target options
 tar_option_set(
   resources = tar_resources(
-    fst = tar_resources_fst(compress = 100)
+    fst = tar_resources_fst(compress = 50)
   ),
-  packages = pipeline_library
+  packages = pipeline_library,
+  seed = 1
 )
 
 # tar_make_future() configuration:

@@ -44,13 +44,31 @@ which_range = function(non_list_reason_vec = NA){
   return(list(returner_start,returner_end))
 }
 
-custom_progress_bar = function(.GRP = NA,.GRPN = NA, mod = 100){
-  if(!(.GRP %% mod)){
-    cli::cli_alert_info(glue::glue("progress {.GRP/.GRPN*100}"))
+custom_progress_bar = function(classification_type = NA, .GRP = NA,.GRPN = NA, mod = 1000){
+  
+  # the .envir argument causes the progress_bar used to be the global one
+  if(.GRP == 1){
+    
+    start_time <<- Sys.time()
+    # Initialization of progress bar and some stats
+    cli::cli_alert_info(glue::glue("Starting {classification_type} at {start_time}" ))
+    cli::cli_alert_info(glue::glue("Total groups: {.GRPN}"))
+    cli::cli_progress_bar("  Classifying...", total = (.GRPN/mod), .envir = parent.frame(n = sys.nframe()))
+  
+  } else if(.GRP == .GRPN){
+    
+    # Finish and cleanup
+    cli::cli_alert_success(glue::glue("Finished {classification_type} after {Sys.time() - start_time}"))
+    cli::cli_progress_done(.envir = parent.frame(n = sys.nframe()))
+    
+  } else if(!(.GRP %% mod)){
+    
+    # Update everytime mod times x is hit
+    cli::cli_progress_update(.envir = parent.frame(n = sys.nframe()))
+  
   }
-  
-  
-  
+    
+  return(NULL)
   
   
 }

@@ -14,9 +14,11 @@ make_classification <- function(geo_grouped_data = NA) {
   logger::log_info("Pre Removal Observations: ", pre_removal_obs)
 
   geo_grouped_data_similarity <- geo_grouped_data[,
+    #curly brackets causes both expressions to be evaluated but only last one is passed along
     {
+      custom_progress_bar("Similarity", .GRP, .NGRP);
       similarity_classification(.SD)
-      custom_progress_bar(.GRP, .NGRP)
+      
     },
     by = c("latlon_utm", "balkon")
   ]
@@ -26,10 +28,10 @@ make_classification <- function(geo_grouped_data = NA) {
 
   # .SDcols = c("amonths","emonths")
   geo_grouped_data_connected <- geo_grouped_data_similarity[,
-    {
-      non_list_classification(.SD, data_end_date)
-      custom_progress_bar(.GRP, .NGRP)
-    },
+  {
+    custom_progress_bar("Connected", .GRP, .NGRP);
+    non_list_classification(.SD, data_end_date)
+  },
     by = parent
   ]
   # [!"Update", on = "non_list_reason"]
