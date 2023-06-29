@@ -70,7 +70,7 @@ suppressPackageStartupMessages({
 })
 
 
-# Settings: ----------------------------------------------------------
+# Pipeline Settings ----------------------------------------------------------
 
 # target options
 tar_option_set(
@@ -78,14 +78,21 @@ tar_option_set(
     fst = tar_resources_fst(compress = 50)
   ),
   packages = pipeline_library,
-  seed = 1
+  seed = 1,
+  trust_object_timestamps = TRUE,
+  garbage_collection = TRUE,
+  storage = "worker", 
+  retrieval = "worker"
 )
 
 # tar_make_future() configuration:
-#plan(callr)
+plan(callr)
 
+###########################################################################
+# Paths and Globals -----------------------------------------------------------
+###########################################################################
 
-# Paths and Global: -------------------------------------------------------------------
+# Globals -------------------------------------------------------------------
 
 # for now only can run one type at once
 RED_version <- "v8"
@@ -111,7 +118,7 @@ zimmeranzahl_e_o =  0
 # time offset for readability
 time_offset <- 6
 
-
+# settings export setup
 exportJSON = data.table(
   "RED_type" = RED_type,
   "RED_version" = RED_version,
@@ -124,12 +131,14 @@ exportJSON = data.table(
   "time_offset" = time_offset
 )
 
+
+# Paths -------------------------------------------------------------------
+
 # data-path
 data_path <- here::here("data")
 
 # output path
 output_path = here::here("output",RED_type,RED_version)
-
 
 
 # logging setup
@@ -138,6 +147,12 @@ logger::log_appender(
     paste0(here::here("log"), "/", Sys.Date(), "_log.log")
   )
 )
+
+
+# tar_eval variablse ------------------------------------------------------
+federal_state_ids = 1:16
+classification_ids = glue::glue("classification_blid_{federal_state_ids}")
+
 
 # Sourcing: ---------------------------------------------------------------
 
@@ -154,7 +169,8 @@ file_targets <- rlang::list2(
     settings_used,
     output_path_json(
       output_path
-    )
+    ),
+    deployment = "main"
   ),
   
   # read RED data and
@@ -185,7 +201,8 @@ file_targets <- rlang::list2(
         "lat_utm",
         "lon_utm"
       )
-    )
+    ),
+    deployment = "main"
   )
 )
 
@@ -196,26 +213,27 @@ file_targets <- rlang::list2(
 #
 ## create targets for each federal states
 federal_state_targets <- rlang::list2(
-  # group data by zip code
+  # group data by federal state
   # this could be any group larger than lat+lon
   # smaller granularity leads to more intermediary files and therefore scaling issues
-  tarchetypes::tar_group_by(
-    federal_states,
-    RED,
-    blid
-  ),
+  
+  
+  #this seems slightly slower than prior usage of tar_group_by + pattern(map)
+  # usage of pattern causes hash names however which makes loading difficult
   # classify data
   tar_eval(
     tar_fst_dt(
-      classification,
+      classification_ids,
       make_classification(
-        geo_grouped_data = federal_states
-      ),
-      pattern = map(federal_states)
+        geo_grouped_data = RED[.(federal_state_ids), on = "blid"]
+      )
     ),
-    values = list(classification = glue::glue("classification_blid_{1:16}"))
-  )
-  
+    values = rlang::list2(
+      federal_state_ids = federal_state_ids,
+      classification_ids = classification_ids
+    )
+   )
+
 )
 
 
