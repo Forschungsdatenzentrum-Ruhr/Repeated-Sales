@@ -1,0 +1,2 @@
+blid_non_list_reason - clear diff between ost/west (new/old federal states) why?
+same_time_listing - accounts for most of misses (88%)

@@ -2,9 +2,6 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   # latlon_utm == 5914585.51138591603185.2001455
   # contains long update chain + miss example
 
-  # dummy data delete after
-  # parent_grouped_data = rbind(data.table(amonths = 24099, emonths = 24100), parent_grouped_data,data.table(amonths = c(25000,26000), emonths = c(25001,26001)))
-
   # this is fairly ugly, but cant reference non_list_duration in second mutation due to data.table not finding it
   # throws error without copy due to using := within .SD
   parent_grouped_data_non_list <- copy(parent_grouped_data)[
@@ -20,9 +17,13 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     # updated/overwrite/super-ceded?
     non_list_reason := .(fcase(
       non_list_duration < 0, "Miss",
-      non_list_duration >= 0 & non_list_duration <= 6, "Update",
-      non_list_duration > 6, "Sold"
+      non_list_duration >= 0 & non_list_duration <= time_offset, "Update",
+      non_list_duration > time_offset, "Sold"
     ))
+  ][,
+    same_time_listing:= .N >= 2,
+    by = c("amonths")
+    
   ]
   # set index to allow for binary operations here and later
   setindex(parent_grouped_data_non_list, non_list_reason)

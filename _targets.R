@@ -37,7 +37,8 @@ pipeline_library <- c(
   "magrittr", # two sided pipe
   "fst", #
   "modelsummary",
-  "janitor"
+  "janitor",
+  "htmlTable"
 )
 
 suppressPackageStartupMessages({
@@ -79,7 +80,6 @@ tar_option_set(
   ),
   packages = pipeline_library,
   seed = 1,
-  trust_object_timestamps = TRUE,
   garbage_collection = TRUE,
   storage = "worker", 
   retrieval = "worker"
@@ -115,8 +115,28 @@ etage_e_o = 0
 zimmeranzahl_e_o =  0
 
 
+
+# plot_offset
+low_cutoff = 0.1
+high_cutoff = 1
+
+wohnflaeche_ro_range = c(
+  seq(from = 0, to = low_cutoff, by = 0.01),
+  seq(from = low_cutoff, to = high_cutoff, by = 0.1)
+) |> unique()
+
+wohnflaeche_eo_range = shift(wohnflaeche_ro_range)
+
+wohnflaeche_eo_range = wohnflaeche_eo_range[-1]
+wohnflaeche_ro_range = wohnflaeche_ro_range[-1]
+
+sensitivity_suffix = wohnflaeche_eo_range |> str_replace_all('\\.','_')
+
 # time offset for readability
-time_offset <- 6
+time_offset <- fcase(
+  RED_type == "WM", 3,
+  RED_type %in% c("WK","HK"), 6
+)
 
 # settings export setup
 exportJSON = data.table(
@@ -133,12 +153,13 @@ exportJSON = data.table(
 
 
 # Paths -------------------------------------------------------------------
+curr_date = Sys.Date() |> str_replace_all("-","_")
 
 # data-path
 data_path <- here::here("data")
 
 # output path
-output_path = here::here("output",RED_type,RED_version)
+output_path = here::here("output",RED_type,RED_version, curr_date)
 
 
 # logging setup
@@ -213,9 +234,7 @@ file_targets <- rlang::list2(
 #
 ## create targets for each federal states
 federal_state_targets <- rlang::list2(
-  # group data by federal state
-  # this could be any group larger than lat+lon
-  # smaller granularity leads to more intermediary files and therefore scaling issues
+
   
   
   #this seems slightly slower than prior usage of tar_group_by + pattern(map)
@@ -232,18 +251,43 @@ federal_state_targets <- rlang::list2(
       federal_state_ids = federal_state_ids,
       classification_ids = classification_ids
     )
-   )
+   ),
+  tar_eval(
+    tar_fst_dt(
+      non_list_reason_sensitivities,
+      make_sensitivity(
+        geo_grouped_data = RED[.(4), on = "blid"],
+        resembling_offset,
+        exact_offset
+      )  
+    ),
+    values = rlang::list2(
+      resembling_offset = wohnflaeche_ro_range,
+      exact_offset = wohnflaeche_eo_range,
+      non_list_reason_sensitivities = glue::glue(
+        "non_list_reason_{sensitivity_suffix}")
+    )
+  )
 
 )
-
 
 ###########################################################################
 # Summary --------------------------------------------------------------
 ###########################################################################
 
 cross_tabyl_arguments = data.table(
-    arg1 = c("blid","sim_index","blid"), 
-    arg2 = c("sim_index","non_list_reason","non_list_reason")
+    arg1 = c(
+      "blid",
+      "sim_index",
+      "blid",
+      "same_time_listing"
+    ), 
+    arg2 = c(
+      "sim_index",
+      "non_list_reason",
+      "non_list_reason",
+      "non_list_reason"
+    )
 )[,
   target_name := paste0("summary_table","_",arg1,"_",arg2)
 ]
@@ -253,20 +297,20 @@ summary_targets = rlang::list2(
   tar_target(
     summary_skim_numeric,
     datasummary_skim_numerical(
-      combined_federal_states
+      classification
     )
   ),
   tar_target(
     summary_skim_cat,
     datasummary_skim_categorical(
-      combined_federal_states
+      classification
     )
   ),
   tar_eval(
     tar_target(
       target_name,
       custom_cross_tabyl(
-        combined_federal_states,
+        classification,
         arg1 = arg1,
         arg2 = arg2
       )
@@ -286,10 +330,18 @@ rlang::list2(
 
   # federal state targets
   federal_state_targets,
-
+  
   # # combine last step of federal state targets together into single output
   tar_combine(
-    combined_federal_states,
+    classification,
+    federal_state_targets[[1]],
+    command = bind_rows(!!!.x),
+    format = "fst_dt"
+  ),
+  
+  # # combine last step of federal state targets together into single output
+  tar_combine(
+    sensitvity,
     federal_state_targets[[length(federal_state_targets)]],
     command = bind_rows(!!!.x),
     format = "fst_dt"
