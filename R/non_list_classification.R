@@ -1,8 +1,10 @@
 non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA) {
+  # WK data !!
   # latlon_utm == 5914585.51138591603185.2001455
   # contains long update chain + miss example
 
-  # this is fairly ugly, but cant reference non_list_duration in second mutation due to data.table not finding it
+  # this is fairly ugly, but cant reference non_list_duration in second mutation 
+  # due to data.table not finding it
   # throws error without copy due to using := within .SD
   parent_grouped_data_non_list <- copy(parent_grouped_data)[
     ,
@@ -13,7 +15,8 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     )
   ][
     ,
-    # update wording might be missleading since the actual update is the subsequent one which actually sold
+    # update wording might be misleading since the actual update is the 
+    # subsequent one which actually sold
     # updated/overwrite/super-ceded?
     non_list_reason := .(fcase(
       non_list_duration < 0, "Miss",
@@ -25,11 +28,11 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     by = c("amonths")
     
   ]
+  
   # set index to allow for binary operations here and later
   setindex(parent_grouped_data_non_list, non_list_reason)
   
   parent_grouped_data_connected <- parent_grouped_data_non_list[
-    # non_list_reason ==
     !"Miss",
     c("start_position", "end_position") := which_range(non_list_reason),
     on = "non_list_reason"
@@ -48,5 +51,4 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   tar_assert_true(!parent_grouped_data_connected[,anyNA(.SD), .SDcols = c("non_list_reason","non_list_duration")])
 
   return(parent_grouped_data_connected)
-  # parent_grouped_data
 }

@@ -17,7 +17,6 @@ read_RED <- function(RED_file_name = NA, var_of_interest = NA) {
 
   
   initial_obs = RED[,.N]
-  
   logger::log_info("Initial Observations: ", initial_obs)
   
   RED <- RED[
@@ -52,17 +51,8 @@ read_RED <- function(RED_file_name = NA, var_of_interest = NA) {
       mietekalt = NULL,
       kaufpreis = NULL
 
-      # TODO
-      # get enddate of date
-      # data_end_date = max(emonths)
-
     )
   ]
-  #setkey(RED, )
-  
-  # TODO: figure out where to declare this
-  # should be dynamic
-  # maybe as a target?
   
   logger::log_info("Post Reading Observations: ", RED[,.N])
   

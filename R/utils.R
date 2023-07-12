@@ -18,11 +18,6 @@ output_path_json = function(output_path = NA){
 }
 
 
-
-#this needs to cleaned up desperately 
-# works pretty well tho
-# somewhat slow, which_range can be moved to util
-
 which_range = function(non_list_reason_vec = NA){
   
   # helps connect selling point to first preceding update

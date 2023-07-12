@@ -49,7 +49,7 @@ cluster <- R6::R6Class("cluster",
     },
     # actual cluster sequence
     determine_cluster_centers = function() {
-      # consider all unique combinations of clusters
+     
       # catch single obs cases. keep for now with parent = child
       if (length(self$cluster_options) == 1 & 1 %in% lengths(self$cluster_options)) {
         self$centers <- data.table(
@@ -59,6 +59,8 @@ cluster <- R6::R6Class("cluster",
           "parent" = as.numeric(self$cluster_names)
         )
       } else {
+        
+        # consider all unique combinations of clusters
         for (cluster_option in self$cluster_options) {
           # subset to current cluster_option
           self$subset <- self$sequence[self$cluster_names %in% names(cluster_option)]
@@ -69,39 +71,38 @@ cluster <- R6::R6Class("cluster",
           # shouldnt be an issue, just gets assigned NA and dropped later?
           
           
-          # extract minimum
+          # extract minimum mean 
           self$min_ss <- self$subset[which.min(self$means[self$subset])]
 
-          # assign both temp data.table
-          temp2 <- data.table(
+          # assign respective distance to temp data.table
+          temp_dist <- data.table(
             "sim_dist" = as.numeric(self$distance[self$min_ss,self$subset,  with = F])
           )
           # bind temp data.table with itself for each iteration
-          # print(self$sim_dist)
-          # print(t(temp2))
-          self$sim_dist <- rbind(self$sim_dist, temp2)
+          self$sim_dist <- rbind(self$sim_dist, temp_dist)
 
-          # assign both temp data.table
-          temp3 <- data.table(
+          # assign respective index temp data.table
+          temp_index <- data.table(
             "sim_index" = as.numeric(self$index[self$min_ss,self$subset,  with = F])
           )
           # bind temp data.table with itself for each iteration
-          self$sim_index <- rbind(self$sim_index, temp3)
+          self$sim_index <- rbind(self$sim_index, temp_index)
 
-          # Pot Unit-test if issues mentioned above cant be ignored
-          # if (any(is.na(temp3$sim_index))) {
+          # Put Unit-test if issues mentioned above cant be ignored
+          # if (any(is.na(temp_index$sim_index))) {
           #   tst <<- self
           #   stop()
           # }
 
           # assign temp data.table
-          temp <- data.table(
+          temp_ids <- data.table(
             "counting_id" = as.numeric(names(cluster_option)),
             "parent" = as.numeric(self$cluster_names[self$min_ss])
           )
           # bind temp data.table with itself for each iteration
-          self$centers <- rbind(self$centers, temp)
+          self$centers <- rbind(self$centers, temp_ids)
         }
+        
         # overwrite total dist with current rel distance
         self$centers$sim_dist <- self$sim_dist
         self$centers$sim_index <- self$sim_index

@@ -1,10 +1,9 @@
 # General TODO: -----------------------------------------------------------
 
-# use formatting of pop-forecast
-# swap away from %>% ?
 # add packagename before functions
-# use data.table
-# cluster around each baseline?
+# figure out what to with same_time_listings
+# do regression example with mietpreisbremse?
+# decide whether to merge remaining variables or just keep all during classification
 
 
 # Packages-Setup: ----------------------------------------------
@@ -106,7 +105,7 @@ categories = c("wohnflaeche", "etage", "zimmeranzahl")
 # maybe set zimmeranzahl to 1?
 #resembling_offset
 wohnflaeche_r_o =  0.1
-etage_r_o = 99
+etage_r_o = 1
 zimmeranzahl_r_o =  0.5
 
 #exact_offset
@@ -115,14 +114,17 @@ etage_e_o = 0
 zimmeranzahl_e_o =  0
 
 
-
 # plot_offset
 low_cutoff = 0.1
-high_cutoff = 1
+mid_cutoff = 1
+high_cutoff = 20
+final_cutoff = 100
 
 wohnflaeche_ro_range = c(
-  seq(from = 0, to = low_cutoff, by = 0.01),
-  seq(from = low_cutoff, to = high_cutoff, by = 0.1)
+  seq(from = 0, to = low_cutoff, by = 0.02),
+  seq(from = low_cutoff, to = mid_cutoff, by = 0.1),
+  seq(from = mid_cutoff - 1, to = high_cutoff, by = 5),
+  seq(from = high_cutoff, to = final_cutoff, by = 20)
 ) |> unique()
 
 wohnflaeche_eo_range = shift(wohnflaeche_ro_range)
@@ -159,7 +161,7 @@ curr_date = Sys.Date() |> str_replace_all("-","_")
 data_path <- here::here("data")
 
 # output path
-output_path = here::here("output",RED_type,RED_version, curr_date)
+output_path = here::here("output", RED_type, RED_version, curr_date)
 
 
 # logging setup
@@ -170,7 +172,7 @@ logger::log_appender(
 )
 
 
-# tar_eval variablse ------------------------------------------------------
+# tar_eval variables ------------------------------------------------------
 federal_state_ids = 1:16
 classification_ids = glue::glue("classification_blid_{federal_state_ids}")
 
@@ -185,7 +187,8 @@ lapply(list.files("R", pattern = "\\.R$", full.names = TRUE), source)
 ###########################################################################
 
 file_targets <- rlang::list2(
-
+  
+  # dump settings as json file to make results reproducible
   tar_target(
     settings_used,
     output_path_json(
@@ -194,15 +197,15 @@ file_targets <- rlang::list2(
     deployment = "main"
   ),
   
-  # read RED data and
+  ## RED data
   tar_file_read(
     RED,
-    # generates file_name used, version and type can be specified
+    # generates file_name used based on version and type
     make_RED_file_name(
       data_version = RED_version,
       data_type = RED_type
     ),
-    # read stata file, removes labels and create individual data for fs
+    # read stata file, removes labels and subset for relevant variables
     read_RED(!!.x,
       var_of_interest = c(
         ## general info
@@ -235,9 +238,7 @@ file_targets <- rlang::list2(
 ## create targets for each federal states
 federal_state_targets <- rlang::list2(
 
-  
-  
-  #this seems slightly slower than prior usage of tar_group_by + pattern(map)
+  # this seems slightly slower than prior usage of tar_group_by + pattern(map)
   # usage of pattern causes hash names however which makes loading difficult
   # classify data
   tar_eval(
@@ -252,6 +253,8 @@ federal_state_targets <- rlang::list2(
       classification_ids = classification_ids
     )
    ),
+  # perform sensitivity exercise on one federal state
+  # iterativ repeats classification over specified ranges
   tar_eval(
     tar_fst_dt(
       non_list_reason_sensitivities,
@@ -275,6 +278,8 @@ federal_state_targets <- rlang::list2(
 # Summary --------------------------------------------------------------
 ###########################################################################
 
+# arguments to create summary_tables from
+# first of arg1 vector correspondences to first argument of arg2 vector
 cross_tabyl_arguments = data.table(
     arg1 = c(
       "blid",
@@ -293,7 +298,10 @@ cross_tabyl_arguments = data.table(
 ]
 
 summary_targets = rlang::list2(
+
+# Tables ------------------------------------------------------------------
   
+# classification
   tar_target(
     summary_skim_numeric,
     datasummary_skim_numerical(
@@ -316,7 +324,35 @@ summary_targets = rlang::list2(
       )
     ),
     values = cross_tabyl_arguments
-  )
+  ),
+  # tar_target(
+  #   summary_threeway,
+  #   custom_threeway_tabyl(
+  #     classification,
+  #     "blid",
+  #     "same_time_listing",
+  #     "non_list_reason"
+  #   )
+  # )
+  tar_target(
+    summary_threeway,
+    custom_cross_tabyl(
+      classification,
+      "blid",
+      "same_time_listing"
+    )
+  ),
+  # sensitivity
+  tar_target(
+    summary_sensitivity,
+    summary_graph_sensitivity(
+      sensitivity
+    )
+  ),
+
+# Figures -----------------------------------------------------------------
+
+
   
   
 )
@@ -341,7 +377,7 @@ rlang::list2(
   
   # # combine last step of federal state targets together into single output
   tar_combine(
-    sensitvity,
+    sensitivity,
     federal_state_targets[[length(federal_state_targets)]],
     command = bind_rows(!!!.x),
     format = "fst_dt"

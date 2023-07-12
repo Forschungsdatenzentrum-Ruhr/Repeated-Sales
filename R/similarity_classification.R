@@ -16,7 +16,7 @@ similarity_classification <- function(geo_grouped_data = NA) {
   # geo_grouped_data = classification_77a61db3[latlon_utm == "5875229.20871175489859.109419092"]
 
   # example of overlapping parents/children
-  #geo_grouped_data = federal_state |>  filter(latlon_utm == "5914872.28545209603584.936611244") |> setDT()
+  #geo_grouped_data = RED |>  filter(latlon_utm == "5914872.28545209603584.936611244") |> setDT()
 
   ## Preperation
   
