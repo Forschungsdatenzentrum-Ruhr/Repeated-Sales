@@ -35,7 +35,11 @@ make_classification <- function(geo_grouped_data = NA) {
   },
     by = parent
   ]
-
+  
+  
+  # unit-test
+  check_nonsensical_listings(geo_grouped_data_connected,"geo_grouped_data_connected")
+  
   post_update_obs <- geo_grouped_data_connected[, .N]
   logger::log_info("Post Removal Observations: ", post_update_obs)
 

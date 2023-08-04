@@ -21,13 +21,14 @@ similarity_classification <- function(geo_grouped_data = NA) {
   ## Preperation
   
   # find duplicates
-  duplicates <- duplicated(geo_grouped_data[, ..categories])
+  #duplicates <- duplicated(geo_grouped_data[, ..categories])
 
   # extract ids and combinations of non-duplicates
-  first_occurence_ids <- geo_grouped_data[!duplicates, counting_id]
+  first_occurence_ids <- geo_grouped_data[, counting_id]
   
   # does order matter here? key = amonths?
-  unique_combinations <- geo_grouped_data[!duplicates, ..categories]
+  # if this changes stuff rename this to just combinations
+  unique_combinations <- geo_grouped_data[, ..categories]
   
   # assign id to exact duplicate combination based on first occurrence
   geo_grouped_data = copy(geo_grouped_data)[

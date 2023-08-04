@@ -44,6 +44,7 @@ read_RED <- function(RED_file_name = NA, var_of_interest = NA) {
       counting_id = 1:.N,
 
       # cleanup
+      # keep the date stuff?
       ajahr = NULL,
       amonat = NULL,
       ejahr = NULL,
@@ -53,6 +54,9 @@ read_RED <- function(RED_file_name = NA, var_of_interest = NA) {
 
     )
   ]
+  
+  # Unit-test
+  check_nonsensical_listings(RED,"RED")
   
   logger::log_info("Post Reading Observations: ", RED[,.N])
   
