@@ -23,11 +23,11 @@ make_classification <- function(geo_grouped_data = NA) {
     by = c("latlon_utm", "balkon")
   ]
 
-  # everything was classified
+  # check if everything was classified
   tar_assert_true(pre_removal_obs == geo_grouped_data_similarity[, .N])
 
   # create panel structure based on parent-child relationship created above
-  # connects listings based on months between occurences
+  # connects listings based on months between occurrences
   geo_grouped_data_connected <- geo_grouped_data_similarity[,
   {
     custom_progress_bar("Connected", .GRP, .NGRP);
@@ -35,6 +35,13 @@ make_classification <- function(geo_grouped_data = NA) {
   },
     by = parent
   ]
+  
+  # unit-test
+  # this should basically never trigger since the unit-test
+  # in non_list_classification() should catch errors beforehand. 
+  # leaving it as backup for now 
+  check_nonsensical_listings(geo_grouped_data_connected,"geo_grouped_data_connected")
+  
   
   post_update_obs <- geo_grouped_data_connected[, .N]
   logger::log_info("Post Removal Observations: ", post_update_obs)

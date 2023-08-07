@@ -60,19 +60,34 @@ check_nonsensical_listings <- function(data_connected = NA, data_name = NA) {
     tabyl(ayear, eyear) |>
     select(-any_of(c("ayear", "eyear"))) |>
     as.matrix()
-
-
-  # save to file
-  ayear_eyear_table |>
-    htmlTable(rnames = F) |>
-    kableExtra::save_kable(paste0(output_path, "/", data_name, "_", "ayear", "_", "eyear", ".png"))
-
+  
+  # save non-modified table for saving, next step modifies in place
+  table_to_save = ayear_eyear_table
+  
   # set upper triangle of matrix including diag as NA (these are okay to be >0)
   ayear_eyear_table[upper.tri(ayear_eyear_table, diag = T)] <- NA
-
+  
   # calc sum of colsums to check that entire lower triangle of matrix is contains only 0
-  tar_assert_true(
-    sum(colSums(ayear_eyear_table, na.rm = T)) == 0,
-    msg = glue::glue("nonsensical ayear/eyear combinations found at: {unique(data_connected$latlon_utm)}")
-  )
+  if(sum(colSums(ayear_eyear_table, na.rm = T)) == 0){
+    
+    # save to file
+    table_to_save |>
+      htmlTable(rnames = F) |>
+      kableExtra::save_kable(paste0(output_path, "/", data_name, "_", "ayear", "_", "eyear", ".png"))
+    
+    # there should be a better way to stop the pipeline with msg but i wasnt able to find one yet
+    tar_assert_true(
+      FALSE,
+      msg = glue::glue("nonsensical ayear/eyear combinations found at: {unique(data_connected$latlon_utm)}")
+    )
+    
+    return(NULL)
+    
+  }
+  
+  
+  
+  
+
+  
 }

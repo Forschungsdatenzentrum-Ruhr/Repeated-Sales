@@ -6,11 +6,10 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   # this is fairly ugly, but cant reference non_list_duration in second mutation 
   # due to data.table not finding it
   # throws error without copy due to using := within .SD
+  parent_grouped_data = copy(parent_grouped_data)
+  setkey(parent_grouped_data_non_list, amonths, emonths)
   
-  #parent_grouped_data_non_list = copy(parent_grouped_data)
-  #setkey(parent_grouped_data_non_list, amonths, emonths)
-  
-  parent_grouped_data_non_list <- copy(parent_grouped_data)[
+  parent_grouped_data_non_list <- parent_grouped_data[
     ,
     non_list_duration := fifelse(
       is.na(shift(amonths, 1, type = "lead") - emonths),
@@ -54,11 +53,18 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   ]
   parent_grouped_data_connected[, c("start_position","end_position") := NULL]
   
-  # unit-test
-  check_nonsensical_listings(parent_grouped_data_connected,"parent_grouped_data_connected")
+  # check if any mistakes were made (starting date is before end date)
+  tar_assert_true(
+    !any(parent_grouped_data_connected[,amonths>emonths]),
+    msg = glue::glue("amonths > emonths for {unique(parent_grouped_data_connected$parent)} at {unique(parent_grouped_data_connected$latlon_utm)}")
+  )
+  
   
   # check if no NAs were created somewhere
-  tar_assert_true(!parent_grouped_data_connected[,anyNA(.SD), .SDcols = c("non_list_reason","non_list_duration")])
+  tar_assert_true(
+    !parent_grouped_data_connected[,anyNA(.SD), .SDcols = c("non_list_reason","non_list_duration")],
+    msg = glue::glue("NAs created for {unique(parent_grouped_data_connected$latlon_utm)}")
+  )
 
   
   
