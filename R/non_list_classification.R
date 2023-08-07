@@ -6,6 +6,10 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   # this is fairly ugly, but cant reference non_list_duration in second mutation 
   # due to data.table not finding it
   # throws error without copy due to using := within .SD
+  
+  #parent_grouped_data_non_list = copy(parent_grouped_data)
+  #setkey(parent_grouped_data_non_list, amonths, emonths)
+  
   parent_grouped_data_non_list <- copy(parent_grouped_data)[
     ,
     non_list_duration := fifelse(
@@ -24,8 +28,11 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
       non_list_duration > time_offset, "Sold"
     ))
   ][,
+    # within parent grouped frame figure out if listings has been made
+    # in within same year/month
+    # these are currently problematic since classification missclassifies
     same_time_listing:= .N >= 2,
-    by = c("amonths")
+    by = "amonths"
     
   ]
   
@@ -40,15 +47,21 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     ,
     # can calculate something like price difference from initial offering to actual sale price
     amonths := fifelse(
-      !start_position == end_position & !is.na(start_position),
+      !(start_position == end_position) & !is.na(start_position),
       amonths[start_position],
       amonths
     )
   ]
   parent_grouped_data_connected[, c("start_position","end_position") := NULL]
   
+  # unit-test
+  check_nonsensical_listings(parent_grouped_data_connected,"parent_grouped_data_connected")
+  
   # check if no NAs were created somewhere
   tar_assert_true(!parent_grouped_data_connected[,anyNA(.SD), .SDcols = c("non_list_reason","non_list_duration")])
 
+  
+  
+  
   return(parent_grouped_data_connected)
 }

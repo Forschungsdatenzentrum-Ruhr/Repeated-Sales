@@ -65,7 +65,7 @@ check_nonsensical_listings <- function(data_connected = NA, data_name = NA) {
   # save to file
   ayear_eyear_table |>
     htmlTable(rnames = F) |>
-    kableExtra::save_kable(paste0(output_path, "/", data_name, "_", ayear, "_", eyear, ".png"))
+    kableExtra::save_kable(paste0(output_path, "/", data_name, "_", "ayear", "_", "eyear", ".png"))
 
   # set upper triangle of matrix including diag as NA (these are okay to be >0)
   ayear_eyear_table[upper.tri(ayear_eyear_table, diag = T)] <- NA
@@ -73,6 +73,6 @@ check_nonsensical_listings <- function(data_connected = NA, data_name = NA) {
   # calc sum of colsums to check that entire lower triangle of matrix is contains only 0
   tar_assert_true(
     sum(colSums(ayear_eyear_table, na.rm = T)) == 0,
-    msg = glue::glue("{unique(data_connected$latlon_utm)}")
+    msg = glue::glue("nonsensical ayear/eyear combinations found at: {unique(data_connected$latlon_utm)}")
   )
 }

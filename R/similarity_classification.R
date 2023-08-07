@@ -19,46 +19,38 @@ similarity_classification <- function(geo_grouped_data = NA) {
   #geo_grouped_data = RED |>  filter(latlon_utm == "5914872.28545209603584.936611244") |> setDT()
 
   ## Preperation
-  
-  # find duplicates
-  #duplicates <- duplicated(geo_grouped_data[, ..categories])
 
   # extract ids and combinations of non-duplicates
-  first_occurence_ids <- geo_grouped_data[, counting_id]
+  occurence_ids <- geo_grouped_data[, counting_id]
   
   # does order matter here? key = amonths?
-  # if this changes stuff rename this to just combinations
-  unique_combinations <- geo_grouped_data[, ..categories]
-  
-  # assign id to exact duplicate combination based on first occurrence
-  geo_grouped_data = copy(geo_grouped_data)[
-    cbind(first_occurence_ids,unique_combinations),
-    on = categories
-  ]
+  combinations <- geo_grouped_data[, ..categories]
+
+  # make copy to modifiy keys 
+  geo_grouped_data = copy(geo_grouped_data)
   setkey(geo_grouped_data, wohnflaeche, etage, zimmeranzahl)
   
   similarity_index_list <- similarity_dist_list <- list()
 
-if(!nrow(unique_combinations) == 1){
+if(!nrow(combinations) == 1){
 
   # increase etage by one to avoid scaling around 0
-  
-  unique_combinations[, etage := etage + 1]
+  combinations[, etage := etage + 1]
   
   
   ## similiarity calculations
-  for (i in 1:nrow(unique_combinations)) {
+  for (i in 1:nrow(combinations)) {
     
     # percentage of rooms scaled values are allowed to be off
     # e.g. what percentage of 8 rooms is 0.5 rooms
     # this feels way to complicated
-    scaled_zimmeranzahl_r_o <- unique_combinations[
+    scaled_zimmeranzahl_r_o <- combinations[
       ,
-      (as.numeric(unique_combinations[i, "zimmeranzahl"]) + zimmeranzahl_r_o) / as.numeric(unique_combinations[i, "zimmeranzahl"]) - 1
+      (as.numeric(combinations[i, "zimmeranzahl"]) + zimmeranzahl_r_o) / as.numeric(combinations[i, "zimmeranzahl"]) - 1
     ]
     # scaling around 0 causes div by 0 and inf for everything else
     # just increase etage by one? other solution?
-    data_to_similarity <- scale(unique_combinations, center = F, scale = unique_combinations[i]) |> as.data.table()
+    data_to_similarity <- scale(combinations, center = F, scale = combinations[i]) |> as.data.table()
     
     similarity_index_list[[i]] <- data_to_similarity[
       ,
@@ -95,14 +87,12 @@ if(!nrow(unique_combinations) == 1){
   # enforce zero diagonal(allows classification of zero observations which otherwise are fully NA)
   diag(similarity_index_list) = 0
   
-  setnames(similarity_index_list, as.character(first_occurence_ids))
-  setnames(similarity_dist_list, as.character(first_occurence_ids))
+  setnames(similarity_index_list, as.character(occurence_ids))
+  setnames(similarity_dist_list, as.character(occurence_ids))
   
   # setup and run the actual clustering
   clustering <- cluster$new(
-    # since apply performs action on rows while all other functions use columns
     cluster_options = similarity_index_list,
-    #*similarity_index_list
     distance = similarity_dist_list,
     means = rowMeans(similarity_index_list * similarity_dist_list, na.rm = T)
   )
@@ -113,6 +103,8 @@ if(!nrow(unique_combinations) == 1){
     # filter/fix duplicates within $centers here if they exist
     # currently its always being parents > being a child to ease calc
     # otherwise there has to be a cost assigned for non-parenthood
+    # can prob just compare sim_dist to parent (gain from being child) vs 
+    # sum(sim_dist) to children (gain from being parent/cost)
     
     clustering$centers <- clustering$centers[
       ,
@@ -128,8 +120,8 @@ if(!nrow(unique_combinations) == 1){
     cluster_options = NULL
   )
   clustering$centers = data.table(
-    "counting_id" = as.numeric(first_occurence_ids),
-    "parent" = as.numeric(first_occurence_ids),
+    "counting_id" = as.numeric(occurence_ids),
+    "parent" = as.numeric(occurence_ids),
     "sim_dist" = 0,
     "sim_index" = 0
   )
@@ -139,14 +131,13 @@ if(!nrow(unique_combinations) == 1){
   # Unit-Test ---------------------------------------------------------------
   
   # make sure every combination got clustered
-  tar_assert_true(nrow(clustering$centers) == nrow(unique_combinations))
-  
+  tar_assert_true(nrow(clustering$centers) == nrow(combinations))
   
   # merge cluster results to inital data and return
   out <- geo_grouped_data[
     clustering$centers,
-    on = .(first_occurence_ids = counting_id),
-    allow.cartesian = T
+    on = .(counting_id)
+    #allow.cartesian = T
   ]
   
   # make sure we dont output more obs than we input
