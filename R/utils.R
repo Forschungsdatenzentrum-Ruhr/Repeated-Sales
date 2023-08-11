@@ -7,7 +7,7 @@
 
 output_path_json = function(output_path = NA){
   if(!dir.exists(output_path)){
-    dir.create(output_path)
+    dir.create(output_path, recursive = T)
   }
   
   write_json(

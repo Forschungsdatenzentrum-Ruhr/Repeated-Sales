@@ -106,10 +106,14 @@ if(!nrow(combinations) == 1){
     # can prob just compare sim_dist to parent (gain from being child) vs 
     # sum(sim_dist) to children (gain from being parent/cost)
     
+    tar_assert_true(
+      FALSE,
+      msg = glue::glue("{unique(geo_grouped_data$latlon)}")
+    )
+    
     clustering$centers <- clustering$centers[
       ,
-      .SD[which.min(sim_dist)],
-      by = "counting_id"
+      similarity_cost_function(.SD)
     ]
   }
 } else {

@@ -81,7 +81,7 @@ tar_option_set(
   packages = pipeline_library,
   seed = 1,
   garbage_collection = TRUE,
-  storage = "worker", 
+  storage = "worker",
   retrieval = "worker"
 )
 
@@ -96,53 +96,54 @@ plan(callr)
 
 # for now only can run one type at once
 RED_version <- "v8"
-RED_type <- "WM"
+# one of WM / WK / HK
+RED_type <- "WK"
 
 
 ## similarity settings
-categories = c("wohnflaeche", "etage", "zimmeranzahl")
+categories <- c("wohnflaeche", "etage", "zimmeranzahl")
 
 
 # maybe set zimmeranzahl to 1?
-#resembling_offset
-wohnflaeche_r_o =  0.1
-etage_r_o = 1
-zimmeranzahl_r_o =  0.5
+# resembling_offset
+wohnflaeche_r_o <- 0.1
+etage_r_o <- 1
+zimmeranzahl_r_o <- 0.5
 
-#exact_offset
-wohnflaeche_e_o =  0.05
-etage_e_o = 0
-zimmeranzahl_e_o =  0
+# exact_offset
+wohnflaeche_e_o <- 0.05
+etage_e_o <- 0
+zimmeranzahl_e_o <- 0
 
 
 # plot_offset
-low_cutoff = 0.1
-mid_cutoff = 1
-high_cutoff = 20
-final_cutoff = 100
+low_cutoff <- 0.1
+mid_cutoff <- 1
+high_cutoff <- 20
+final_cutoff <- 100
 
-wohnflaeche_ro_range = c(
+wohnflaeche_ro_range <- c(
   seq(from = 0, to = low_cutoff, by = 0.02),
   seq(from = low_cutoff, to = mid_cutoff, by = 0.1),
   seq(from = mid_cutoff - 1, to = high_cutoff, by = 5),
   seq(from = high_cutoff, to = final_cutoff, by = 20)
 ) |> unique()
 
-wohnflaeche_eo_range = shift(wohnflaeche_ro_range)
+wohnflaeche_eo_range <- shift(wohnflaeche_ro_range)
 
-wohnflaeche_eo_range = wohnflaeche_eo_range[-1]
-wohnflaeche_ro_range = wohnflaeche_ro_range[-1]
+wohnflaeche_eo_range <- wohnflaeche_eo_range[-1]
+wohnflaeche_ro_range <- wohnflaeche_ro_range[-1]
 
-sensitivity_suffix = wohnflaeche_eo_range |> str_replace_all('\\.','_')
+sensitivity_suffix <- wohnflaeche_eo_range |> str_replace_all("\\.", "_")
 
 # time offset for readability
 time_offset <- fcase(
   RED_type == "WM", 3,
-  RED_type %in% c("WK","HK"), 6
+  RED_type %in% c("WK", "HK"), 6
 )
 
 # settings export setup
-exportJSON = data.table(
+exportJSON <- data.table(
   "RED_type" = RED_type,
   "RED_version" = RED_version,
   "categories" = categories,
@@ -150,19 +151,19 @@ exportJSON = data.table(
   "etage_r_o" = etage_r_o,
   "zimmeranzahl_r_o" = zimmeranzahl_r_o,
   "wohnflaeche_e_o" = wohnflaeche_e_o,
-  "zimmeranzahl_e_o" =  zimmeranzahl_e_o,
+  "zimmeranzahl_e_o" = zimmeranzahl_e_o,
   "time_offset" = time_offset
 )
 
 
 # Paths -------------------------------------------------------------------
-curr_date = Sys.Date() |> str_replace_all("-","_")
+curr_date <- Sys.Date() |> str_replace_all("-", "_")
 
 # data-path
 data_path <- here::here("data")
 
 # output path
-output_path = here::here("output", RED_type, RED_version, curr_date)
+output_path <- here::here("output", RED_type, RED_version, curr_date)
 
 
 # logging setup
@@ -174,8 +175,8 @@ logger::log_appender(
 
 
 # tar_eval variables ------------------------------------------------------
-federal_state_ids = 1:16
-classification_ids = glue::glue("classification_blid_{federal_state_ids}")
+federal_state_ids <- 1:16
+classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
 
 
 # Sourcing: ---------------------------------------------------------------
@@ -188,7 +189,7 @@ lapply(list.files("R", pattern = "\\.R$", full.names = TRUE), source)
 ###########################################################################
 
 file_targets <- rlang::list2(
-  
+
   # dump settings as json file to make results reproducible
   tar_target(
     settings_used,
@@ -198,14 +199,19 @@ file_targets <- rlang::list2(
     deployment = "main"
   ),
   
-  ## RED data
-  tar_file_read(
-    RED,
+  tar_target(
+    file_name,
     # generates file_name used based on version and type
     make_RED_file_name(
       data_version = RED_version,
       data_type = RED_type
-    ),
+    )
+  ),
+
+  ## RED data
+  tar_file_read(
+    RED,
+    file_name,
     # read stata file, removes labels and subset for relevant variables
     read_RED(!!.x,
       var_of_interest = c(
@@ -253,7 +259,7 @@ federal_state_targets <- rlang::list2(
       federal_state_ids = federal_state_ids,
       classification_ids = classification_ids
     )
-   ),
+  ),
   # perform sensitivity exercise on one federal state
   # iterativ repeats classification over specified ranges
   tar_eval(
@@ -263,16 +269,16 @@ federal_state_targets <- rlang::list2(
         geo_grouped_data = RED[.(4), on = "blid"],
         resembling_offset,
         exact_offset
-      )  
+      )
     ),
     values = rlang::list2(
       resembling_offset = wohnflaeche_ro_range,
       exact_offset = wohnflaeche_eo_range,
       non_list_reason_sensitivities = glue::glue(
-        "non_list_reason_{sensitivity_suffix}")
+        "non_list_reason_{sensitivity_suffix}"
+      )
     )
   )
-
 )
 
 ###########################################################################
@@ -281,28 +287,29 @@ federal_state_targets <- rlang::list2(
 
 # arguments to create summary_tables from
 # first of arg1 vector correspondences to first argument of arg2 vector
-cross_tabyl_arguments = data.table(
-    arg1 = c(
-      "blid",
-      "sim_index",
-      "blid",
-      "same_time_listing"
-    ), 
-    arg2 = c(
-      "sim_index",
-      "non_list_reason",
-      "non_list_reason",
-      "non_list_reason"
-    )
-)[,
-  target_name := paste0("summary_table","_",arg1,"_",arg2)
+cross_tabyl_arguments <- data.table(
+  arg1 = c(
+    "blid",
+    "sim_index",
+    "blid",
+    "same_time_listing"
+  ),
+  arg2 = c(
+    "sim_index",
+    "non_list_reason",
+    "non_list_reason",
+    "non_list_reason"
+  )
+)[
+  ,
+  target_name := paste0("summary_table", "_", arg1, "_", arg2)
 ]
 
-summary_targets = rlang::list2(
+summary_targets <- rlang::list2(
 
-# Tables ------------------------------------------------------------------
-  
-# classification
+  # Tables ------------------------------------------------------------------
+
+  # classification
   tar_target(
     summary_skim_numeric,
     datasummary_skim_numerical(
@@ -351,13 +358,21 @@ summary_targets = rlang::list2(
     )
   ),
 
-# Figures -----------------------------------------------------------------
-
-
-  
-  
+  # Figures -----------------------------------------------------------------
 )
-
+###########################################################################
+# EXPORT-TARGETS -----------------------------------------------------------
+###########################################################################
+export_targets <- rlang::list2(
+  
+  tar_target(
+    export_classification,
+    export_data(
+      classification,
+      file_name
+      )
+    ),
+)
 ###########################################################################
 # FINAL_TARGETS -----------------------------------------------------------
 ###########################################################################
@@ -367,7 +382,7 @@ rlang::list2(
 
   # federal state targets
   federal_state_targets,
-  
+
   # # combine last step of federal state targets together into single output
   tar_combine(
     classification,
@@ -375,7 +390,7 @@ rlang::list2(
     command = bind_rows(!!!.x),
     format = "fst_dt"
   ),
-  
+
   # # combine last step of federal state targets together into single output
   tar_combine(
     sensitivity,
@@ -383,7 +398,8 @@ rlang::list2(
     command = bind_rows(!!!.x),
     format = "fst_dt"
   ),
-  summary_targets
+  #summary_targets,
+  export_targets
 )
 
 
