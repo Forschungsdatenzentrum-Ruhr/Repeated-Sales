@@ -8,10 +8,6 @@ make_classification <- function(geo_grouped_data = NA) {
   # NOTE: there should be a better place for this?
   data_end_date <- geo_grouped_data[, max(emonths)]
 
-  
-  pre_removal_obs <- geo_grouped_data[, .N]
-  logger::log_info("Pre Removal Observations: ", pre_removal_obs)
-
   # classify parent-child relationships, adds sim_index and sim_distance
   geo_grouped_data_similarity <- geo_grouped_data[,
     #curly brackets causes both expressions to be evaluated but only last one is passed along
@@ -41,11 +37,6 @@ make_classification <- function(geo_grouped_data = NA) {
   # in non_list_classification() should catch errors beforehand. 
   # leaving it as backup for now 
   check_nonsensical_listings(geo_grouped_data_connected,"geo_grouped_data_connected")
-  
-  
-  post_update_obs <- geo_grouped_data_connected[, .N]
-  logger::log_info("Post Removal Observations: ", post_update_obs)
-
 
   return(geo_grouped_data_connected)
 }

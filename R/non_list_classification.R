@@ -7,7 +7,7 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   # due to data.table not finding it
   # throws error without copy due to using := within .SD
   parent_grouped_data = copy(parent_grouped_data)
-  setkey(parent_grouped_data_non_list, amonths, emonths)
+  setkey(parent_grouped_data, amonths, emonths)
   
   parent_grouped_data_non_list <- parent_grouped_data[
     ,
@@ -58,7 +58,6 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     !any(parent_grouped_data_connected[,amonths>emonths]),
     msg = glue::glue("amonths > emonths for {unique(parent_grouped_data_connected$parent)} at {unique(parent_grouped_data_connected$latlon_utm)}")
   )
-  
   
   # check if no NAs were created somewhere
   tar_assert_true(

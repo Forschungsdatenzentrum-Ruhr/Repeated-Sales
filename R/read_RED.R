@@ -21,13 +21,18 @@ read_RED <- function(RED_file_name = NA, var_of_interest = NA) {
   
   RED <- RED[
     # drop missings for all but pricing variables since one of those is always missing
+    # drops like 8-10 mil
     RED[,
       Reduce("&", lapply(.SD, ">=", 0)),
       .SDcols = setdiff(var_of_interest, c("mietekalt", "kaufpreis"))
     ],
     # keep only relevant variables
     ..var_of_interest
-  ][,
+    # unique only
+    # drops like 2mil
+  ] |> unique()
+  
+  RED <- RED[,
     ## mutations
     ":="(
       # combine coordinates
