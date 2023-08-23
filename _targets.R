@@ -113,7 +113,7 @@ zimmeranzahl_r_o <- 0.5
 # exact_offset
 wohnflaeche_e_o <- 0.05
 etage_e_o <- 0
-zimmeranzahl_e_o <- 0
+zimmeranzahl_e_o <- 0.5
 
 
 # plot_offset
