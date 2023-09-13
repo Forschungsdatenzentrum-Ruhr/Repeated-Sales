@@ -68,8 +68,7 @@ cluster <- R6::R6Class("cluster",
           # issues occurs when center chosen does not resemble all children.
           # 532145 532135 532155 532136 532156
           # with first and last not being similar (origin being second)
-          # shouldnt be an issue, just gets assigned NA and dropped later?
-          
+          # fixed during cost-function
           
           # extract minimum mean 
           self$min_ss <- self$subset[which.min(self$means[self$subset])]
@@ -87,12 +86,6 @@ cluster <- R6::R6Class("cluster",
           )
           # bind temp data.table with itself for each iteration
           self$sim_index <- rbind(self$sim_index, temp_index)
-
-          # Put Unit-test if issues mentioned above cant be ignored
-          # if (any(is.na(temp_index$sim_index))) {
-          #   tst <<- self
-          #   stop()
-          # }
 
           # assign temp data.table
           temp_ids <- data.table(

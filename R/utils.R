@@ -53,7 +53,7 @@ custom_progress_bar = function(classification_type = NA, .GRP = NA,.GRPN = NA, m
   } else if(.GRP == .GRPN){
     
     # Finish and cleanup
-    cli::cli_alert_success(glue::glue("Finished {classification_type} after {Sys.time() - start_time}"))
+    cli::cli_alert_success(glue::glue("Finished {classification_type} after {format(Sys.time() - start_time, format = '%H:%M:%S')}"))
     cli::cli_progress_done(.envir = parent.frame(n = sys.nframe()))
     
   } else if(!(.GRP %% mod)){
@@ -69,7 +69,7 @@ custom_progress_bar = function(classification_type = NA, .GRP = NA,.GRPN = NA, m
 }
 check_nonsensical_listings <- function(data_connected = NA, data_name = NA) {
   # calc ayear/eyear from amonths/emonths
-  data_connected[, ":="(ayear = amonths %/% 12, eyear = emonths %/% 12)]
+  data_connected = copy(data_connected)[, ":="(ayear = amonths %/% 12, eyear = emonths %/% 12)]
   
   # table ayear vs eyear and remove name column
   ayear_eyear_table <- data_connected |>

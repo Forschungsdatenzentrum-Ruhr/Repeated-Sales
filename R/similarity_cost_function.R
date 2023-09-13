@@ -10,15 +10,27 @@ similarity_cost_function <- function(clustering_centers = NA) {
   #' @author Thorben Wiebe
   #----------------------------------------------
 
-  # geo_grouped_data = RED |> filter(latlon_utm == "5914872.28545209603584.936611244")
+  # Curr Error
+  #coords = RED |> filter(counting_id == "5344") |> pull(latlon_utm)
+  #geo_grouped_data = RED |> filter(latlon_utm == coords & balkon == 1)
   
+  # NA-Example
+  # geo_grouped_data = RED |> filter(latlon_utm == "5914872.28545209603584.936611244")
+
+  # parent_child Example
+  # geo_grouped_data = RED |> filter(latlon_utm == "5915033.15972125602782.786688613")
+
   # NOTE: to save on variables all competitors/winners could be integrated into a
-  # piping structure. decided against it to make it easier to see what 
+  # piping structure. decided against it to make it easier to see what
   # the individual steps are doing, since it gets quite complicated during
   # the gains calculation
 
   # Explanation + Prep ------------------------------------------------------
-
+  
+  # empty data.table to appended to
+  new_names = names(clustering_centers)
+  final_removal = setNames(data.table(matrix(nrow = 0, ncol = length(new_names))), new_names)
+  
   # each observation can only be a parent or child, never both
   # to dissolve this conflict compare similarity gains from each case
   # another way to think about it: similarity is lost if the other option is chosen
@@ -26,7 +38,6 @@ similarity_cost_function <- function(clustering_centers = NA) {
   # unique deals with a parent being chosen as such from multiple cluster
   # since the parent is the same either way, no special consideration is necessary
   unique_clustering_centers <- unique(clustering_centers)
-
 
   # clean_up of NAs ---------------------------------------------------------
 
@@ -42,7 +53,6 @@ similarity_cost_function <- function(clustering_centers = NA) {
   ]
 
   # competitions ------------------------------------------------------------
-
   # isolate cases where conflicts arose
   competing_parents <- unique_clustering_centers[
     ,
@@ -50,71 +60,148 @@ similarity_cost_function <- function(clustering_centers = NA) {
     by = "counting_id"
   ]
   
-  # check if cleaning up Nas fixed the problem already
+  # this check likely needs to be more complicated since not every parent_child
+  # competion has to pass through parent_parent competition
+  # check if cleaning up NAs fixed the problem already
   if (length(competing_parents) != 0) {
-   
+  #if(anyDuplicated(competing_parents$parent) != 0)
     # parent vs parent competing ----------------------------------------------
 
     # x is potential child of y or z but not itself -> choose lowest sim_dist
     # this also contains all listings with are their own parent -> used in first option
-    parent_parent_competitors <- competing_parents[
-      ,
+    parent_parent_winners <- competing_parents[
+      parent != counting_id,
       .SD[which.min(sim_dist)],
       by = "counting_id"
     ]
 
-    # isolate cases where there was pure parent vs parent competition
-    # this likely influences parent vs children competition and should be remerged to initial data
-    parent_parent_winners <- parent_parent_competitors[
-      parent != counting_id
+    # isolate losers that arent parents of themselves
+    parent_parent_loser <- competing_parents[
+      !parent_parent_winners,
+      on = .(counting_id, parent)
+    ][parent != counting_id]
+
+    # remove non-winning classifications from cluster via anti-join
+    unique_clustering_centers <- unique_clustering_centers[
+      !parent_parent_loser,
+      on = .(counting_id, parent)
     ]
 
+    # recheck if conflicts still exist
+    competing_parents <- unique_clustering_centers[
+      ,
+      .SD[.N >= 2],
+      by = "counting_id"
+    ]
 
-    # parent vs child competing -----------------------------------------------
+    if (length(competing_parents) != 0) {
+      # parent vs child competing -----------------------------------------------
+      # find parents which have conflicting classifications
+      parent_children_ids <- competing_parents[
+        parent == counting_id
+      ]$parent
 
-    # find parents which have conflicting classifications
-    parent_children_ids <- parent_parent_competitors[
-      parent == counting_id
-    ]$parent
+      if (length(parent_children_ids) != 0) {
+        ## first option: x parent of cluster x with children y_n -> gain = sum(similiarity of children)
+        # isolate competitors based on ids
+        parent_children_competitors <- unique_clustering_centers[
+          .(parent_children_ids),
+          on = "parent"
+        ]
 
-    if (length(parent_children_ids) != 0) {
-      
-      ## first option: x parent of cluster x with children y_n -> gain = sum(similiarity of children)
-      # isolate competitors based on ids
-      parent_children_competitors <- unique_clustering_centers[
-        .(parent_children_ids),
-        on = "parent"
-      ]
+        # calculate gains of being x being a parent
+        parent_gains <- parent_children_competitors[
+          ,
+          .("cluster_sim_dist" = mean(sim_dist)),
+          by = "parent",
+        ]
 
-      # calculate gains of being x being a parent
-      parent_gains <- parent_children_competitors[
-        ,
-        .("cluster_sim_dist" = sum(sim_dist)),
-        by = "parent",
-      ]
+        ## second option: x child of cluster z -> gain = similarity to parent
+        # isolate competitors based on ids
+        child_parent_competitors <- unique_clustering_centers[
+          .(parent_children_ids),
+          on = "counting_id"
+        ]
 
-      ## second option: x child of cluster z -> gain = similarity to parent
-      # isolate competitors based on ids
-      child_parent_competitors <- unique_clustering_centers[
-        .(parent_children_ids),
-        on = "counting_id"
-      ]
+        child_gains <- child_parent_competitors[
+          counting_id != parent,
+          .("counting_id" = counting_id, "single_sim_dist" = sim_dist),
+        ]
+        
+        
+        tar_assert_true(nrow(child_gains) == nrow(parent_gains))
 
-      child_gains <- child_parent_competitors[
-        !.(parent_children_ids),
-        .("counting_id" = counting_id, "single_sim_dist" = sim_dist),
-        on = "parent"
-      ]
+        # Compare gains and choose lower sim_dist (more similiarity gained)
+        gains_comparison <- parent_gains[
+          child_gains,
+          .(
+            "counting_id" = counting_id,
+            "winner_type" = fifelse(
+              cluster_sim_dist >= single_sim_dist, "child", "parent"
+            )
+          ),
+          on = .(parent == counting_id)
+        ]
+        # split gain-winners into parent-/child type since they cause each
+        # have different consequences
+        winner_ids <- split(gains_comparison, by = "winner_type", keep.by = F)
 
-      # Compare gains
-      gains_comparison <- parent_gains[
-        child_gains,
-        "winner" := fifelse(
-          cluster_sim_dist >= single_sim_dist, "parent", "child"
-        ),
-        on = .(parent == counting_id)
-      ]
+        # Unit-Test
+        # Check if any ids have been assigned as both parent and child winner
+        tar_assert_true(
+          !any(winner_ids$child %in% winner_ids$parent),
+          msg = winner_ids
+        )
+
+        # apply winner selection to initial cluster_centers by anti-joining
+        # the opposite result
+        if (length(winner_ids$parent) != 0) {
+          # all parent-type winners eliminate them being a child of someone else
+          # NOTE This should be possible in one join but i cant find a way to
+          # add the latter select into the on statement
+          child_removal <- competing_parents[
+            .(winner_ids$parent),
+            on = .(counting_id = counting_id)
+          ][!parent == counting_id]
+        
+          
+          # check if this merge did what its intended to do
+          tar_assert_true(all(child_removal[counting_id %in% winner_ids$parent, counting_id != parent]))
+          
+          final_removal = rbindlist(list(final_removal, child_removal))
+        }
+        if (length(winner_ids$child) != 0) {
+          # all child-type winners eliminate them being a parent
+          parent_removal <- competing_parents[
+            .(winner_ids$child),
+            on = .(parent = counting_id)
+          ][parent == counting_id]
+          
+          # check if this merge did what its intended to do
+          tar_assert_true(all(parent_removal[counting_id %in% winner_ids$child, counting_id == parent]))
+          
+          
+          final_removal = rbindlist(list(final_removal, parent_removal))
+        }
+        # combine removals which each being possibly empty
+
+        # after elimination
+        unique_clustering_centers <- unique_clustering_centers[
+          !final_removal,
+          on = .(counting_id, parent)
+        ]
+      }
     }
   }
   
+  #Unit-test
+  tar_assert_true(anyDuplicated(unique_clustering_centers) == 0)
+
+  
+  
+  # tar_assert_true(all(clustering_centers$counting_id %in% unique_clustering_centers$counting_id))
+  # tar_assert_true(all(unique_clustering_centers$counting_id %in% clustering_centers$counting_id))
+  
+  
+  return(unique_clustering_centers)
 }

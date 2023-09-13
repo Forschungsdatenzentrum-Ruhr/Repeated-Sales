@@ -1,4 +1,4 @@
-export_data <- function(classification = NA, file_name = NA) {
+export_data <- function(classification = NA, data_version = NA, data_type = NA) {
   #' @title WIP
   #'
   #' @description WIP
@@ -11,7 +11,7 @@ export_data <- function(classification = NA, file_name = NA) {
   #----------------------------------------------
 
   # paste path together
-  final_path = glue::glue("{output_path}/classification_{file_name}.fst")
+  final_path = glue::glue("{output_path}/classification_{data_type}_{data_version}.fst")
   
   # subset data to only contain sell events
   classification["Sold", on = "non_list_reason"] |>

@@ -1,8 +1,11 @@
 make_classification <- function(geo_grouped_data = NA) {
 
+  # it might help quite a bit to move this into a markdown file with a
+  # synthetic example of how every step works. might be useful to structure
+  # paper as well
+  
   # arrange data and prep for grouping
-  # NOTE: use index instead ?
-  setDT(geo_grouped_data, key = c("latlon_utm", "balkon", "amonths"))
+  setDT(geo_grouped_data, key = c("latlon_utm", "balkon", "counting_id"))
 
   # extract end_date of data
   # NOTE: there should be a better place for this?
@@ -20,10 +23,13 @@ make_classification <- function(geo_grouped_data = NA) {
   ]
 
   # check if everything was classified
-  tar_assert_true(pre_removal_obs == geo_grouped_data_similarity[, .N])
+  tar_assert_true(geo_grouped_data[,.N] == geo_grouped_data_similarity[, .N])
 
   # create panel structure based on parent-child relationship created above
   # connects listings based on months between occurrences
+  
+  # isnt it possible to drop the parent itself here?
+  # might have to move the parent along to the first sell event aswell
   geo_grouped_data_connected <- geo_grouped_data_similarity[,
   {
     custom_progress_bar("Connected", .GRP, .NGRP);
@@ -31,6 +37,12 @@ make_classification <- function(geo_grouped_data = NA) {
   },
     by = parent
   ]
+  
+  unique_parents = unique(geo_grouped_data_connected[,parent])
+  unique_ids = unique(geo_grouped_data_connected[,counting_id])
+  
+  tar_assert_true(all(unique_parents %in% unique_ids), msg = glue::glue("{unique(geo_grouped_data_connected$latlon_utm)}"))
+  
   
   # unit-test
   # this should basically never trigger since the unit-test
