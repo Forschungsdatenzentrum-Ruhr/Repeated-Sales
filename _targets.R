@@ -3,8 +3,9 @@
 # add packagename before functions
 # figure out what to with same_time_listings
 # do regression example with mietpreisbremse?
-# decide whether to merge remaining variables or just keep all during classification
-# add messages to tar_assert_true to make debugging easier
+# have pipeline run seperately for each of WK, HK, WM (make this a setting in setup)
+#   or have it run all of them sequentially? might be kinda hard to implement
+# add price indicies for each of above, hedonic, repeated, average, mixed?
 
 
 # Packages-Setup: ----------------------------------------------
@@ -68,6 +69,7 @@ suppressPackageStartupMessages({
   library(janitor)
   library(kableExtra)
   library(htmlTable)
+  library(fixest)
 })
 
 
@@ -155,16 +157,7 @@ exportJSON <- data.table(
   "time_offset" = time_offset
 )
 
-
-# Paths -------------------------------------------------------------------
-curr_date <- Sys.Date() |> str_replace_all("-", "_")
-
-# data-path
-data_path <- here::here("data")
-
-# output path
-output_path <- here::here("output", RED_type, RED_version, curr_date)
-
+# Setup Misc --------------------------------------------------------------
 
 # logging setup
 logger::log_appender(
@@ -174,15 +167,53 @@ logger::log_appender(
 )
 
 
-# tar_eval variables ------------------------------------------------------
+# tar_eval variables
 federal_state_ids <- 1:16
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
 
+curr_date <- Sys.Date() |> str_replace_all("-", "_")
 
-# Sourcing: ---------------------------------------------------------------
+# Paths -------------------------------------------------------------------
 
-# Load the R scripts with your custom functions:
-lapply(list.files("R", pattern = "\\.R$", full.names = TRUE), source)
+# main path, path where this file is located
+main_path <- here::here()
+#setwd(main_path)
+
+# code-path
+code_path <- here::here("R")
+
+# data-path
+data_path <- here::here("data")
+
+# output path
+output_path <- here::here("output", RED_type, RED_version, curr_date)
+
+# Sourcing ----------------------------------------------------------------
+
+# Read main files
+lapply(
+  list.files(
+    file.path(code_path),
+    pattern = "\\.R$",
+    full.names = TRUE,
+    all.files = FALSE
+  ),
+  source
+)
+
+# Read code files
+for(sub_dir in c("read_","make_","summary_","similarity_","misc")){
+  lapply(
+    list.files(
+      file.path(code_path, glue::glue("{sub_dir}")),
+      pattern = "\\.R$",
+      full.names = TRUE,
+      all.files = FALSE
+    ),
+    source
+  )
+}
+
 
 ###########################################################################
 # FILE_TARGETS -----------------------------------------------------------
@@ -210,27 +241,42 @@ file_targets <- rlang::list2(
 
   ## RED data
   tar_file_read(
-    RED,
+    RED_all_columns,
     file_name,
-    # read stata file, removes labels and subset for relevant variables
-    read_RED(!!.x,
+    # read stata file, removes labels and mutate some variables
+    read_RED(!!.x),
+    deployment = "main"
+  ),
+  # cut down RED data to only columns required for classification
+  tar_fst_dt(
+    RED_req_columns,
+    prepare_RED(
+      RED_all_columns,
       var_of_interest = c(
         ## general info
         "blid",
-        "ajahr",
-        "ejahr",
-        "amonat",
-        "emonat",
-
+        # "ajahr",
+        # "ejahr",
+        # "amonat",
+        # "emonat",
+        
         ## object info
         "wohnflaeche",
         "zimmeranzahl",
         "etage",
-        "mietekalt",
-        "kaufpreis",
+        # "mietekalt",
+        # "kaufpreis",
         "balkon",
-        "lat_utm",
-        "lon_utm"
+        # "lat_utm",
+        # "lon_utm",
+        
+        ## mutated info
+        "counting_id",
+        "latlon_utm",
+        "amonths",
+        "emonths",
+        "price_var"
+        
       )
     ),
     deployment = "main"
@@ -252,7 +298,7 @@ federal_state_targets <- rlang::list2(
     tar_fst_dt(
       classification_ids,
       make_classification(
-        geo_grouped_data = RED[.(federal_state_ids), on = "blid"]
+        geo_grouped_data = RED_req_columns[.(federal_state_ids), on = "blid"]
       )
     ),
     values = rlang::list2(
@@ -260,25 +306,25 @@ federal_state_targets <- rlang::list2(
       classification_ids = classification_ids
     )
   ),
-  # perform sensitivity exercise on one federal state
-  # iterativ repeats classification over specified ranges
-  tar_eval(
-    tar_fst_dt(
-      non_list_reason_sensitivities,
-      make_sensitivity(
-        geo_grouped_data = RED[.(4), on = "blid"],
-        resembling_offset,
-        exact_offset
-      )
-    ),
-    values = rlang::list2(
-      resembling_offset = wohnflaeche_ro_range,
-      exact_offset = wohnflaeche_eo_range,
-      non_list_reason_sensitivities = glue::glue(
-        "non_list_reason_{sensitivity_suffix}"
-      )
-    )
-  )
+  # # perform sensitivity exercise on one federal state
+  # # iterativ repeats classification over specified ranges
+  # tar_eval(
+  #   tar_fst_dt(
+  #     non_list_reason_sensitivities,
+  #     make_sensitivity(
+  #       geo_grouped_data = RED[.(4), on = "blid"],
+  #       resembling_offset,
+  #       exact_offset
+  #     )
+  #   ),
+  #   values = rlang::list2(
+  #     resembling_offset = wohnflaeche_ro_range,
+  #     exact_offset = wohnflaeche_eo_range,
+  #     non_list_reason_sensitivities = glue::glue(
+  #       "non_list_reason_{sensitivity_suffix}"
+  #     )
+  #   )
+  # )
 )
 
 ###########################################################################
@@ -379,14 +425,21 @@ export_targets <- rlang::list2(
 # Price Indices -----------------------------------------------------------
 ###########################################################################
 indices_targets = rlang::list2(
+  tar_fst_tbl(
+    RED_classified,
+    # this needs the initial version of red with all columns since some are
+    # used during regression but not during classification
+    remerge_RED(
+      classification,
+      RED_all_columns
+    )
+  ),
   tar_target(
     hedonic_index,
     make_hedonic(
-      classification
+      RED_classified
     )
   )
-  
-  
   
 )
 
@@ -410,14 +463,15 @@ rlang::list2(
   ),
 
   # # combine last step of federal state targets together into single output
-  tar_combine(
-    sensitivity,
-    federal_state_targets[[length(federal_state_targets)]],
-    command = bind_rows(!!!.x),
-    format = "fst_dt"
-  ),
-  #summary_targets,
-  export_targets
+  # tar_combine(
+  #   sensitivity,
+  #   federal_state_targets[[length(federal_state_targets)]],
+  #   command = bind_rows(!!!.x),
+  #   format = "fst_dt"
+  # ),
+  # #summary_targets,
+  # export_targets,
+  indices_targets
 )
 
 

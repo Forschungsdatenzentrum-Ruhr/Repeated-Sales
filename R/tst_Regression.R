@@ -1,18 +1,15 @@
-# tst_Regression <- function(classification = NA) {
-#   # repeated sales regression
-# 
-#   classification <- classification[
-#     "Sold",
-#     on = "non_list_reason"
-#   ]
-#   upper_percentile <- quantile(classification[price_var >= 0, price_var], 1 - (0.5 / 100))
-#   lower_percentile <- quantile(classification[price_var >= 0, price_var], (0.5 / 100))
-# 
-# 
-# 
-#   tst <- classification[
-#     price_var <= upper_percentile & 
-#       price_var >= lower_percentile &,
-#     ln_pvar := log(price_var)
-#   ]
-# }
+
+# estimation ----
+makeFormula = function(.data, depvar = dep_var, env = parent.frame()) {
+  avail = names(.data)
+  rhs = c(num_vars, setdiff(cats, fixeffs)) |>
+    intersect(avail) |>
+    paste(collapse = " + ")
+  f = sprintf("%s ~ %s | %s",
+              depvar, rhs, paste(intersect(fixeffs, avail), collapse = "^")
+  )
+  as.formula(f, env = env)
+}
+
+mod = feols(makeFormula(x), x, combine.quick = FALSE, mem.clean = TRUE)
+
