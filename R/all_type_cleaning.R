@@ -9,7 +9,7 @@ all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA,
     # paired mutations --------------------------------------------------------
     # this only split for readability, could be combined with single mutations
     # redefine baujahr and letzte_modernisierung
-    c("baujahr_cat", "modernisierung_cat") := lapply(.SD, function(x) {
+    c("baujahr_cat") := lapply(.SD, function(x) {
       # sort into categories
       fcase(
         x <= 0, 0,
@@ -40,7 +40,7 @@ all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA,
           )
         )
     }),
-    .SDcols = c("baujahr", "letzte_modernisierung")
+    .SDcols = c("baujahr")
   ][
 
     # single mutations --------------------------------------------------------
@@ -54,53 +54,12 @@ all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA,
         ausstattung,
         0:4,
         c(NA_character_, "Simple", "Normal", "Sophisticated", "Deluxe")
-      ),
-      ## etagen
-      # anzahletagen
-      num_floors = fcase(
-        anzahletagen <= 0, 0,
-        between(anzahletagen, 1, 3), 1,
-        between(anzahletagen, 4, 5), 2,
-        between(anzahletagen, 6, 10), 3,
-        anzahletagen > 10, 4
-      ) |> factor(
-        0:4,
-        c(
-          NA_character_,
-          "1-3 floors",
-          "4-5 floors",
-          "6-10 floors",
-          "more than 10 floors"
-        )
-      ),
-      # category etagen
-      cat_floors = fcase(
-        etage < 0, 0,
-        etage == 0, 1,
-        etage == 1, 2,
-        between(etage, 2, 3), 3,
-        between(etage, 4, 5), 4,
-        between(etage, 6, 10), 5,
-        anzahletagen > 10, 6
-      ) |> factor(
-        0:6,
-        c(
-          NA_character_,
-          "ground floor (UG)",
-          "first floor (EG)",
-          "2nd to 3rd floor",
-          "4th to 5th floor",
-          "6th to 10th floor",
-          "above 10th floor"
-        )
-      ),
-      # wohngeld
-      declared_wohngeld = fifelse(between(wohngeld, 0, 2500), "Yes", "No")
+      )
     )
   ]
 
 
-  tar_assert_true(all(indepVar %in% names(RED_cleaned)))
+  
 
   return(RED_cleaned)
 }

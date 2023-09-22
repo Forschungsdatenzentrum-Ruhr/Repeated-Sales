@@ -437,7 +437,14 @@ indices_targets = rlang::list2(
   tar_target(
     hedonic_index,
     make_hedonic(
-      RED_classified
+      RED_classified,
+      data_type
+    )
+  ),
+  tar_target(
+    repeated_index,
+    make_repeated(
+      classification
     )
   )
   
