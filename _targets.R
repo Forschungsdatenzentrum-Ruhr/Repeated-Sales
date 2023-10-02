@@ -414,7 +414,7 @@ export_targets <- rlang::list2(
   tar_target(
     export_classification,
     export_data(
-      classification,
+      RED_classified,
       data_version = RED_version,
       data_type = RED_type
       )
@@ -441,10 +441,11 @@ indices_targets = rlang::list2(
       data_type
     )
   ),
+  # use remerged RED for now, since i need some variables not in classification
   tar_target(
     repeated_index,
     make_repeated(
-      classification
+      RED_classified
     )
   )
   
