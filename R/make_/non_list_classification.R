@@ -3,12 +3,12 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   # latlon_utm == 5914585.51138591603185.2001455
   # contains long update chain + miss example
 
-  # this is fairly ugly, but cant reference non_list_duration in second mutation 
+  # this is fairly ugly, but cant reference non_list_duration in second mutation
   # due to data.table not finding it
   # throws error without copy due to using := within .SD
-  parent_grouped_data = copy(parent_grouped_data)
+  parent_grouped_data <- copy(parent_grouped_data)
   setkey(parent_grouped_data, amonths, emonths)
-  
+
   parent_grouped_data_non_list <- parent_grouped_data[
     ,
     non_list_duration := fifelse(
@@ -18,7 +18,7 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     )
   ][
     ,
-    # update wording might be misleading since the actual update is the 
+    # update wording might be misleading since the actual update is the
     # subsequent one which actually sold
     # updated/overwrite/super-ceded?
     non_list_reason := .(fcase(
@@ -30,43 +30,51 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     # within parent grouped frame figure out if listings has been made
     # in within same year/month
     # these are currently problematic since classification missclassifies
-    same_time_listing:= .N >= 2,
+    same_time_listing := .N >= 2,
     by = "amonths"
-    
   ]
-  
+
   # set index to allow for binary operations here and later
   setindex(parent_grouped_data_non_list, non_list_reason)
-  
+
+  first_sold_id = parent_grouped_data_non_list["Sold", first(counting_id), on = "non_list_reason", with = T]
+
   parent_grouped_data_connected <- parent_grouped_data_non_list[
     !"Miss",
     c("start_position", "end_position") := which_range(non_list_reason),
     on = "non_list_reason"
-  ][
-    ,
+  ][,
+    ":="(
     # can calculate something like price difference from initial offering to actual sale price
-    amonths := fifelse(
+    amonths = fifelse(
       !(start_position == end_position) & !is.na(start_position),
       amonths[start_position],
       amonths
+    ),
+    start_position = NULL,
+    end_position = NULL,
+    rs_id = first_sold_id
     )
   ]
-  parent_grouped_data_connected[, c("start_position","end_position") := NULL]
-  
+  # this has to happen outside of filtering, since otherwise it creates a second parent column
+  #parent_grouped_data_connected <- parent_grouped_data_connected[,parent := first_sold_id]
+
+  # check if all ids of parents are ids that were actually sold, non update/miss-classified
+  tar_assert_true(
+    parent_grouped_data_connected[counting_id == rs_id & non_list_reason != "Sold", .N] == 0
+  )
+
   # check if any mistakes were made (starting date is before end date)
   tar_assert_true(
-    !any(parent_grouped_data_connected[,amonths>emonths]),
+    !any(parent_grouped_data_connected[, amonths > emonths]),
     msg = glue::glue("amonths > emonths for {unique(parent_grouped_data_connected$parent)} at {unique(parent_grouped_data_connected$latlon_utm)}")
   )
-  
+
   # check if no NAs were created somewhere
   tar_assert_true(
-    !parent_grouped_data_connected[,anyNA(.SD), .SDcols = c("non_list_reason","non_list_duration")],
+    !parent_grouped_data_connected[, anyNA(.SD), .SDcols = c("non_list_reason", "non_list_duration")],
     msg = glue::glue("NAs created for {unique(parent_grouped_data_connected$latlon_utm)}")
   )
 
-  
-  
-  
   return(parent_grouped_data_connected)
 }

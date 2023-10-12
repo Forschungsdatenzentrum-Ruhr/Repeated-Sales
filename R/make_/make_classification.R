@@ -48,7 +48,7 @@ make_classification <- function(geo_grouped_data = NA) {
   # this should basically never trigger since the unit-test
   # in non_list_classification() should catch errors beforehand. 
   # leaving it as backup for now 
-  check_nonsensical_listings(geo_grouped_data_connected,"geo_grouped_data_connected")
+  # check_nonsensical_listings(geo_grouped_data_connected,"geo_grouped_data_connected")
 
   return(geo_grouped_data_connected)
 }

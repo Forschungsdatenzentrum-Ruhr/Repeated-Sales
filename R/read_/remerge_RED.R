@@ -8,6 +8,6 @@ remerge_RED <- function(classification = NA, RED_all_columns = NA) {
 
   check_geo = RED_classified[,uniqueN(latlon_utm) == 1 & uniqueN(kid2019) == 1 , by = "parent"]
   tar_assert_true(all(check_geo[[2]]))
-  
+
   return(RED_classified)
 }

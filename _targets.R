@@ -166,9 +166,10 @@ logger::log_appender(
   )
 )
 
-
 # tar_eval variables
-federal_state_ids <- 1:16
+federal_state_ids <- c(1:2)
+#federal_state_ids <- 1:16
+#federal_state_ids <- c(1:10,12:16)
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
 
 curr_date <- Sys.Date() |> str_replace_all("-", "_")
@@ -425,7 +426,7 @@ export_targets <- rlang::list2(
 # Price Indices -----------------------------------------------------------
 ###########################################################################
 indices_targets = rlang::list2(
-  tar_fst_tbl(
+  tar_fst_dt(
     RED_classified,
     # this needs the initial version of red with all columns since some are
     # used during regression but not during classification
@@ -438,7 +439,7 @@ indices_targets = rlang::list2(
     hedonic_index,
     make_hedonic(
       RED_classified,
-      data_type
+      data_type = RED_type
     )
   ),
   # use remerged RED for now, since i need some variables not in classification
@@ -467,7 +468,8 @@ rlang::list2(
     classification,
     federal_state_targets[[1]],
     command = bind_rows(!!!.x),
-    format = "fst_dt"
+    format = "fst_dt",
+    cue = tar_cue(mode = "always")
   ),
 
   # # combine last step of federal state targets together into single output

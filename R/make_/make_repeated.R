@@ -1,11 +1,11 @@
 make_repeated <- function(RED_classified = NA) {
   library(rsmatrix)
 
-  vars_needed = c("counting_id","parent","emonths","kaufpreis","kid2019")
-  #tst_vars_needed = c(vars_needed, "latlon_utm","kid2015","gid2015","gid2019")
-  rs_pairs <- RED_classified[non_list_reason == "Sold", ..vars_needed]
-  setkey(rs_pairs, "parent", "counting_id")
+  vars_needed <- c("counting_id", "rs_id", "emonths", "kaufpreis", "kid2019")
+  # tst_vars_needed = c(vars_needed, "latlon_utm","kid2015","gid2015","gid2019")
 
+  rs_pairs <- RED_classified["Sold", on = "non_list_reason", ..vars_needed]
+  setkey(rs_pairs, "rs_id", "counting_id")
 
   # reverse year to month conversion done during initial reading since subsequent functions require dates
   rs_pairs[
@@ -39,43 +39,63 @@ make_repeated <- function(RED_classified = NA) {
   )]
 
   # extract columns whose names are getting i. prefix during self-merge
-  prev_cols <- setdiff(intersect(names(rs_pairs), names(rs_pairs)), "parent")
-
-  #tst = RED_classified[parent == 3, ..tst_vars_needed]
-  
-  #rs_pairs[counting_id == 3]
+  #prev_cols <- setdiff(intersect(names(rs_pairs), names(rs_pairs)),"rs_id")
+  prev_cols <- c("kaufpreis","date","counting_id")
   
   # self-merge data to construct required data structure
-  self_merged_rs_pairs <- rs_pairs[rs_pairs, on = c("parent==parent"), nomatch = 0]
-  # rename columns for clarity
-  setnames(self_merged_rs_pairs, glue::glue("i.{prev_cols}"), glue::glue("prev_{prev_cols}"))
-  
-  
-  tar_assert_true(self_merged_rs_pairs[date >= prev_date,.N] == 0)
-  
-  
-  
-  # drop merges made on exact same listing
+  # this is a called an update join
+  self_merged_rs_pairs <- rs_pairs[
+    rs_pairs, 
+    on = c("rs_id==rs_id","date>date"),
+    # rename columns for clarity
+    (glue::glue("prev_{prev_cols}")) := mget(glue::glue("i.{prev_cols}"))
+    ]
+
+  tar_assert_true(self_merged_rs_pairs[prev_date > date, .N] == 0)
+tst = na.omit(self_merged_rs_pairs)
   # taken from rsmatrix vignette
   matrices <- with(
-    self_merged_rs_pairs[
-      # listings merged on themselves
-      counting_id != prev_counting_id &
-        # opposite shouldnt be occuring, have to check
-        date > prev_date &
-        # price = 0 throws error
-        price_var != 0 &
-        prev_price_var != 0
-    ],
-    rs_matrix(date, prev_date, price_var, prev_price_var, sparse = T)
+    na.omit(self_merged_rs_pairs),
+    rs_matrix(
+      t2 = date,
+      t1 = prev_date,
+      p2 = kaufpreis,
+      p1 = prev_kaufpreis,
+      f = kid2019, # grouping variable
+      sparse = T
+    )
   )
 
-  # GRS = solve(crossprod(Z))%*%crossprod(Z, y) |> exp()
+  View(GRS)
+  # Prep --------------------------------------------------------------------
 
   Z <- matrices("Z")
   y <- matrices("y")
+  X <- matrices("X")
+  Y <- matrices("Y")
+
+  # GRS ---------------------------------------------------------------------
+  # index via Bailey(1963)
+  grs_b <- qr.coef(qr(Z), y)
+
+  GRS <- exp(grs_b) * 100
+  # GRS_vcov <- rs_var(y - Z %*% b, Z) |>
+  #   diag() |>
+  #   sqrt()
+
+  # ARS ---------------------------------------------------------------------
+
+  # index via Shiller (1991)
+  ars_b <- qr.coef(
+    qr(
+      Z %*% t(X),
+      Z %*% t(Y)
+    )
+  )
+  ARS <- 100 / ars_b
+  # vcov <- rs_var(Y - X %*% ars_b, Z, X) |>
+  #   diag() |>
+  #   sqrt()
+  # ARS_vcov <- vcov * ARS^2
   
-  GRS = solve(crossprod(Z))%*%crossprod(Z, y) |> exp()
-  
-  grs <- exp(solve(crossprod(Z), crossprod(Z, y)))
 }
