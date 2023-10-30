@@ -94,6 +94,7 @@ similarity_classification <- function(geo_grouped_data = NA) {
     clustering <- cluster$new(
       cluster_options = similarity_index_list,
       distance = similarity_dist_list,
+      # redo this using selection instead of multiplication -> small deviations vansih overwise since they are multiplied by 0
       means = rowMeans(similarity_index_list * similarity_dist_list, na.rm = T)
     )
     clustering$determine_cluster_centers()

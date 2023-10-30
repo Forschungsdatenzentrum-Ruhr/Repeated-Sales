@@ -56,6 +56,7 @@ suppressPackageStartupMessages({
   library(jsonlite)
 
   # used during execution of pipeline
+  library(MetBrewer)
   library(here)
   library(stringr)
   library(dplyr)
@@ -168,8 +169,8 @@ logger::log_appender(
 
 # tar_eval variables
 federal_state_ids <- c(1:2)
-#federal_state_ids <- 1:16
-#federal_state_ids <- c(1:10,12:16)
+# federal_state_ids <- 1:16
+# federal_state_ids <- c(1:10,12:16)
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
 
 curr_date <- Sys.Date() |> str_replace_all("-", "_")
@@ -178,13 +179,15 @@ curr_date <- Sys.Date() |> str_replace_all("-", "_")
 
 # main path, path where this file is located
 main_path <- here::here()
-#setwd(main_path)
+# setwd(main_path)
 
 # code-path
 code_path <- here::here("R")
 
 # data-path
 data_path <- here::here("data")
+
+markdown_path = here::here("documentation","markdown_")
 
 # output path
 output_path <- here::here("output", RED_type, RED_version, curr_date)
@@ -203,7 +206,7 @@ lapply(
 )
 
 # Read code files
-for(sub_dir in c("read_","make_","summary_","similarity_","misc")){
+for (sub_dir in c("read_", "make_", "summary_", "similarity_", "misc")) {
   lapply(
     list.files(
       file.path(code_path, glue::glue("{sub_dir}")),
@@ -230,7 +233,6 @@ file_targets <- rlang::list2(
     ),
     deployment = "main"
   ),
-  
   tar_target(
     file_name,
     # generates file_name used based on version and type
@@ -260,7 +262,7 @@ file_targets <- rlang::list2(
         # "ejahr",
         # "amonat",
         # "emonat",
-        
+
         ## object info
         "wohnflaeche",
         "zimmeranzahl",
@@ -270,14 +272,13 @@ file_targets <- rlang::list2(
         "balkon",
         # "lat_utm",
         # "lon_utm",
-        
+
         ## mutated info
         "counting_id",
         "latlon_utm",
         "amonths",
         "emonths",
         "price_var"
-        
       )
     ),
     deployment = "main"
@@ -326,6 +327,24 @@ federal_state_targets <- rlang::list2(
   #     )
   #   )
   # )
+)
+
+###########################################################################
+# Markdown --------------------------------------------------------------
+###########################################################################
+markdown_targets <- rlang::list2(
+  tar_fst_dt(
+    example_markdown_data,
+    make_example_markdown_data(
+      geo_grouped_data = RED_req_columns[.(4), on = "blid"]
+    ),
+    deployment = "main"
+  ),
+  tar_render(
+    example_markdown,
+    paste0(markdown_path,"/example_markdown.Rmd")
+  ),
+  deployment = "main"
 )
 
 ###########################################################################
@@ -411,21 +430,20 @@ summary_targets <- rlang::list2(
 # EXPORT-TARGETS -----------------------------------------------------------
 ###########################################################################
 export_targets <- rlang::list2(
-  
   tar_target(
     export_classification,
     export_data(
       RED_classified,
       data_version = RED_version,
       data_type = RED_type
-      )
-    ),
+    )
+  ),
 )
 
 ###########################################################################
 # Price Indices -----------------------------------------------------------
 ###########################################################################
-indices_targets = rlang::list2(
+indices_targets <- rlang::list2(
   tar_fst_dt(
     RED_classified,
     # this needs the initial version of red with all columns since some are
@@ -449,7 +467,6 @@ indices_targets = rlang::list2(
       RED_classified
     )
   )
-  
 )
 
 
@@ -471,6 +488,7 @@ rlang::list2(
     format = "fst_dt",
     cue = tar_cue(mode = "always")
   ),
+  markdown_targets,
 
   # # combine last step of federal state targets together into single output
   # tar_combine(
@@ -481,8 +499,5 @@ rlang::list2(
   # ),
   # #summary_targets,
   # export_targets,
-  indices_targets
+  #indices_targets
 )
-
-
-

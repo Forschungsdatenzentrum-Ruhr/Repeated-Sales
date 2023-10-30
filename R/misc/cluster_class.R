@@ -71,6 +71,7 @@ cluster <- R6::R6Class("cluster",
           # fixed during cost-function
           
           # extract minimum mean 
+          # is this even necessary? it should be possible to just pick lowest similarity from any cluster
           self$min_ss <- self$subset[which.min(self$means[self$subset])]
 
           # assign respective distance to temp data.table

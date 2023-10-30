@@ -17,6 +17,10 @@ output_path_json = function(output_path = NA){
   
 }
 
+standardise_zero_one = function(x){
+  out = (x- min(x))/(max(x)-min(x))
+  return(out)
+}
 
 which_range = function(non_list_reason_vec = NA){
   

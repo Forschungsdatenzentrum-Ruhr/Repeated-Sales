@@ -1,0 +1,75 @@
+---
+title: "Repeated sales/rent walkthrough"
+output:
+  pdf_document: default
+  html_document:
+    code_folding: show
+    theme:
+      bg: '#202123'
+      fg: '#B8BCC2'
+      primary: '#EA80FC'
+      secondary: '#00DAC6'
+      base_font:
+        google: Prompt
+      heading_font:
+        google: Proza Libre
+---
+
+Introduction outlining the idea and process..
+
+Details of reading/reprocessing the RED data can be found in R/read_/, specifically read_RED.R and prepare_RED.R. These should be self explanatory. Note that the classification algorithm is designed to be run in parallel.^[I recommend using 'tar_make_future(workers = n)', where $n$ is the number of cores. $n = 4$ is a decent value, when no one else is using the server the number can be set higher. More than 8 is overkill, since Berlin alone typically bottlenecks. If speed becomes a big issue with growing data consider using "foreach()" on the coordinate level.] This is achieved by grouping the RED data on "blid", i.e. one group for each federal state. These groups are than classified in parallel for significant speedups. This classification digs down to coordinate-level, which is where i will start explaining the actual procedure. 
+
+Also dropped filtered and dropped balkon---
+The example data is taken from a coordinate with $25$ observations of federal state Bremen. Since the data is already subset to the required dissolution for the next steps, the variables "blid" and "latlon_utm" were dropped beforehand (See R/misc/make_example_markdown_data.R for details).
+
+```{r}
+## load example data
+tar_load(example_markdown_data)
+```
+
+#General makeup of the data:
+```{r}
+# show head
+head(example_markdown_data)
+# show summary
+summary(example_markdown_data)
+```
+
+There are two types of similarity which will be considered: resembling and exact. The former allows for slightly larger deviations, the latter is quite restrictive. "r_o" refers to resembeling offset and "e_o" to exact offset.
+
+# parameter used for classification:
+```{r}
+# these are globally defined in _targets.R
+print(exportJSON)
+```
+
+<!-- # scatter plot of the problem: -->
+<!-- ```{r} -->
+<!-- standardised_data = example_markdown_data[balkon == 1, standardise_zero_one(.SD),.SDcols = c("wohnflaeche","zimmeranzahl","etage")] -->
+<!-- head(standardised_data) -->
+<!-- ``` -->
+
+
+```{r}
+# make color blind friendly palette
+etage_colors = MetBrewer::met.brewer("Egypt", n = uniqueN(example_markdown_data$etage))
+
+ggplot(example_markdown_data, aes(x  = wohnflaeche, y = zimmeranzahl, color = as.factor(etage)))+
+  geom_point() +
+  scale_color_manual(values = etage_colors)
+```
+Note that direct overlaps naturally arent visible. We can see that most of the combinations are fairly distinct with one notable exception: Etage 4 (green) has one near perfect match (etage and zimmeranzahl are the same) with slight deviations in wohnflaeche. The challenge now is to make a decision: are the lisings for two different apartments or are they the same apartment? To make this decision for any number of characteristic combinations, I use a modified version of k-nearest neighbors clustering. Before we can get to this stage however, I it is necessary to define and approach the issue formally. Visually classifying each combination at each coordinate in Germany would take quite some time (and would have to be re-done for every new wave, more on that later).
+
+We will proceed in two overarching dimensions, each involving quite a few steps: the characteristics dimension (classifying similarity) and the subsequent time dimension ('classifying' non list reason): 
+
+
+# characteristics dimension
+
+
+```{r}
+# run tar_load_globals() if R cant find this function
+out = similarity_classification(example_markdown_data)
+head(out)
+```
+
+

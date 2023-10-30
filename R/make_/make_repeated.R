@@ -52,9 +52,10 @@ make_repeated <- function(RED_classified = NA) {
     ]
 
   tar_assert_true(self_merged_rs_pairs[prev_date > date, .N] == 0)
-tst = na.omit(self_merged_rs_pairs)
+  
   # taken from rsmatrix vignette
   matrices <- with(
+    # na.omit here since update joins ignore nomatch = 0 argument
     na.omit(self_merged_rs_pairs),
     rs_matrix(
       t2 = date,
