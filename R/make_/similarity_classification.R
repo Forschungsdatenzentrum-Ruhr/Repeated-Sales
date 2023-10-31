@@ -40,7 +40,7 @@ similarity_classification <- function(geo_grouped_data = NA) {
       distance = similarity_dist_list
     )
     clustering$determine_cluster_centers()
-
+    clustering$centers
     if (anyDuplicated(clustering$centers$counting_id)) {
       # filter/fix duplicates within $centers here if they exist
       # currently its always being parents > being a child to ease calc

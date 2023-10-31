@@ -71,6 +71,7 @@ suppressPackageStartupMessages({
   library(kableExtra)
   library(htmlTable)
   library(fixest)
+  library(magrittr)
 })
 
 
