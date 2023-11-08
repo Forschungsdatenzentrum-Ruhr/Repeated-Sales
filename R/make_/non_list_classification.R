@@ -37,7 +37,10 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
   # set index to allow for binary operations here and later
   setindex(parent_grouped_data_non_list, non_list_reason)
 
+  # consider catching cluster that have no sales or are single observations (should only happen at the very recent end of the data)
+  # these are dropped anyway but look confusing since they are NA
   first_sold_id = parent_grouped_data_non_list["Sold", first(counting_id), on = "non_list_reason", with = T]
+
 
   parent_grouped_data_connected <- parent_grouped_data_non_list[
     !"Miss",
@@ -56,8 +59,6 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     rs_id = first_sold_id
     )
   ]
-  # this has to happen outside of filtering, since otherwise it creates a second parent column
-  #parent_grouped_data_connected <- parent_grouped_data_connected[,parent := first_sold_id]
 
   # check if all ids of parents are ids that were actually sold, non update/miss-classified
   tar_assert_true(

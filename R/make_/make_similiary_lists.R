@@ -1,4 +1,4 @@
-make_similarity_lists <- function(combinations = NA) {
+make_similarity_lists <- function(combinations = NA, occurence_ids = NA) {
   #' @title WIP
   #'
   #' @description WIP

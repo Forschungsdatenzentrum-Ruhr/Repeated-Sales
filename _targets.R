@@ -7,7 +7,9 @@
 #   or have it run all of them sequentially? might be kinda hard to implement
 # add price indicies for each of above, hedonic, repeated, average, mixed?
 
+# the classification steps appear to be a mix of dbscan and k-neigherst neighoor? 
 
+options(error = traceback)
 # Packages-Setup: ----------------------------------------------
 
 # used during setup of pipeline
@@ -498,7 +500,7 @@ rlang::list2(
   #   command = bind_rows(!!!.x),
   #   format = "fst_dt"
   # ),
-  # #summary_targets,
+  summary_targets,
   # export_targets,
-  #indices_targets
+  indices_targets
 )

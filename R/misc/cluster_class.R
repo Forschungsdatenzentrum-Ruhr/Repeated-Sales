@@ -38,12 +38,13 @@ cluster <- R6::R6Class("cluster",
     },
     make_cluster = function(unique_option) {
       # assign temp data.table
-      parent <- names(unique_option)
+      parent <- attr(unique_option, "names")
+      parent_col = which(parent==self$names_cluster_combinations)
       temps <- data.table(
         "counting_id" = as.numeric(self$names_cluster_combinations),
         "parent" = as.numeric(parent),
-        "sim_dist" = as.numeric(unique_option),
-        "sim_index" = as.numeric(self$index_cluster_combinations[, parent, with = F])
+        "sim_dist" = as.numeric(unique_option |> unlist()),#,
+        "sim_index" = as.numeric(self$index_cluster_combinations[[parent_col]])
       )
       return(temps)
     },
@@ -66,16 +67,15 @@ cluster <- R6::R6Class("cluster",
           # consider all combinations within cluster
           self$distance_cluster_combinations <- self$distance[self$subset, self$subset, with = F]
           self$index_cluster_combinations <- self$index[self$subset, self$subset, with = F]
-          self$names_cluster_combinations <- names(self$distance_cluster_combinations)
+          self$names_cluster_combinations <- attr(self$distance_cluster_combinations, "names")
           # transposing is necessary since for scaled values distance AB is not equal to BA
-          t_cluster_combinations <- data.table::transpose(self$distance_cluster_combinations) |> setnames(self$names_cluster_combinations)
+          #t_cluster_combinations <- data.table::transpose(self$distance_cluster_combinations) |> setnames(self$names_cluster_combinations)
           # identify exact duplicates in combinations (happens when all inputs are exactly the same)
-          dups <- duplicated(self$t_cluster_combinations)
+          dups <- base::duplicated(self$distance_cluster_combinations, margin = 0)
           # and drop those duplicates so we only deal with unique_combinations
           unique_cluster_combinations <- self$distance_cluster_combinations[, !dups, with = F]
-
           for (cluster_combination in seq_along(unique_cluster_combinations)) {
-            self$centers = rbind(self$centers, self$make_cluster(unique_cluster_combinations[[cluster_combination]]))
+            self$centers = rbind(self$centers, self$make_cluster(unique_cluster_combinations[,cluster_combination, with = F]))
           }
         }
       }
