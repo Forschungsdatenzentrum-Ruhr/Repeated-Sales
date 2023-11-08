@@ -7,7 +7,7 @@
 #   or have it run all of them sequentially? might be kinda hard to implement
 # add price indicies for each of above, hedonic, repeated, average, mixed?
 
-# the classification steps appear to be a mix of dbscan and k-neigherst neighoor? 
+# the classification steps appear to be a mix of dbscan and k-neigherst neighoor?
 
 options(error = traceback)
 # Packages-Setup: ----------------------------------------------
@@ -190,7 +190,7 @@ code_path <- here::here("R")
 # data-path
 data_path <- here::here("data")
 
-markdown_path = here::here("documentation","markdown_")
+markdown_path <- here::here("documentation", "markdown_")
 
 # output path
 output_path <- here::here("output", RED_type, RED_version, curr_date)
@@ -292,8 +292,7 @@ file_targets <- rlang::list2(
 # ###########################################################################
 # # FEDERALSTATE_TARGETS -------------------------------------------------------------
 # ###########################################################################
-#
-## create targets for each federal states
+# create targets for each federal states
 federal_state_targets <- rlang::list2(
 
   # this seems slightly slower than prior usage of tar_group_by + pattern(map)
@@ -310,26 +309,7 @@ federal_state_targets <- rlang::list2(
       federal_state_ids = federal_state_ids,
       classification_ids = classification_ids
     )
-  ),
-  # # perform sensitivity exercise on one federal state
-  # # iterativ repeats classification over specified ranges
-  # tar_eval(
-  #   tar_fst_dt(
-  #     non_list_reason_sensitivities,
-  #     make_sensitivity(
-  #       geo_grouped_data = RED[.(4), on = "blid"],
-  #       resembling_offset,
-  #       exact_offset
-  #     )
-  #   ),
-  #   values = rlang::list2(
-  #     resembling_offset = wohnflaeche_ro_range,
-  #     exact_offset = wohnflaeche_eo_range,
-  #     non_list_reason_sensitivities = glue::glue(
-  #       "non_list_reason_{sensitivity_suffix}"
-  #     )
-  #   )
-  # )
+  )
 )
 
 ###########################################################################
@@ -345,7 +325,7 @@ markdown_targets <- rlang::list2(
   ),
   tar_render(
     example_markdown,
-    paste0(markdown_path,"/example_markdown.Rmd")
+    paste0(markdown_path, "/example_markdown.Rmd")
   ),
   deployment = "main"
 )
@@ -353,7 +333,6 @@ markdown_targets <- rlang::list2(
 ###########################################################################
 # Summary --------------------------------------------------------------
 ###########################################################################
-
 # arguments to create summary_tables from
 # first of arg1 vector correspondences to first argument of arg2 vector
 cross_tabyl_arguments <- data.table(
@@ -374,9 +353,8 @@ cross_tabyl_arguments <- data.table(
   target_name := paste0("summary_table", "_", arg1, "_", arg2)
 ]
 
-summary_targets <- rlang::list2(
-
-  # Tables ------------------------------------------------------------------
+# Tables ------------------------------------------------------------------
+table_targets <- rlang::list2(
 
   # classification
   tar_target(
@@ -402,33 +380,11 @@ summary_targets <- rlang::list2(
     ),
     values = cross_tabyl_arguments
   ),
-  # tar_target(
-  #   summary_threeway,
-  #   custom_threeway_tabyl(
-  #     classification,
-  #     "blid",
-  #     "same_time_listing",
-  #     "non_list_reason"
-  #   )
-  # )
-  tar_target(
-    summary_threeway,
-    custom_cross_tabyl(
-      classification,
-      "blid",
-      "same_time_listing"
-    )
-  ),
-  # sensitivity
-  tar_target(
-    summary_sensitivity,
-    summary_graph_sensitivity(
-      sensitivity
-    )
-  ),
-
-  # Figures -----------------------------------------------------------------
 )
+# Figures -----------------------------------------------------------------
+figure_targets <- rlang::list2()
+
+
 ###########################################################################
 # EXPORT-TARGETS -----------------------------------------------------------
 ###########################################################################
@@ -492,15 +448,8 @@ rlang::list2(
     cue = tar_cue(mode = "always")
   ),
   markdown_targets,
-
-  # # combine last step of federal state targets together into single output
-  # tar_combine(
-  #   sensitivity,
-  #   federal_state_targets[[length(federal_state_targets)]],
-  #   command = bind_rows(!!!.x),
-  #   format = "fst_dt"
-  # ),
-  summary_targets,
+  table_targets,
+  figure_targets,
   # export_targets,
   indices_targets
 )
