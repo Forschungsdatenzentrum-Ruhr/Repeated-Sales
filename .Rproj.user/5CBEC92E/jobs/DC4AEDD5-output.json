@@ -1,8 +1,0 @@
-[1,"Installing 'miniUI' for Shiny Add-Ins...\r\n"]
-[1,"\r\n"]
-[1,"Retrieving 'https://cran.rstudio.com/src/contrib/miniUI_0.1.1.1.tar.gz' ...\r\n"]
-[1,"\tOK [downloaded 95.7 Kb in 0.22 seconds]\r\n"]
-[1,"Installing miniUI [0.1.1.1] ...\r\n"]
-[1,"\tOK [built from source in 8.5 seconds]\r\n"]
-[1,"* Installed 1 package in 11 seconds.\r\n"]
-[2,"\r\n\r\n<U+2714> Package 'miniUI' successfully installed.\r\n"]

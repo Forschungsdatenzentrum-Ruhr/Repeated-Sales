@@ -1,3 +1,0 @@
-classify_data = function(latlon_utm){
-  print(latlon_utm)
-}
