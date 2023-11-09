@@ -2,12 +2,12 @@
 
 # add packagename before functions
 # figure out what to with same_time_listings
-# do regression example with mietpreisbremse?
 # have pipeline run seperately for each of WK, HK, WM (make this a setting in setup)
-#   or have it run all of them sequentially? might be kinda hard to implement
-# add price indicies for each of above, hedonic, repeated, average, mixed?
+# or have it run all of them sequentially? might be kinda hard to implement
+
 
 # the classification steps appear to be a mix of dbscan and k-neigherst neighoor?
+# swap out kaufpreis/kaltmiete mit preis_var to make indices functions universal
 
 options(error = traceback)
 # Packages-Setup: ----------------------------------------------
@@ -74,6 +74,9 @@ suppressPackageStartupMessages({
   library(htmlTable)
   library(fixest)
   library(magrittr)
+  library(rsmatrix)
+  library(ggplot2)
+  library(qs)
 })
 
 
@@ -85,7 +88,6 @@ tar_option_set(
     fst = tar_resources_fst(compress = 50)
   ),
   packages = pipeline_library,
-  seed = 1,
   garbage_collection = TRUE,
   storage = "worker",
   retrieval = "worker"
@@ -171,7 +173,7 @@ logger::log_appender(
 )
 
 # tar_eval variables
-federal_state_ids <- c(1:2)
+federal_state_ids <- c(1)
 # federal_state_ids <- 1:16
 # federal_state_ids <- c(1:10,12:16)
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
@@ -182,7 +184,6 @@ curr_date <- Sys.Date() |> str_replace_all("-", "_")
 
 # main path, path where this file is located
 main_path <- here::here()
-# setwd(main_path)
 
 # code-path
 code_path <- here::here("R")
@@ -236,6 +237,7 @@ file_targets <- rlang::list2(
     ),
     deployment = "main"
   ),
+  # implement same split via tar_eval as in master
   tar_target(
     file_name,
     # generates file_name used based on version and type
@@ -244,7 +246,6 @@ file_targets <- rlang::list2(
       data_type = RED_type
     )
   ),
-
   ## RED data
   tar_file_read(
     RED_all_columns,
@@ -261,20 +262,12 @@ file_targets <- rlang::list2(
       var_of_interest = c(
         ## general info
         "blid",
-        # "ajahr",
-        # "ejahr",
-        # "amonat",
-        # "emonat",
 
         ## object info
         "wohnflaeche",
         "zimmeranzahl",
         "etage",
-        # "mietekalt",
-        # "kaufpreis",
         "balkon",
-        # "lat_utm",
-        # "lon_utm",
 
         ## mutated info
         "counting_id",
@@ -302,6 +295,8 @@ federal_state_targets <- rlang::list2(
     tar_fst_dt(
       classification_ids,
       make_classification(
+        # this way of grouping causes targets problems when tracking changes
+        # doesnt recognize changes to RED_req_columns and therefore doesnt rerun classification
         geo_grouped_data = RED_req_columns[.(federal_state_ids), on = "blid"]
       )
     ),
@@ -417,13 +412,20 @@ indices_targets <- rlang::list2(
     make_hedonic(
       RED_classified,
       data_type = RED_type
+    ),
+    format = "rds"
+  ),
+  tar_fst_dt(
+    self_merged_rs_pairs,
+    prepare_repeated(
+      RED_classified
     )
   ),
   # use remerged RED for now, since i need some variables not in classification
   tar_target(
     repeated_index,
     make_repeated(
-      RED_classified
+      self_merged_rs_pairs
     )
   )
 )

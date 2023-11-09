@@ -36,11 +36,17 @@ make_hedonic_WM <- function(RED_classified = NA) {
     "objektzustand",
     "wohnflaeche" # used during outlier removal
   )
+  # drop extreme values of variables
+  # this is exclusive in REDX and inclusive here
+  upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
+  lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
 
   # clean data with procedure identical for all data_types
   RED_WM <- all_type_cleaning(
     # drop everything else to reduce RAM usage
-    RED_classified[, ..var_to_keep],
+    RED_classified[zimmeranzahl < 8 &
+                     mietekalt %between% c(0, 5000) &
+                     wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep],
     var_to_replace_missings = c(
       "balkon",
       "garten",
@@ -52,17 +58,6 @@ make_hedonic_WM <- function(RED_classified = NA) {
     ),
     indepVar
   )
-
-  # drop extreme values of variables
-  # this is exclusive in REDX and inclusive here
-  upper_percentile <- quantile(RED_WM[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
-  lower_percentile <- quantile(RED_WM[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
-
-  RED_WM[
-    zimmeranzahl < 8 &
-      mietekalt %between% c(0, 5000) &
-      wohnflaeche %between% c(lower_percentile, upper_percentile)
-  ]
 
   tar_assert_true(all(indepVar %in% names(RED_WM)))
 

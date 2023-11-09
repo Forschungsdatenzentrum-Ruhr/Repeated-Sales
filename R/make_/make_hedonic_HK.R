@@ -35,10 +35,19 @@ make_hedonic_HK <- function(RED_classified = NA) {
     "kategorie_Haus", # -> becomes 'type_cat'
     "wohnflaeche" # used during outlier removal
   )
+  # drop extreme values of variables
+  # this is exclusive in REDX and inclusive here
+  upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
+  lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
+  
   # clean data with procedure identical for all data_types
   RED_HK <- all_type_cleaning(
     # drop everything else to reduce RAM usage
-    RED_classified[, ..var_to_keep],
+    RED_classified[
+      zimmeranzahl < 15 &
+        kaufpreis %between% c(0, 5000000) &
+        wohnflaeche %between% c(lower_percentile, upper_percentile),
+      grundstuecksflaeche > 2500, ..var_to_keep],
     var_to_replace_missings = c(
       "gaestewc",
       "ausstattung"
@@ -46,16 +55,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
     indepVar
   )
 
-  # drop extreme values of variables
-  # this is exclusive in REDX and inclusive here
-  upper_percentile <- quantile(RED_HK[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
-  lower_percentile <- quantile(RED_HK[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
-
-  RED_HK[
-    zimmeranzahl < 15 &
-      kaufpreis %between% c(0, 5000000) &
-      wohnflaeche %between% c(lower_percentile, upper_percentile),
-      grundstuecksflaeche > 2500,
+  RED_HK = RED_HK[,
     ":="(
       plotarea_cat = fcase(
         grundstuecksflaeche <= 0, 0,

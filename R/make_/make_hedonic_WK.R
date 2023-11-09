@@ -41,10 +41,17 @@ make_hedonic_WK <- function(RED_classified = NA) {
     "wohngeld", # -> becomes 'baujahr_cat'
     "wohnflaeche" # used during outlier removal
   )
+  # drop extreme values of variables
+  # this is exclusive in REDX and inclusive here
+  upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
+  lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
+
   # clean data with procedure identical for all data_types
   RED_WK <- all_type_cleaning(
     # drop everything else to reduce RAM usage
-    RED_classified[, ..var_to_keep],
+    RED_classified[zimmeranzahl < 8 &
+      kaufpreis %between% c(0, 2000000) &
+      wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep],
     var_to_replace_missings = c(
       "balkon",
       "garten",
@@ -58,15 +65,7 @@ make_hedonic_WK <- function(RED_classified = NA) {
     indepVar
   )
 
-  # drop extreme values of variables
-  # this is exclusive in REDX and inclusive here
-  upper_percentile <- quantile(RED_WK[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
-  lower_percentile <- quantile(RED_WK[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
-
-  RED_WK[
-    zimmeranzahl < 8 &
-      kaufpreis %between% c(0, 2000000) &
-      wohnflaeche %between% c(lower_percentile, upper_percentile),
+  RED_WK = RED_WK[,
     ":="(
       # wohngeld
       declared_wohngeld = fifelse(between(wohngeld, 0, 2500), "Yes", "No"),
