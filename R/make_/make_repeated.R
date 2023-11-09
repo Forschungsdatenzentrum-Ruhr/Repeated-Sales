@@ -4,7 +4,7 @@ make_repeated <- function(self_merged_rs_pairs = NA) {
   # see also ?rs_matrix
   matrices <- with(
     # na.omit here since update joins ignore nomatch = 0 argument
-    na.omit(self_merged_rs_pairs),
+    self_merged_rs_pairs,
     rs_matrix(
       t2 = date,
       t1 = prev_date,
@@ -14,7 +14,7 @@ make_repeated <- function(self_merged_rs_pairs = NA) {
       sparse = F
     )
   )
-
+  
   # Prep --------------------------------------------------------------------
 
   Z <- matrices("Z")
@@ -24,7 +24,7 @@ make_repeated <- function(self_merged_rs_pairs = NA) {
 
   # GRS ---------------------------------------------------------------------
   # index via Bailey(1963)
-  grs_b <- qr.coef(qr(Z), y) 
+  grs_b <- qr.coef(qr(Z), y) |> na.omit()
 
   GRS <- (exp(grs_b) * 100) |> formatC(format = "f", digits = 4)
   
@@ -39,8 +39,13 @@ make_repeated <- function(self_merged_rs_pairs = NA) {
   ars_b <- qr.coef(
     qr(t(Z) %*% X),
     t(Z) %*% Y
-  )|> formatC(format = "f", digits = 4)
-  ARS = 1 / ars_b
+  ) |> na.omit()
+  
+  # this helps the divide by zero issue but is still kinda weird
+  # doesnt fix the weird values
+  ars_b[ars_b == 0] = NA
+  
+  ARS = (100 / ars_b)|> formatC(format = "f", digits = 4)
   dt_ARS = data.table(date = rownames(ars_b),ars_b = ars_b, ARS = ARS)
   
   # vcov <- rs_var(Y - X %*% ars_b, Z, X) |>
@@ -49,7 +54,6 @@ make_repeated <- function(self_merged_rs_pairs = NA) {
   # ARS_vcov <- vcov * ARS^2
   
   
-
 # combined ----------------------------------------------------------------
   repeated_indices = dt_GRS[dt_ARS, on = "date"] |>  drop_na()
 
