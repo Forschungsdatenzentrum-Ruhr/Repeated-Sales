@@ -1,0 +1,16 @@
+make_classification <- function(geo_grouped_data = NA) {
+  
+  # arrange data and prep for grouping 
+  # add balkon?
+  setDT(geo_grouped_data, key= c("latlon_utm","balkon","wohnflaeche", "etage", "zimmeranzahl"))
+  
+  logger::log_info("Pre Removal Observations: ", geo_grouped_data[,.N])
+
+  out = geo_grouped_data[, removal(.SD), by = c("latlon_utm", "balkon")]
+  
+  logger::log_info("Post Removal Observations: ", out[,.N])
+  
+  
+  return(out)
+}
+

@@ -1,0 +1,64 @@
+#rerun this if packages are changed/missing
+#stuff needs to be hard installed for it to be available to parallel
+# for(package in 1:length(pipeline_library)){
+#   install.packages(pipeline_library[package])
+# }
+
+######################
+#Package Install and Load
+######################
+#used during setup of pipeline
+library(targets)
+library(tarchetypes)
+
+
+######################
+#Options and parallel
+######################
+
+# Set target options:
+tar_option_set(
+  packages = c(
+    "here", # creating dynamic paths based on script location
+    "haven", # reading/writing of dta files
+    "tidyverse", # data manipulation/wrangeling
+    #"doParallel", #parallel processing
+    #"foreach", #parallel looping
+    "magrittr", #two sided pipe
+    "logger" # logging utilites
+  ) # packages that your targets need to run
+)
+
+# tar_make_clustermq() configuration (okay to leave alone):
+#options(clustermq.scheduler = "multiprocess")
+
+# tar_make_future() configuration (okay to leave alone):
+# Install packages {{future}}, {{future.callr}}, and {{future.batchtools}} to allow use_targets() to configure tar_make_future() options.
+
+
+######################
+#Sourcing
+######################
+
+# Load the R scripts with your custom functions:
+lapply(list.files("R", full.names = TRUE, recursive = TRUE), source)
+
+######################
+#Pipeline
+######################
+
+blid_targets = tar_map(
+  values = list(.bl_id = 1:2),
+  tar_target(bl, load_data(filename, bl_id = .bl_id )),
+  tar_group_by(group, split_data(bl), latlon_utm),
+  tar_target(classification, classify_data(group), pattern = map(group))
+)
+
+# Replace the target list below with your own:
+list(
+  tar_target(filename, construct_file_name("v6","Wk"),format = "file"),
+  blid_targets
+)
+# ?tar_group_by
+# tar_target(latlon_utm, split_data(data)),
+# tar_group_by(classification, classify_data(latlon_utm),groups)

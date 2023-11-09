@@ -1,0 +1,213 @@
+# General TODO: -----------------------------------------------------------
+
+# use formatting of pop-forecast
+# swap away from %>% ?
+# add packagename before functions
+# use data.table
+# cluster around each baseline?
+
+
+# Packages-Setup: ----------------------------------------------
+
+# used during setup of pipeline
+req_library <- c(
+  "targets",
+  "tarchetypes",
+  "future",
+  "future.callr",
+  "fst",
+  "renv",
+  "rlang",
+  "styler",
+  "docstring"
+)
+
+# used during execution of pipeline
+pipeline_library <- c(
+  "here",
+  "stringr",
+  "dplyr",
+  "tidyr",
+  "data.table",
+  "cli",
+  "glue",
+  "ggplot2",
+  "haven", # reading/writing of dta files
+  "tidyverse", # data manipulation/wrangeling
+  "magrittr", # two sided pipe
+  "fst" #
+)
+
+suppressPackageStartupMessages({
+  # used during setup of pipeline
+  library(targets)
+  library(tarchetypes)
+  library(future)
+  library(future.callr)
+  library(fst)
+  library(renv)
+  library(rlang)
+  library(styler)
+  library(docstring)
+
+  # used during execution of pipeline
+  library(here)
+  library(stringr)
+  library(dplyr)
+  library(tidyr)
+  library(data.table)
+  library(cli)
+  library(glue)
+  library(ggplot2)
+  library(haven)
+})
+
+
+# Settings: ----------------------------------------------------------
+
+# target options
+tar_option_set(
+  resources = tar_resources(
+    fst = tar_resources_fst(compress = 100)
+  ),
+  packages = pipeline_library
+)
+
+# tar_make_future() configuration:
+#plan(callr)
+
+## similarity settings
+categories = c("wohnflaeche", "etage", "zimmeranzahl")
+
+
+# maybe set zimmeranzahl to 1?
+#resembling_offset
+wohnflaeche_r_o =  0.1
+etage_r_o = 99
+zimmeranzahl_r_o =  0.5
+
+#exact_offset
+wohnflaeche_e_o =  0.05
+etage_e_o = 0
+zimmeranzahl_e_o =  0
+
+
+# time offset for readability
+time_offset <- 6
+
+# logging setup
+logger::log_appender(
+  logger::appender_file(
+    paste0(Sys.Date(), "_log.log")
+  )
+)
+
+# Paths and Global: -------------------------------------------------------------------
+
+# data-path
+data_path <- here::here("data")
+
+# for now only can run one type at once
+RED_version <- "v6"
+RED_type <- "Wk"
+
+
+# Sourcing: ---------------------------------------------------------------
+
+# Load the R scripts with your custom functions:
+lapply(list.files("R", pattern = "\\.R$", full.names = TRUE), source)
+
+###########################################################################
+# FILE_TARGETS -----------------------------------------------------------
+###########################################################################
+
+file_targets <- rlang::list2(
+
+  # read RED data and
+  tar_file_read(
+    RED,
+    # generates file_name used, version and type can be specified
+    make_RED_file_name(
+      data_version = RED_version,
+      data_type = RED_type
+    ),
+    # read stata file, removes labels and create individual data for fs
+    read_RED(!!.x,
+      var_of_interest = c(
+        ## general info
+        "blid",
+        "ajahr",
+        "ejahr",
+        "amonat",
+        "emonat",
+
+        ## object info
+        "wohnflaeche",
+        "zimmeranzahl",
+        "etage",
+        "mietekalt",
+        "kaufpreis",
+        "balkon",
+        "lat_utm",
+        "lon_utm"
+      )
+    )
+  )
+)
+
+
+# ###########################################################################
+# # FEDERALSTATE_TARGETS -------------------------------------------------------------
+# ###########################################################################
+#
+## create targets for each federal states
+federal_state_targets <- rlang::list2(
+  # group data by zip code
+  # this could be any group larger than lat+lon
+  # smaller granularity leads to more intermediary files and therefore scaling issues
+  tarchetypes::tar_group_by(
+    federal_state,
+    RED,
+    blid
+  ),
+  # classify data
+  tar_fst_dt(
+    classification,
+    make_classification(
+      geo_grouped_data = federal_state
+    ),
+    pattern = map(federal_state)
+  )
+)
+
+
+
+#
+
+#
+# ###########################################################################
+# # FINAL_TARGETS -----------------------------------------------------------
+# ###########################################################################
+# ## combine to main pipeline
+rlang::list2(
+  file_targets,
+
+  # federal state targets
+  federal_state_targets,
+
+  # # combine last step of federal state targets together into single output
+  # tar_combine(
+  #   repeated,
+  #   federal_state_targets[[length(federal_state_targets)]],
+  #   command = bind_rows(!!!.x),
+  #   format = "fst_dt"
+  # )
+)
+
+###########################################################################
+# COMPARISON --------------------------------------------------------------
+###########################################################################
+
+###########################################################################
+# PLOTTING ----------------------------------------------------------------
+###########################################################################
