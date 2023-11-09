@@ -11,7 +11,7 @@
 *.fst
 *.do
 *.log
-group_modify.txt
-group_modify.txt
 .Rproj.user
 .Rhistory
+_targets/
+data/
