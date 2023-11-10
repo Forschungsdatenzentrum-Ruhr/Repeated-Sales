@@ -1,5 +1,5 @@
-prepare_repeated <- function(RED_classified = NA) {
-  vars_needed <- c("rs_id", "emonths", "price_var", "kid2019")
+prepare_repeated <- function(RED_classified = NA, grouping_var = NA) {
+  vars_needed <- c("rs_id", "emonths", "price_var", grouping_var)
   # tst_vars_needed = c(vars_needed, "latlon_utm","kid2015","gid2015","gid2019")
 
   rs_pairs_prep <- RED_classified["Sold", on = "non_list_reason", ..vars_needed]

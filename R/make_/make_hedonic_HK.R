@@ -35,6 +35,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
     "kategorie_Haus", # -> becomes 'type_cat'
     "wohnflaeche" # used during outlier removal
   )
+  # TODO: make the cutting a function and equal for all -> do it after merging?
   # drop extreme values of variables
   # this is exclusive in REDX and inclusive here
   upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
@@ -99,15 +100,14 @@ make_hedonic_HK <- function(RED_classified = NA) {
       )
     )
   ]
+  out <- hedonic_regression(
+    RED_data = RED_HK, 
+    indepVar = indepVar, 
+    depVar = depVar, 
+    fixed_effects = fixed_effects
+  )
 
-  tar_assert_true(all(indepVar %in% names(RED_HK)))
 
-  rhs <- indepVar |> paste(collapse = " + ")
-  f <- sprintf("%s ~ %s | %s", depVar, rhs, paste0(fixed_effects, collapse = "^")) |>
-    as.formula()
-
-  hedonic_HK <- feols(f, RED_HK, combine.quick = F, mem.clean = T)
-
-  return(hedonic_HK)
+  return(out)
 }
 

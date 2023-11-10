@@ -77,6 +77,7 @@ suppressPackageStartupMessages({
   library(rsmatrix)
   library(ggplot2)
   library(qs)
+  library(plotly)
 })
 
 
@@ -418,14 +419,16 @@ indices_targets <- rlang::list2(
   tar_fst_dt(
     self_merged_rs_pairs,
     prepare_repeated(
-      RED_classified
+      RED_classified,
+      grouping_var = "blid"
     )
   ),
   # use remerged RED for now, since i need some variables not in classification
   tar_target(
     repeated_index,
     make_repeated(
-      self_merged_rs_pairs
+      self_merged_rs_pairs,
+      grouping_var = "blid"
     )
   )
 )

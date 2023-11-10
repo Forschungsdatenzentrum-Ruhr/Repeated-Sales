@@ -54,9 +54,11 @@ print(exportJSON)
 # make color blind friendly palette
 etage_colors = MetBrewer::met.brewer("Egypt", n = uniqueN(example_markdown_data$etage))
 
-ggplot(example_markdown_data, aes(x  = wohnflaeche, y = zimmeranzahl, color = as.factor(etage)))+
-  geom_point() +
-  scale_color_manual(values = etage_colors)
+plot_ly(example_markdown_data, x = ~wohnflaeche, y = ~zimmeranzahl, z = ~etage, colors = etage_colors) |> add_markers() |> layout(scene = list(
+  xaxis = list(title = "Wohnflaeche"),
+  yaxis = list(title = "Zimmeranzahl"),
+  zaxis = list(title = "Etage")
+  ))
 ```
 Note that direct overlaps naturally arent visible. We can see that most of the combinations are fairly distinct with one notable exception: Etage 4 (green) has one near perfect match (etage and zimmeranzahl are the same) with slight deviations in wohnflaeche. The challenge now is to make a decision: are the lisings for two different apartments or are they the same apartment? To make this decision for any number of characteristic combinations, I use a modified version of k-nearest neighbors clustering. Before we can get to this stage however, I it is necessary to define and approach the issue formally. Visually classifying each combination at each coordinate in Germany would take quite some time (and would have to be re-done for every new wave, more on that later).
 

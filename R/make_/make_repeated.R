@@ -1,22 +1,21 @@
-make_repeated <- function(self_merged_rs_pairs = NA) {
+make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
 
   # taken from rsmatrix vignette
   # see also ?rs_matrix
   matrices <- with(
-    # na.omit here since update joins ignore nomatch = 0 argument
     self_merged_rs_pairs,
     rs_matrix(
       t2 = date,
       t1 = prev_date,
       p2 = price_var,
       p1 = prev_price_var,
-      f = kid2019, # grouping variable
+      f = eval(as.symbol(grouping_var)),
       sparse = F
     )
   )
   
   # Prep --------------------------------------------------------------------
-
+  # TODO: make the cutting a function and equal for all -> do it after merging?
   Z <- matrices("Z")
   y <- matrices("y")
   X <- matrices("X")

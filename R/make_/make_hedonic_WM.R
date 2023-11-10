@@ -45,8 +45,8 @@ make_hedonic_WM <- function(RED_classified = NA) {
   RED_WM <- all_type_cleaning(
     # drop everything else to reduce RAM usage
     RED_classified[zimmeranzahl < 8 &
-                     mietekalt %between% c(0, 5000) &
-                     wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep],
+      mietekalt %between% c(0, 5000) &
+      wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep],
     var_to_replace_missings = c(
       "balkon",
       "garten",
@@ -59,11 +59,12 @@ make_hedonic_WM <- function(RED_classified = NA) {
     indepVar
   )
 
-  tar_assert_true(all(indepVar %in% names(RED_WM)))
+  out <- hedonic_regression(
+    RED_data = RED_WM, 
+    indepVar = indepVar, 
+    depVar = depVar, 
+    fixed_effects = fixed_effects
+  )
 
-  rhs <- indepVar |> paste(collapse = " + ")
-  f <- sprintf("%s ~ %s | %s", depVar, rhs, paste0(fixed_effects, collapse = "^")) |>
-    as.formula()
-
-  hedonic_WK <- feols(f, RED_WM, combine.quick = F, mem.clean = T)
+  return(out)
 }

@@ -111,13 +111,13 @@ make_hedonic_WK <- function(RED_classified = NA) {
     )
   ]
 
-  tar_assert_true(all(indepVar %in% names(RED_WK)))
+  out <- hedonic_regression(
+    RED_data = RED_WK, 
+    indepVar = indepVar, 
+    depVar = depVar, 
+    fixed_effects = fixed_effects
+  )
+  
 
-  rhs <- indepVar |> paste(collapse = " + ")
-  f <- sprintf("%s ~ %s | %s", depVar, rhs, paste0(fixed_effects, collapse = "^")) |>
-    as.formula()
-
-  hedonic_WK <- feols(f, RED_WK, combine.quick = F, mem.clean = T)
-
-  return(hedonic_WK)
+  return(out)
 }
