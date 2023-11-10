@@ -77,7 +77,7 @@ suppressPackageStartupMessages({
   library(rsmatrix)
   library(ggplot2)
   library(qs)
-  library(plotly)
+  library(scatterplot3d)
 })
 
 

@@ -14,7 +14,7 @@ output:
       heading_font:
         google: Proza Libre
 ---
-
+THIS FILE ONLY COMPILES DURING THE PIPELINE; ERRORS IF DONE MANUALLY!
 Introduction outlining the idea and process..
 
 Details of reading/reprocessing the RED data can be found in R/read_/, specifically read_RED.R and prepare_RED.R. These should be self explanatory. Note that the classification algorithm is designed to be run in parallel.^[I recommend using 'tar_make_future(workers = n)', where $n$ is the number of cores. $n = 4$ is a decent value, when no one else is using the server the number can be set higher. More than 8 is overkill, since Berlin alone typically bottlenecks. If speed becomes a big issue with growing data consider using "foreach()" on the coordinate level.] This is achieved by grouping the RED data on "blid", i.e. one group for each federal state. These groups are than classified in parallel for significant speedups. This classification digs down to coordinate-level, which is where i will start explaining the actual procedure. 
@@ -25,6 +25,8 @@ The example data is taken from a coordinate with $25$ observations of federal st
 ```{r}
 ## load example data
 tar_load(example_markdown_data)
+#make this dynamic
+#tar_load(example_markdown_data, store ="N:/FDZ/Intern/HiWi-Praktikanten/Mitarbeiter/Thorben/repeated offerings/_targets")
 ```
 
 #General makeup of the data:
@@ -43,35 +45,64 @@ There are two types of similarity which will be considered: resembling and exact
 print(exportJSON)
 ```
 
-<!-- # scatter plot of the problem: -->
-<!-- ```{r} -->
-<!-- standardised_data = example_markdown_data[balkon == 1, standardise_zero_one(.SD),.SDcols = c("wohnflaeche","zimmeranzahl","etage")] -->
-<!-- head(standardised_data) -->
-<!-- ``` -->
-
-
 ```{r}
 # make color blind friendly palette
-etage_colors = MetBrewer::met.brewer("Egypt", n = uniqueN(example_markdown_data$etage))
+etage_colors = MetBrewer::met.brewer("Egypt", n = length(example_markdown_data$etage))
+with(
+  example_markdown_data,
+  scatterplot3d(x = wohnflaeche , y = zimmeranzahl, z =  etage , color = etage_colors, pch = 16)
+)
 
-plot_ly(example_markdown_data, x = ~wohnflaeche, y = ~zimmeranzahl, z = ~etage, colors = etage_colors) |> add_markers() |> layout(scene = list(
-  xaxis = list(title = "Wohnflaeche"),
-  yaxis = list(title = "Zimmeranzahl"),
-  zaxis = list(title = "Etage")
-  ))
 ```
-Note that direct overlaps naturally arent visible. We can see that most of the combinations are fairly distinct with one notable exception: Etage 4 (green) has one near perfect match (etage and zimmeranzahl are the same) with slight deviations in wohnflaeche. The challenge now is to make a decision: are the lisings for two different apartments or are they the same apartment? To make this decision for any number of characteristic combinations, I use a modified version of k-nearest neighbors clustering. Before we can get to this stage however, I it is necessary to define and approach the issue formally. Visually classifying each combination at each coordinate in Germany would take quite some time (and would have to be re-done for every new wave, more on that later).
+Note that direct overlaps naturally arent visible. The challenge now is to make a decision: are the lisings for two different apartments or are they the same apartment? To make this decision for any number of characteristic combinations, I use a modified version of k-nearest neighbors clustering. Before we can get to this stage however, it is necessary to define and approach the issue formally. Visually classifying each combination at each coordinate would take quite some time (and would have to be re-done for every new wave, more on that later).
 
-We will proceed in two overarching dimensions, each involving quite a few steps: the characteristics dimension (classifying similarity) and the subsequent time dimension ('classifying' non list reason): 
+We will proceed in two overarching dimensions: the characteristics dimension (classifying similarity) and the subsequent time dimension ('classifying' non list reason): 
 
 
 # characteristics dimension
 
 
 ```{r}
-# run tar_load_globals() if R cant find this function
-out = similarity_classification(example_markdown_data)
-head(out)
+# save ordering of ids
+occurence_ids <- example_markdown_data[, counting_id]
+
+similarity_lists = make_similarity_lists(example_markdown_data,occurence_ids)
+```
+# index 
+```{r}
+similarity_index_list = similarity_lists[[1]]
+similarity_index_list[1:5,1:5]
+```
+# similarity distances
+```{r}
+similarity_dist_list = similarity_lists[[2]]
+similarity_dist_list[1:5,1:5]
 ```
 
+```{r}
+    similarity_dist_list[is.na(similarity_index_list)] = NA
+      
+    # setup and run the actual clustering
+    clustering <- cluster$new(
+      cluster_options = similarity_index_list,
+      distance = similarity_dist_list
+    )
+    clustering$determine_cluster_centers()
+    clustering$centers |> head(n = 10)
+```
+```{r}
+clustering$centers <- clustering$centers[
+        ,
+        similarity_cost_function(.SD)
+      ]
+clustering$centers |>  head(n = 10)
+```
+
+```{r}
+out <- geo_grouped_data[
+    clustering$centers,
+    on = .(counting_id)
+  ]
+out |>  head(n = 10)
+```
 
