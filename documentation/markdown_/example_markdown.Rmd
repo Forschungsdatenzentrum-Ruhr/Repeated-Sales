@@ -99,7 +99,8 @@ clustering$centers |>  head(n = 10)
 ```
 
 ```{r}
-out <- geo_grouped_data[
+# example_markdown_data is equvialent to geo_grouped_data in the code
+out <- example_markdown_data[
     clustering$centers,
     on = .(counting_id)
   ]

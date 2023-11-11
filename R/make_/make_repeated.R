@@ -1,9 +1,14 @@
 make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
 
+  # bandaid to filter top bottom half a percent of pice variables to catch incredible outliers
+  # there are still NAs in ARS -> accept or fix
+  upper_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], 1 - (0.1 / 100))
+  lower_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], (0.1 / 100))
+  
   # taken from rsmatrix vignette
   # see also ?rs_matrix
   matrices <- with(
-    self_merged_rs_pairs,
+    self_merged_rs_pairs[price_var %between% c(lower_percentile, upper_percentile)],
     rs_matrix(
       t2 = date,
       t1 = prev_date,
@@ -45,7 +50,7 @@ make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
   ars_b[ars_b == 0] = NA
   
   ARS = (100 / ars_b)|> formatC(format = "f", digits = 4)
-  dt_ARS = data.table(date = rownames(ars_b),ars_b = ars_b, ARS = ARS)
+  dt_ARS = data.table(date = rownames(ars_b), ARS = ARS)
   
   # vcov <- rs_var(Y - X %*% ars_b, Z, X) |>
   #   diag() |>
@@ -54,7 +59,7 @@ make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
   
   
 # combined ----------------------------------------------------------------
-  repeated_indices = dt_GRS[dt_ARS, on = "date"] |>  drop_na()
+  repeated_indices = dt_GRS[.(dt_ARS), on = "date"] |>  drop_na()
 
   return(repeated_indices)
 }
