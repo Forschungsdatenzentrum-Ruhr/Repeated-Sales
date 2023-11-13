@@ -1,7 +1,0 @@
-#run pipelin
-library(targets)
-tar_make_future(workers = 2)
-tar_manifest()
-tar_visnetwork(targets_only = T)
-
-
