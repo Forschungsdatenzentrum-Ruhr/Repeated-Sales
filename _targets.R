@@ -9,7 +9,7 @@
 # the classification steps appear to be a mix of dbscan and k-neigherst neighoor?
 # swap out kaufpreis/kaltmiete mit preis_var to make indices functions universal
 
-options(error = traceback)
+#options(error = traceback)
 # Packages-Setup: ----------------------------------------------
 
 # used during setup of pipeline
@@ -174,7 +174,7 @@ logger::log_appender(
 )
 
 # tar_eval variables
-federal_state_ids <- c(1)
+federal_state_ids <- c(5)
 # federal_state_ids <- 1:16
 # federal_state_ids <- c(1:10,12:16)
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
@@ -420,7 +420,7 @@ indices_targets <- rlang::list2(
     self_merged_rs_pairs,
     prepare_repeated(
       RED_classified,
-      grouping_var = "blid"
+      grouping_var = "kid2019"
     )
   ),
   # use remerged RED for now, since i need some variables not in classification
@@ -428,7 +428,7 @@ indices_targets <- rlang::list2(
     repeated_index,
     make_repeated(
       self_merged_rs_pairs,
-      grouping_var = "blid"
+      grouping_var = "kid2019"
     )
   )
 )

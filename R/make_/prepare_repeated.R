@@ -23,33 +23,38 @@ prepare_repeated <- function(RED_classified = NA, grouping_var = NA) {
     # sprintf is used to pad leading zeros for months while pasteing at the same time
     # %d means digits
     # %02d means digit with leading zeros until length 2
-    date = sprintf(
+    date_month = sprintf(
       "%d-%02d-01",
       year,
       month
+    ) |> as.Date(format = "%Y-%m-%d"))][,
+    ":="(
+    date_quarter =  sprintf(
+      "%d-%02d-01",
+      year,
+      quarter(date_month)
     ) |> as.Date(format = "%Y-%m-%d"),
-    # drop year + month columns
     year = NULL,
     month = NULL,
     emonths = NULL
   )]
 
   # extract columns whose names are getting i. prefix during self-merge
-  prev_cols <- c("price_var", "date")
+  prev_cols <- c("price_var", "date_month", "date_quarter")
 
 
   # self-merge data to construct required data structure
   # this is a called an update join
   self_merged_rs_pairs_prep <- rs_pairs_prep[
     rs_pairs_prep,
-    on = c("rs_id==rs_id", "date>date"),
+    on = c("rs_id==rs_id", "date_month>date_month"),
     # rename columns for clarity
     (glue::glue("prev_{prev_cols}")) := mget(glue::glue("i.{prev_cols}"))
   ]|> drop_na()
   
   self_merged_rs_pairs_prep = self_merged_rs_pairs_prep[,.SD[.N >= 2], by = "rs_id"]
   
-  tar_assert_true(self_merged_rs_pairs_prep[prev_date > date, .N] == 0)
+  tar_assert_true(self_merged_rs_pairs_prep[prev_date_month > date_month, .N] == 0)
 
   return(self_merged_rs_pairs_prep)
 }
