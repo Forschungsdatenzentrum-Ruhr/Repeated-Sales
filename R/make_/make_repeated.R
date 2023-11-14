@@ -17,9 +17,8 @@ make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
   
   matrices <- with(
     self_merged_rs_pairs[
-      !price_var == prev_price_var &
-      price_var %between% c(lower_percentile, upper_percentile) &
-      kid2019 %in% c("1054")
+      #!price_var == prev_price_var &
+      price_var %between% c(lower_percentile, upper_percentile)
     ],
     rs_matrix(
       t2 = date_quarter,
@@ -43,9 +42,9 @@ make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
   grs_b <- qr.coef(qr(Z), y) #|> na.omit()
   # Calculate the GRS index in Bailey, Muth, and Nourse (1963)
 
-  # GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
-  #   diag() |>
-  #   sqrt()
+  GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
+    diag() |>
+    sqrt()
 
   GRS <- (exp(grs_b) * 100) 
   
