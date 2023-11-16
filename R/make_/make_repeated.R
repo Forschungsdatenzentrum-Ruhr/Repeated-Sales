@@ -40,13 +40,15 @@ make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
   # GRS ---------------------------------------------------------------------
   # index via Bailey(1963)
   grs_b <- qr.coef(qr(Z), y) #|> na.omit()
+  
   # Calculate the GRS index in Bailey, Muth, and Nourse (1963)
-
-  GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
-    diag() |>
-    sqrt()
-
   GRS <- (exp(grs_b) * 100) 
+
+  # GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
+  #   diag() |>
+  #   sqrt()
+
+
   
   dt_GRS = data.table(date_quarter = names(GRS), i_type = "GRS", index = GRS |> formatC(format = "f", digits = 4))
 
@@ -77,3 +79,4 @@ make_repeated <- function(self_merged_rs_pairs = NA , grouping_var = NA) {
 
   return(repeated_indices)
 }
+
