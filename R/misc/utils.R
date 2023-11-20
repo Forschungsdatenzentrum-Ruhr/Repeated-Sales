@@ -65,7 +65,7 @@ custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA,
     # Initialization of progress bar and some stats
     cli::cli_alert_info(glue::glue("Starting {classification_type} at {start_time}"))
     cli::cli_alert_info(glue::glue("Total groups: {.GRPN}"))
-    cli::cli_progress_bar("  Classifying {classification_type}...", total = (.GRPN / mod), .envir = parent.frame(n = sys.nframe()))
+    cli::cli_progress_bar("  Classifying ...", total = (.GRPN / mod), .envir = parent.frame(n = sys.nframe()))
   } else if (.GRP == .GRPN) {
     # Finish and cleanup
     cli::cli_alert_success(glue::glue("Finished {classification_type} after {format(Sys.time() - start_time, format = '%H:%M:%S')}"))

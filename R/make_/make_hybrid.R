@@ -1,5 +1,5 @@
 make_hybrid = function(RED_classified = NA){
-
+# build by me based on Case and Quigley 1991
 # sample 1 pure rs
 # sample 2 quality changed rs
 # smaple 3 hedonic
@@ -94,10 +94,10 @@ Z = do.call(rbind, list(
     make_X_2(x_conts = list(x_1,x_2), x_binaries = list(x_3), t_month = urs_t, T_month = urs_T),
     make_X_3(x_conts = list(x_1,x_2), x_star_conts = list(x_star_1,x_star_2), x_binaries = list(x_3), x_star_binaries = list(x_star_3), t_month = crs_t, T_month = crs_T)
 )
-)
+) #|> as.data.frame(col.names = )
 #beta = crossprod(Z)
 beta = qr.coef(qr(Z), Y)
 # or
-lm(Y ~ Z -1)
-
+reg = lm(Y ~ Z -1)
+summary(reg)
 }
