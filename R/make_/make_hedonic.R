@@ -1,14 +1,18 @@
-make_hedonic <- function(RED_classified = NA, data_type = NA) {
-  if (data_type == "WK") {
-    hedonic <- make_hedonic_WK(RED_classified)
-  } else if (data_type == "WM") {
-    hedonic <- make_hedonic_WM(RED_classified)
-  } else if (data_type == "HK") {
-    hedonic <- make_hedonic_HK(RED_classified)
-  }
+make_hedonic <- function(prepared_hedonic, data_type = NA) {
+  # centralized way of declaring the variables to make adjustments easier
+  list_var = make_var(data_type = data_type)
+  depVar = list_var$depVar
+  indepVar = list_var$indepVar
+  fixed_effects = list_var$fixed_effects
 
-  return(hedonic)
+  out = hedonic_regression(
+    RED_data = prepared_hedonic, 
+    indepVar = indepVar, 
+    depVar = depVar, 
+    fixed_effects = fixed_effects
+  )
+
+  return(out)
 }
-
 # repeated_index |> group_by(i_type) |> summarise(a = mean(as.numeric(index)), b = mean(as.numeric(index), na.rm = T))
 # summary(repeated_index)

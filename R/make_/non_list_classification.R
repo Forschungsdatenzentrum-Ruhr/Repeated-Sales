@@ -58,7 +58,8 @@ non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA
     end_position = NULL,
     rs_id = first_sold_id
     )
-  ]
+    # if missed due to same_time_listing reset rs_id
+  ][non_list_reason == "Miss" & same_time_listing == TRUE, rs_id := counting_id]
 
   # check if all ids of parents are ids that were actually sold, non update/miss-classified
   tar_assert_true(

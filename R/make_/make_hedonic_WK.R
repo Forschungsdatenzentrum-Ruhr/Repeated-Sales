@@ -111,13 +111,5 @@ make_hedonic_WK <- function(RED_classified = NA) {
     )
   ]
 
-  out <- hedonic_regression(
-    RED_data = RED_WK, 
-    indepVar = indepVar, 
-    depVar = depVar, 
-    fixed_effects = fixed_effects
-  )
-  
-
-  return(out)
+  return(RED_WK)
 }

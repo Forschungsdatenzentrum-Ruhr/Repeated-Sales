@@ -100,14 +100,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
       )
     )
   ]
-  out <- hedonic_regression(
-    RED_data = RED_HK, 
-    indepVar = indepVar, 
-    depVar = depVar, 
-    fixed_effects = fixed_effects
-  )
 
-
-  return(out)
+  return(RED_HK)
 }
 

@@ -409,9 +409,16 @@ indices_targets <- rlang::list2(
     )
   ),
   tar_target(
+    prepared_hedonic,
+    prepare_hedonic(
+      RED_classified,
+      data_type = RED_type
+    )
+  ),
+  tar_target(
     hedonic_index,
     make_hedonic(
-      RED_classified,
+      prepared_hedonic,
       data_type = RED_type
     ),
     format = "rds"
@@ -429,7 +436,16 @@ indices_targets <- rlang::list2(
     make_repeated(
       self_merged_rs_pairs,
       grouping_var = "kid2019"
-    )
+    ),
+    format = "rds"
+  ),
+  tar_target(
+    hybrid_index,
+    make_hybrid(
+      RED_classified,
+      data_type = RED_type
+    ),
+    format = "rds"
   )
 )
 

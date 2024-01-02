@@ -1,7 +1,38 @@
-make_hybrid = function(RED_classified = NA){
+make_hybrid = function(RED_classified,self_merged_rs_pairs, data_type){
+
+  list_var = make_var(data_type = data_type)
+  depVar = list_var$depVar
+  indepVar = list_var$indepVar
+  # think of a solution for this, they are mutated in prepare_hedonic
+  var_to_keep = c(setdiff(indepVar,c("declared_wohngeld", "baujahr_cat", "first_occupancy", "num_floors", "floors_cat")),"rs_id")
+
+# one consideration is that we have to decide between using or dropping updates from hedonic as well
+
 # build by me based on Case and Quigley 1991
+all_rs = self_merged_rs_pairs[["rs_id"]] |> unique()
+RED_classified[,hybrid_type := fifelse(rs_id %in% all_rs, "repeat", "hedonic")]
+
 # sample 1 pure rs
+pure_rs = RED_classified[
+    hybrid_type == "repeat",
+    ..var_to_keep
+    ][,
+    (var_to_keep) := lapply(.SD, 
+    function(x) {
+      fifelse(x < 0, 0, x)
+    }),
+    .SDcols = var_to_keep
+  ]
+
+changed_boolean = pure_rs[,
+  lapply(.SD, function(x){c(NA,diff(x))}),
+  by = rs_id,
+  .SDcols = setdiff(var_to_keep,"rs_id")
+][,rs_id := NULL] |> rowSums() == 0
+
+tar_assert_true(nrow(tst) == nrow(pure_rs))
 # sample 2 quality changed rs
+
 # smaple 3 hedonic
 make_X_1 = function(x_conts = NA , x_binaries = NA, t_month = NA){
     x_conts = unlist(x_conts)
@@ -56,29 +87,29 @@ make_X_3 = function(x_conts = NA, x_star_conts = NA , x_binaries = NA, x_star_bi
     return(X_3)
 }
 
-# make some example data
-# order is hedonic, unchanged rs, changed rs
-x_1 = c(4,5,6) # cont
-x_star_1 = x_1 + c(1,0,1)
-x_2 = c(2,3,4) # cont
-x_star_2 = x_2 + c(1,0,1)
-x_3 = c(1,0,1) # binary
-x_star_3 = x_3 + c(-1,0,-1)
+# # make some example data
+# # order is hedonic, unchanged rs, changed rs
+# x_1 = c(4,5,6) # cont
+# x_star_1 = x_1 + c(1,0,1)
+# x_2 = c(2,3,4) # cont
+# x_star_2 = x_2 + c(1,0,1)
+# x_3 = c(1,0,1) # binary
+# x_star_3 = x_3 + c(-1,0,-1)
 
-# hedonic
-V_h_t = 50 
-h_t = 150
-# unchanged_rs
-V_urs_t = 100
-V_urs_T = 180
-urs_t = 200
-urs_T = 210
+# # hedonic
+# V_h_t = 50 
+# h_t = 150
+# # unchanged_rs
+# V_urs_t = 100
+# V_urs_T = 180
+# urs_t = 200
+# urs_T = 210
 
-# changed_rs
-V_crs_t = 200
-V_crs_T = 150
-crs_t = 180
-crs_T = 185
+# # changed_rs
+# V_crs_t = 200
+# V_crs_T = 150
+# crs_t = 180
+# crs_T = 185
 
 
 
@@ -98,6 +129,7 @@ Z = do.call(rbind, list(
 #beta = crossprod(Z)
 beta = qr.coef(qr(Z), Y)
 # or
-reg = lm(Y ~ Z -1)
-summary(reg)
+#reg = lm(Y ~ Z -1)
+#summary(reg)
+ return(beta)
 }
