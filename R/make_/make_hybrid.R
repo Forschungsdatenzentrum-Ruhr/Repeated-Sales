@@ -9,10 +9,15 @@ make_hybrid = function(RED_classified,self_merged_rs_pairs, data_type){
 # one consideration is that we have to decide between using or dropping updates from hedonic as well
 
 # build by me based on Case and Quigley 1991
+# get ids of all listings that are classified as repeat sales (pure or changed)
 all_rs = self_merged_rs_pairs[["rs_id"]] |> unique()
+# split into repeat and hedonic
 RED_classified[,hybrid_type := fifelse(rs_id %in% all_rs, "repeat", "hedonic")]
 
-# sample 1 pure rs
+# to split repeat into pure and changed, figure out which listings have changed within id
+# this means however that between pairs quality changed, so for that listing pair
+
+# reduce listings to only repeats and set missings to zero
 pure_rs = RED_classified[
     hybrid_type == "repeat",
     ..var_to_keep
@@ -28,12 +33,24 @@ changed_boolean = pure_rs[,
   lapply(.SD, function(x){c(NA,diff(x))}),
   by = rs_id,
   .SDcols = setdiff(var_to_keep,"rs_id")
-][,rs_id := NULL] |> rowSums() == 0
+][,rs_id := NULL] |> rowSums() != 0
 
-tar_assert_true(nrow(tst) == nrow(pure_rs))
+tar_assert_true(length(changed_boolean) == nrow(pure_rs))
+
+pure_rs[,changed_to := changed_boolean][, changed_from := lead(changed_to,1), by = rs_id]
+
+# sample 1 pure rs
+pure_pairs = pure_rs[changed_to == FALSE | changed_from == FALSE]
+
 # sample 2 quality changed rs
+changed_pairs = pure_rs[changed_to == TRUE | changed_from == TRUE]
 
 # smaple 3 hedonic
+hedonic_listings = RED_classified[hybrid_type == "hedonic", ..var_to_keep]
+
+binary_names = c("balkon","garten","einbaukueche","gaestewc","aufzug","keller","betreut")
+cont_names = c("ausstattung","zimmeranzahl")
+
 make_X_1 = function(x_conts = NA , x_binaries = NA, t_month = NA){
     x_conts = unlist(x_conts)
     x_binaries = unlist(x_binaries)

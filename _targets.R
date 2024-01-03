@@ -174,7 +174,7 @@ logger::log_appender(
 )
 
 # tar_eval variables
-federal_state_ids <- c(5)
+federal_state_ids <- c(11)
 # federal_state_ids <- 1:16
 # federal_state_ids <- c(1:10,12:16)
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
@@ -427,7 +427,7 @@ indices_targets <- rlang::list2(
     self_merged_rs_pairs,
     prepare_repeated(
       RED_classified,
-      grouping_var = "kid2019"
+      grouping_var = "gid2019"
     )
   ),
   # use remerged RED for now, since i need some variables not in classification
@@ -435,18 +435,18 @@ indices_targets <- rlang::list2(
     repeated_index,
     make_repeated(
       self_merged_rs_pairs,
-      grouping_var = "kid2019"
+      grouping_var = "gid2019"
     ),
     format = "rds"
   ),
-  tar_target(
-    hybrid_index,
-    make_hybrid(
-      RED_classified,
-      data_type = RED_type
-    ),
-    format = "rds"
-  )
+  # tar_target(
+  #   hybrid_index,
+  #   make_hybrid(
+  #     RED_classified,
+  #     data_type = RED_type
+  #   ),
+  #   format = "rds"
+  # )
 )
 
 
