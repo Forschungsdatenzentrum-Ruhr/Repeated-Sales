@@ -6,7 +6,7 @@ prepare_repeated <- function(RED_classified = NA, grouping_var = NA) {
   setkey(rs_pairs_prep, "rs_id")
 
   # reverse year to month conversion done during initial reading since subsequent functions require dates
-  rs_pairs_prep <- rs_pairs_prep[
+  rs_pairs_prep <- rs_pairs_prep[,
     ":="(
       year = emonths %/% 12,
       month = emonths - ((emonths %/% 12) * 12)

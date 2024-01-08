@@ -26,7 +26,8 @@ remerge_RED <- function(classification = NA, RED_all_columns = NA) {
     "03241001", # Hannover
     "09564000", # Nürnberg
     "05112000"  # Duisburg
-  )
+  ) |> as.numeric()
+
   RED_classified = RED_classified[gid2019 %in% big_fifteen]
 
   return(RED_classified)

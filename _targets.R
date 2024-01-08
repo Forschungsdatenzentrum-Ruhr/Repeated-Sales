@@ -439,14 +439,15 @@ indices_targets <- rlang::list2(
     ),
     format = "rds"
   ),
-  # tar_target(
-  #   hybrid_index,
-  #   make_hybrid(
-  #     RED_classified,
-  #     data_type = RED_type
-  #   ),
-  #   format = "rds"
-  # )
+  tar_target(
+    hybrid_index,
+    make_hybrid(
+      RED_classified,
+      self_merged_rs_pairs,
+      data_type = RED_type
+    ),
+    format = "rds"
+  )
 )
 
 

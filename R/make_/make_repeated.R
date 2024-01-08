@@ -16,10 +16,10 @@ make_repeated <- function(self_merged_rs_pairs, grouping_var) {
   #   ]
   
   matrices <- with(
-    self_merged_rs_pairs[
+    self_merged_rs_pairs
       #!price_var == prev_price_var &
-      price_var %between% c(lower_percentile, upper_percentile)
-    ],
+      #price_var %between% c(lower_percentile, upper_percentile)
+    ,
     rs_matrix(
       t2 = date_quarter,
       t1 = prev_date_quarter,
