@@ -39,7 +39,9 @@ make_hedonic_WK <- function(RED_classified = NA) {
     "anzahletagen", # -> becomes 'baujahr_cat'
     "etage", # -> becomes 'baujahr_cat'
     "wohngeld", # -> becomes 'baujahr_cat'
-    "wohnflaeche" # used during outlier removal
+    "wohnflaeche", # used during outlier removal
+    "rs_id",
+    "emonths"
   )
   # drop extreme values of variables
   # this is exclusive in REDX and inclusive here
@@ -61,14 +63,19 @@ make_hedonic_WK <- function(RED_classified = NA) {
       "keller",
       "ausstattung",
       "betreut"
-    ),
-    indepVar
+    )
   )
 
   RED_WK = RED_WK[,
     ":="(
       # wohngeld
-      declared_wohngeld = fifelse(between(wohngeld, 0, 2500), "Yes", "No"),
+      declared_wohngeld = fifelse(between(wohngeld, 0, 2500), 1, 0) |> factor(
+        0:1,
+        c(
+          "Yes",
+          "No"
+        )
+      ),
       ## etagen
       # anzahletagen
       num_floors = fcase(

@@ -1,8 +1,7 @@
 make_X_1 = function(hedonic = NA, x_conts = NA , x_binaries = NA, t_month = NA){
 
     x_conts = hedonic[,..x_conts]
-    x_binaries = hedonic[,..x_binaries]
-
+    x_binaries = hedonic[,..x_binaries][,lapply(.SD, function(x){as.numeric(x)-1})]
     x_conts_pre = log(x_conts)
     x_conts_sub = t_month * x_conts_pre 
 
@@ -23,7 +22,7 @@ make_X_1 = function(hedonic = NA, x_conts = NA , x_binaries = NA, t_month = NA){
 make_X_2 = function(pure = NA, x_conts = NA , x_binaries = NA, t_month = NA, T_month = NA){
 
     x_conts = pure[,..x_conts]
-    x_binaries = pure[,..x_binaries]
+    x_binaries = pure[,..x_binaries][,lapply(.SD, function(x){as.numeric(x)-1})]
 
     x_conts_pre = matrix(0,nrow(x_conts), length(x_conts)) |> as.data.table()
     setnames(x_conts_pre, names(x_conts))
@@ -50,8 +49,8 @@ make_X_3 = function(changed = NA, x_conts = NA, x_binaries = NA, t_month = NA, T
     x_star_conts = changed[,lapply(.SD,function(x){lag(x,1)}), by = "rs_id", .SDcols = x_conts][,rs_id := NULL]
     x_conts = changed[,..x_conts]
     
-    x_star_binaries = changed[,lapply(.SD,function(x){lag(x,1)}), by = "rs_id", .SDcols = x_binaries][,rs_id := NULL]   
-    x_binaries = changed[,..x_binaries]
+    x_star_binaries = changed[,lapply(.SD,function(x){lag(x,1)}), by = "rs_id", .SDcols = x_binaries][,rs_id := NULL][,lapply(.SD, function(x){as.numeric(x)-1})]  
+    x_binaries = changed[,..x_binaries][,lapply(.SD, function(x){as.numeric(x)-1})]
 
     x_conts_pre = log(x_star_conts/x_conts)
     x_conts_sub = (t_month* log(x_star_conts)) - (T_month* log(x_conts))

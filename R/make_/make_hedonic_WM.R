@@ -34,7 +34,9 @@ make_hedonic_WM <- function(RED_classified = NA) {
     "baujahr", # -> becomes 'baujahr_cat'
     "letzte_modernisierung",
     "objektzustand",
-    "wohnflaeche" # used during outlier removal
+    "wohnflaeche", # used during outlier removal
+    "rs_id",
+    "emonths"
   )
   # drop extreme values of variables
   # this is exclusive in REDX and inclusive here
@@ -55,8 +57,7 @@ make_hedonic_WM <- function(RED_classified = NA) {
       "aufzug",
       "keller",
       "ausstattung"
-    ),
-    indepVar
+    )
   )
 
   return(RED_WM)

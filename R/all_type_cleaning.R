@@ -1,4 +1,4 @@
-all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA, indepVar = NA) {
+all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA) {
   # this batch replaces all missings with zero and converts columns to factor
   RED_cleaned <- RED_classified[,
     (var_to_replace_missings) := lapply(.SD, function(x) {
@@ -47,7 +47,13 @@ all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA,
     # objektzustand
     , ":="(
       first_occupancy = fifelse(
-        objektzustand == 1, "Yes", "No"
+        objektzustand == 1, 1, 0
+      ) |> factor(
+        0:1,
+        c(
+          "First occupancy",
+          "Not first occupancy"
+        )
       ),
       # ausstattung
       ausstattung = factor(

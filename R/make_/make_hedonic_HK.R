@@ -33,7 +33,9 @@ make_hedonic_HK <- function(RED_classified = NA) {
     "objektzustand", # -> becomes 'first_occupancy'
     "grundstuecksflaeche", # -> becomes 'plotarea_cat'
     "kategorie_Haus", # -> becomes 'type_cat'
-    "wohnflaeche" # used during outlier removal
+    "wohnflaeche", # used during outlier removal
+    "rs_id",
+    "emonths"
   )
   # TODO: make the cutting a function and equal for all -> do it after merging?
   # drop extreme values of variables
@@ -52,8 +54,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
     var_to_replace_missings = c(
       "gaestewc",
       "ausstattung"
-    ),
-    indepVar
+    )
   )
 
   RED_HK = RED_HK[,
