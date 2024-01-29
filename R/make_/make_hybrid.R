@@ -41,7 +41,6 @@ pure_rs[, changed_to := changed_boolean][, changed_from := lead(changed_to,1), b
 
 binary_names = c("balkon","garten","einbaukueche","gaestewc","aufzug","keller","betreut","ausstattung","declared_wohngeld", "baujahr_cat", "first_occupancy", "num_floors", "floors_cat")
 cont_names = c("zimmeranzahl")
-#"ausstattung",
 
 
 # this pretty much allows for duplicate indiviudal listings between pure/changed
@@ -104,9 +103,18 @@ Y = log(
 #beta = qr.coef(qr(Z), Y)
 # or
 test = cbind(Z,Y) |> na.omit()
-summary(test)
-beta = lm(Y ~ ., data = test)$coefficients
-#reg = lm(Y ~ Z)
-#summary(reg)
+
+# final clean up -> these shouldnt really happend beforehand
+test = test[pre_zimmeranzahl != -Inf & sub_zimmeranzahl != -Inf & Y > 0]
+
+beta = lm(Y ~ ., data = test)
+
+pindex = (exp(predict(beta, test))-1)*100
+# reattach this to the original data
+# only works if same nrow -> merge final cleanup into clean up above
+
+# return full data for both hedonic and hybrid -> bring into same format as repeat via average 
+# prob. need to base all of them, so that they are comparable
+
  return(beta)
 }

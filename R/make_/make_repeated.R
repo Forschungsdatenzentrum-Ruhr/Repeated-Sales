@@ -1,8 +1,6 @@
 make_repeated <- function(self_merged_rs_pairs, grouping_var) {
   # add date column here -> might be time to make this a class as well ?
 
-
-
   # bandaid to filter top bottom half a percent of pice variables to catch incredible outliers
   # there are still NAs in ARS -> accept or fix
   #upper_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], 1 - (0.1 / 100))
