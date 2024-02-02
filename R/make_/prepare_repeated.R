@@ -5,39 +5,7 @@ prepare_repeated <- function(RED_classified = NA, grouping_var = NA) {
   rs_pairs_prep <- RED_classified["Sold", on = "non_list_reason", ..vars_needed]
   setkey(rs_pairs_prep, "rs_id")
 
-  # reverse year to month conversion done during initial reading since subsequent functions require dates
-  rs_pairs_prep <- rs_pairs_prep[,
-    ":="(
-      year = emonths %/% 12,
-      month = emonths - ((emonths %/% 12) * 12)
-    )
-  ][
-    # december is converted to an additional year, is this already a problem before this?
-    # maybe use yearmon from zoo instead, shouldnt be a big change
-    month == 0,
-    ":="(
-      month = 12,
-      year = year - 1
-    )
-  ][, ":="(
-    # sprintf is used to pad leading zeros for months while pasteing at the same time
-    # %d means digits
-    # %02d means digit with leading zeros until length 2
-    date_month = sprintf(
-      "%d-%02d-01",
-      year,
-      month
-    ) |> as.Date(format = "%Y-%m-%d"))][,
-    ":="(
-    date_quarter =  sprintf(
-      "%d-%02d-01",
-      year,
-      quarter(date_month)
-    ) |> as.Date(format = "%Y-%m-%d"),
-    year = NULL,
-    month = NULL,
-    emonths = NULL
-  )]
+  rs_pairs_prep <- make_date_quarter(rs_pairs_prep)
 
   # extract columns whose names are getting i. prefix during self-merge
   prev_cols <- c("price_var", "date_month", "date_quarter")

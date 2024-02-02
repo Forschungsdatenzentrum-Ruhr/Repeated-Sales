@@ -7,8 +7,8 @@ hedonic_regression = function(RED_data = NA,indepVar = NA, depVar = NA, fixed_ef
     as.formula()
   
   hedonic <- feols(f, RED_data, combine.quick = F, mem.clean = T)
-  fe = fixef(hedonic)
+  #fe = fixef(hedonic)
   
-  return(list(hedonic,fe))
+  return(hedonic)
 }
 

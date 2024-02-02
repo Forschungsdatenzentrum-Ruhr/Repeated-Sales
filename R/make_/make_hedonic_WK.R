@@ -21,7 +21,7 @@ make_hedonic_WK <- function(RED_classified = NA) {
     "num_floors",
     "floors_cat"
   )
-  fixed_effects <- c("kid2019", "ejahr")
+  fixed_effects <- c("gid2019", "ejahr")
 
   # depVar ------------------------------------------------------------------
   RED_classified[kaufpreis < 0, kaufpreis := 0]
@@ -41,7 +41,8 @@ make_hedonic_WK <- function(RED_classified = NA) {
     "wohngeld", # -> becomes 'baujahr_cat'
     "wohnflaeche", # used during outlier removal
     "rs_id",
-    "emonths"
+    "emonths",
+    "counting_id"
   )
   # drop extreme values of variables
   # this is exclusive in REDX and inclusive here

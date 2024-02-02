@@ -4,7 +4,7 @@ make_hybrid = function(RED_classified,self_merged_rs_pairs, data_type){
   indepVar = list_var$indepVar
   depVar = list_var$depVar
   # think of a solution for this, they are mutated in prepare_hedonic
-  var_to_keep = c(indepVar,"rs_id","emonths","depVar")
+  var_to_keep = c(indepVar,"rs_id","emonths","depVar","rs_id","counting_id")
 # one consideration is that we have to decide between using or dropping updates from hedonic as well
 
 # build by me based on Case and Quigley 1991
@@ -30,7 +30,7 @@ pure_rs = RED_classified[
 changed_boolean = pure_rs[,
   lapply(.SD, function(x){c(NA,diff(x))}),
   by = rs_id,
-  .SDcols = setdiff(var_to_keep,c("rs_id","emonths","depVar"))
+  .SDcols = setdiff(var_to_keep,c("rs_id","emonths","depVar","counting_id"))
 ][,rs_id := NULL] |> rowSums() != 0
 
 is.na(changed_boolean) = FALSE
@@ -53,26 +53,25 @@ changed_pairs = pure_rs[changed_to == TRUE | changed_from == TRUE]
 # smaple 3 hedonic
 hedonic_listings = RED_classified[hybrid_type == "hedonic", ..var_to_keep]
 
-
-
-
-
 # type specific setups, mostly for readability
 # this is incredibly ugly, refactor it later
 # hedonic
 hedonic_V = hedonic_listings[["depVar"]]
 hedonic_t_month = hedonic_listings[["emonths"]]
+hedonic_counting_id = hedonic_listings[["counting_id"]]
 
 # pure
 pure_V_t = pure_pairs[["depVar"]]
 pure_V_T = pure_pairs[,lag(depVar,1), by = "rs_id"][,rs_id := NULL][["V1"]]
 pure_t_month = pure_pairs[["emonths"]]
 pure_T_month = pure_pairs[,lag(emonths,1), by = "rs_id"][,rs_id := NULL][["V1"]]
+pure_counting_id = pure_pairs[["counting_id"]]
 # changed
 changed_V_t = changed_pairs[["depVar"]]
 changed_V_T = changed_pairs[,lag(depVar,1), by = "rs_id"][,rs_id := NULL][["V1"]]
 changed_t_month = changed_pairs[["emonths"]]
 changed_T_month = changed_pairs[,lag(emonths,1), by = "rs_id"][,rs_id := NULL][["V1"]]
+changed_counting_id = changed_pairs[["counting_id"]]
 
 
 Z = do.call(rbind, list(
@@ -90,7 +89,6 @@ X_3 = make_X_3(
 )
 )) 
 
-
 Y = log(
     c(
         hedonic_V,
@@ -99,22 +97,20 @@ Y = log(
     )
 )
 
-#beta = crossprod(Z)
-#beta = qr.coef(qr(Z), Y)
-# or
-test = cbind(Z,Y) |> na.omit()
+test = cbind(Z,Y)[,counting_id := c(hedonic_counting_id, pure_counting_id, changed_counting_id)] |> na.omit()
 
 # final clean up -> these shouldnt really happend beforehand
 test = test[pre_zimmeranzahl != -Inf & sub_zimmeranzahl != -Inf & Y > 0]
 
-beta = lm(Y ~ ., data = test)
+beta = lm(Y ~ ., data = test[,-"counting_id"])
 
 pindex = (exp(predict(beta, test))-1)*100
+out = RED_classified[test[,index := pindex], on = "counting_id"]
 # reattach this to the original data
 # only works if same nrow -> merge final cleanup into clean up above
 
 # return full data for both hedonic and hybrid -> bring into same format as repeat via average 
 # prob. need to base all of them, so that they are comparable
 
- return(beta)
+ return(out)
 }

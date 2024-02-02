@@ -17,7 +17,7 @@ make_hedonic_WM <- function(RED_classified = NA) {
     "baujahr_cat",
     "first_occupancy"
   )
-  fixed_effects <- c("kid2019", "ejahr")
+  fixed_effects <- c("gid2019", "ejahr")
 
   # depVar ------------------------------------------------------------------
   RED_classified[mietekalt < 0, mietekalt := 0]
@@ -36,7 +36,8 @@ make_hedonic_WM <- function(RED_classified = NA) {
     "objektzustand",
     "wohnflaeche", # used during outlier removal
     "rs_id",
-    "emonths"
+    "emonths",
+    "counting_id"
   )
   # drop extreme values of variables
   # this is exclusive in REDX and inclusive here

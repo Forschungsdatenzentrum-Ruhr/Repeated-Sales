@@ -37,10 +37,13 @@ make_repeated <- function(self_merged_rs_pairs, grouping_var) {
 
   # GRS ---------------------------------------------------------------------
   # index via Bailey(1963)
-  grs_b <- qr.coef(qr(Z), y) #|> na.omit()
-  
-  # Calculate the GRS index in Bailey, Muth, and Nourse (1963)
-  GRS <- (exp(grs_b) * 100) 
+  #grs_b <- qr.coef(qr(Z), y) #|> na.omit()
+  grs_b = lm(y ~ Z)
+  GRS = (exp(predict(grs_b, Z))-1)*100
+
+  # Calculate the GRS index in Bailey, Muth, and Nourse (1963) ss
+  GRS_old <- (exp(grs_b) * 100) 
+  print(identical(GRS, GRS_old))
 
   # GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
   #   diag() |>

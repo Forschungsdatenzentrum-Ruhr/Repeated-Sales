@@ -16,7 +16,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
     "plotarea_cat",
     "type_cat"
   )
-  fixed_effects <- c("kid2019", "ejahr")
+  fixed_effects <- c("gid2019", "ejahr")
 
   # depVar ------------------------------------------------------------------
   RED_classified[kaufpreis < 0, kaufpreis := 0]
@@ -35,7 +35,8 @@ make_hedonic_HK <- function(RED_classified = NA) {
     "kategorie_Haus", # -> becomes 'type_cat'
     "wohnflaeche", # used during outlier removal
     "rs_id",
-    "emonths"
+    "emonths",
+    "counting_id"
   )
   # TODO: make the cutting a function and equal for all -> do it after merging?
   # drop extreme values of variables
