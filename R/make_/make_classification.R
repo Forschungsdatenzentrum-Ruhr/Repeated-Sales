@@ -2,10 +2,10 @@ make_classification <- function(geo_grouped_data = NA) {
 
   # it might help quite a bit to move this into a markdown file with a
   # synthetic example of how every step works. might be useful to structure
-  # paper as well
-  
+  # paper as wells
+
   # arrange data and prep for grouping
-  setDT(geo_grouped_data, key = c("latlon_utm", "balkon", "counting_id"))
+  geo_grouped_data = data.table::data.table(geo_grouped_data, key = c("latlon_utm", "balkon", "counting_id"))
 
   # extract end_date of data
   # NOTE: there should be a better place for this?
@@ -16,7 +16,7 @@ make_classification <- function(geo_grouped_data = NA) {
     #curly brackets causes both expressions to be evaluated but only last one is passed along
     {
       custom_progress_bar("Similarity", .GRP, .NGRP);
-      similarity_classification(.SD)
+      similarity_classification(.SD, unique(latlon_utm))
       
     },
     by = c("latlon_utm", "balkon")

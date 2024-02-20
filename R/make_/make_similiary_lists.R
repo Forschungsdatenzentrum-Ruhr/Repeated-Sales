@@ -14,7 +14,7 @@ make_similarity_lists <- function(combinations = NA, occurence_ids = NA) {
   similarity_index_list <- similarity_dist_list <- list()
 
   # increase etage by one to avoid scaling around 0
-  combinations[, etage := etage + 1]
+  combinations = combinations[, etage := etage + 1]
 
   ## similiarity calculations
   for (i in 1:nrow(combinations)) {

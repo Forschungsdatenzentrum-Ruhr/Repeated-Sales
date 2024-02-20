@@ -13,7 +13,7 @@ read_RED <- function(RED_file_name = NA) {
   # read stata file and remove labels
   RED_all_columns <- haven::read_dta(RED_file_name) |>
     haven::zap_labels() |>
-    data.table::setDT(key = c("blid", "ajahr", "amonat"))
+    data.table::data.table(key = c("blid", "ajahr", "amonat"))
 
   RED_all_columns = RED_all_columns[,
     ## mutations

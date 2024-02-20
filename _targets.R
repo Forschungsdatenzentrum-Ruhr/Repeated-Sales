@@ -10,6 +10,11 @@
 # swap out kaufpreis/kaltmiete mit preis_var to make indices functions universal
 
 #options(error = traceback)
+# Known Issues: ----------------------------------------------
+# blid 11 sometimes fails its callr subprocess for no apparent reason.
+# appears to be an timeout issue that vanishes after every restart of the server
+# currently attempting to use tar_make(callr_function=NULL) and selecting id 11 in isolationg
+
 # Packages-Setup: ----------------------------------------------
 
 # used during setup of pipeline
@@ -174,9 +179,9 @@ logger::log_appender(
 )
 
 # tar_eval variables
-#federal_state_ids <- c(5)
- federal_state_ids <- 1:16
-# federal_state_ids <- c(1:10,12:16)
+federal_state_ids <- c(11)
+#federal_state_ids <- 1:16
+#federal_state_ids <- c(1:10,12:16)
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
 
 curr_date <- Sys.Date() |> str_replace_all("-", "_")
@@ -326,59 +331,59 @@ markdown_targets <- rlang::list2(
   deployment = "main"
 )
 
-###########################################################################
-# Summary --------------------------------------------------------------
-###########################################################################
-# arguments to create summary_tables from
-# first of arg1 vector correspondences to first argument of arg2 vector
-cross_tabyl_arguments <- data.table(
-  arg1 = c(
-    "blid",
-    "sim_index",
-    "blid",
-    "same_time_listing"
-  ),
-  arg2 = c(
-    "sim_index",
-    "non_list_reason",
-    "non_list_reason",
-    "non_list_reason"
-  )
-)[
-  ,
-  target_name := paste0("summary_table", "_", arg1, "_", arg2)
-]
+# ###########################################################################
+# # Summary --------------------------------------------------------------
+# ###########################################################################
+# # arguments to create summary_tables from
+# # first of arg1 vector correspondences to first argument of arg2 vector
+# cross_tabyl_arguments <- data.table(
+#   arg1 = c(
+#     "blid",
+#     "sim_index",
+#     "blid",
+#     "same_time_listing"
+#   ),
+#   arg2 = c(
+#     "sim_index",
+#     "non_list_reason",
+#     "non_list_reason",
+#     "non_list_reason"
+#   )
+# )[
+#   ,
+#   target_name := paste0("summary_table", "_", arg1, "_", arg2)
+# ]
 
-# Tables ------------------------------------------------------------------
-table_targets <- rlang::list2(
+# # Tables ------------------------------------------------------------------
+# table_targets <- rlang::list2(
 
-  # classification
-  tar_target(
-    summary_skim_numeric,
-    datasummary_skim_numerical(
-      classification
-    )
-  ),
-  tar_target(
-    summary_skim_cat,
-    datasummary_skim_categorical(
-      classification
-    )
-  ),
-  tar_eval(
-    tar_target(
-      target_name,
-      custom_cross_tabyl(
-        classification,
-        arg1 = arg1,
-        arg2 = arg2
-      )
-    ),
-    values = cross_tabyl_arguments
-  ),
-)
-# Figures -----------------------------------------------------------------
-figure_targets <- rlang::list2()
+#   # classification
+#   tar_target(
+#     summary_skim_numeric,
+#     datasummary_skim_numerical(
+#       classification
+#     )
+#   ),
+#   tar_target(
+#     summary_skim_cat,
+#     datasummary_skim_categorical(
+#       classification
+#     )
+#   ),
+#   tar_eval(
+#     tar_target(
+#       target_name,
+#       custom_cross_tabyl(
+#         classification,
+#         arg1 = arg1,
+#         arg2 = arg2
+#       )
+#     ),
+#     values = cross_tabyl_arguments
+#   ),
+# )
+# # Figures -----------------------------------------------------------------
+# figure_targets <- rlang::list2()
 
 
 ###########################################################################
@@ -479,8 +484,8 @@ rlang::list2(
     cue = tar_cue(mode = "always")
   ),
   markdown_targets,
-  table_targets,
-  figure_targets,
+  #table_targets,
+  #figure_targets,
   # export_targets,
   indices_targets
 )

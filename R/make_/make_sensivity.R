@@ -8,7 +8,7 @@ make_sensitivity <- function(geo_grouped_data = NA, resembling_offset = NA, exac
   wohnflaeche_e_o <<- exact_offset
   
   # arrange data and prep for grouping
-  setDT(geo_grouped_data, key = c("latlon_utm", "balkon", "amonths"))
+  geo_grouped_data = data.table::data.table(geo_grouped_data, key = c("latlon_utm", "balkon", "amonths"))
 
   # extract end_date of data
   data_end_date <- geo_grouped_data[, max(emonths)]

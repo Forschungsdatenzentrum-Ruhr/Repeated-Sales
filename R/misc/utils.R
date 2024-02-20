@@ -17,13 +17,16 @@ output_path_json <- function(output_path = NA) {
 }
 
 
-filter_unique_options <- function(options, new_names, use_which = T) {
-  if (!is.null(options)) {
-    unique_options <- data.table::transpose(options) |>
-      setnames(new = new_names) |>
-      unique()
-
+filter_unique_options <- function(unique_options, new_names, use_which = T) {
+  # error in this function which causes overflow in data.table???
+  if (!is.null(unique_options)) {
+    
+    unique_options <- data.table::transpose(unique_options) |>
+      setnames(new = new_names)
+    unique_options <- unique(unique_options)
+    
     if (use_which) {
+      
       unique_options <- unique_options |>
         is.na() |>
         not() |>

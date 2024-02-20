@@ -28,7 +28,7 @@ cluster <- R6::R6Class("cluster",
                           sim_dist = data.table(),
                           sim_index = data.table(),
                           sequence = NULL,
-                          centers = data.table()) {
+                          centers = data.table()) {                 
       # calculation helpers
       self$cluster_names <- attr(cluster_options, "names")
       self$cluster_options <- filter_unique_options(cluster_options, self$cluster_names)
@@ -43,7 +43,7 @@ cluster <- R6::R6Class("cluster",
       temps <- data.table(
         "counting_id" = as.numeric(self$names_cluster_combinations),
         "parent" = as.numeric(parent),
-        "sim_dist" = as.numeric(unique_option |> unlist()),#,
+        "sim_dist" = as.numeric(unique_option |> unlist()),
         "sim_index" = as.numeric(self$index_cluster_combinations[[parent_col]])
       )
       return(temps)
