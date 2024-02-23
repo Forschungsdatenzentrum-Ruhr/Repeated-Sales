@@ -19,16 +19,23 @@ tryCatch(
     setindex(geo_grouped_data, wohnflaeche, etage, zimmeranzahl)
     
     # extract ids and combinations of non-duplicates
-    occurence_ids <- geo_grouped_data[, counting_id]
+    #occurence_ids <- geo_grouped_data[, counting_id]
     
     # extract all combinations of categories
-    combinations <- geo_grouped_data[, ..categories]
+    var_to_keep = c(categories, "counting_id")
+    combinations <- geo_grouped_data[, ..var_to_keep]
+
+    # filter out duplicates
+    dup_combinations = duplicated(combinations)
+    unique_combinations = combinations[!dup_combinations, ..categoriess]
+    unique_occurence_ids = combinations[!dup_combinations, counting_id]
     
-    if (!nrow(combinations) == 1) {
+    if (!nrow(unique_combinations) == 1) {
       
       # this could be a class
       # consider swapping these for sparse matrices to save memory
-      similarity_lists = make_similarity_lists(combinations,occurence_ids)
+      # should be straightforward, since (when dropping resembling matches) there are only 0/1 values
+      similarity_lists = make_similarity_lists(unique_combinations,unique_occurence_ids)
       
       similarity_index_list = similarity_lists[[1]]
       similarity_dist_list = similarity_lists[[2]]
@@ -43,7 +50,21 @@ tryCatch(
         distance = similarity_dist_list
       )
       clustering$determine_cluster_centers()
-      
+
+      # remerge non-duplicates to clustering results
+      # the idea here is to do the heavy lifting on as little data as possible
+      # and then remerge the results to the original data
+      id_key = clustering$centers[geo_grouped_data, on = "counting_id"][,counting_id:= NULL]
+
+      # should this also allow deviations?
+      id_combinations = combinations[id_key, on = .(wohnflaeche, etage, zimmeranzahl), allow.cartesian = TRUE]
+
+      # check if all rows that were in the original data are still in the clustering results
+      tar_assert_true(nrow(clustering$centers[id_combinations, on = clustering_names]) == nrow(clustering$centers), msg = head(id_combinations))
+      # reassign to clustering for further processing
+      clustering_names = names(clustering$centers)
+      clustering$centers = id_combinations[, ..clustering_names]
+
       if (anyDuplicated(clustering$centers$counting_id)) {
         # filter/fix duplicates within $centers here if they exist
         # currently its always being parents > being a child to ease calc

@@ -85,7 +85,6 @@ suppressPackageStartupMessages({
   library(scatterplot3d)
 })
 
-
 # Pipeline Settings ----------------------------------------------------------
 
 # target options

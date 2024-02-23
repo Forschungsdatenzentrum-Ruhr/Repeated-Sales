@@ -33,8 +33,6 @@ read_RED <- function(RED_file_name = NA) {
 
     )
   ]
-  # including this coordinate causes errors. no idea why it would?
-  RED_all_columns = RED_all_columns[latlon_utm != "5829381.74206909796408.450095488"]
   
   return(RED_all_columns)
 }
