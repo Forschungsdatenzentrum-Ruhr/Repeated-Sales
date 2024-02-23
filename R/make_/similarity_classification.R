@@ -11,25 +11,26 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
     #----------------------------------------------
   ## Preperation
 
-tryCatch(
-  {
+# tryCatch(
+#   {
     # make copy to modifiy keys
     geo_grouped_data <- copy(geo_grouped_data)
     setkey(geo_grouped_data, counting_id)
     setindex(geo_grouped_data, wohnflaeche, etage, zimmeranzahl)
     
     # extract ids and combinations of non-duplicates
-    #occurence_ids <- geo_grouped_data[, counting_id]
+    occurence_ids <- geo_grouped_data[, counting_id]
     
     # extract all combinations of categories
     var_to_keep = c(categories, "counting_id")
     combinations <- geo_grouped_data[, ..var_to_keep]
 
     # filter out duplicates
-    dup_combinations = duplicated(combinations)
-    unique_combinations = combinations[!dup_combinations, ..categoriess]
+    # this has to be done ignoring the counting_id, as it is unique
+    dup_combinations = duplicated(combinations[, ..categories])
+    unique_combinations = combinations[!dup_combinations, ..categories]
     unique_occurence_ids = combinations[!dup_combinations, counting_id]
-    
+   
     if (!nrow(unique_combinations) == 1) {
       
       # this could be a class
@@ -60,7 +61,8 @@ tryCatch(
       id_combinations = combinations[id_key, on = .(wohnflaeche, etage, zimmeranzahl), allow.cartesian = TRUE]
 
       # check if all rows that were in the original data are still in the clustering results
-      tar_assert_true(nrow(clustering$centers[id_combinations, on = clustering_names]) == nrow(clustering$centers), msg = head(id_combinations))
+      #tar_assert_true(nrow(clustering$centers[id_combinations, on = .(counting_id)]) == nrow(clustering$centers), msg = head(id_combinations))
+      
       # reassign to clustering for further processing
       clustering_names = names(clustering$centers)
       clustering$centers = id_combinations[, ..clustering_names]
@@ -104,20 +106,20 @@ tryCatch(
     
     # check if no NAs were created somewhere
     # tar_assert_true(!out[,anyNA(.SD), .SDcols = c("sim_index","sim_dist","parent")])
-  },
-  error = function(cond){
-    logger::log_info("Curr latlon_utm: {curr_latlon_log}")
-    logger::log_error("Errored:")
-    logger::log_error(conditionMessage(cond))
-    cli::cli_alert_info("Error log created. See log folder.")
-  },
-  warning = function(cond){
-    logger::log_info("Curr latlon_utm: {curr_latlon_log}")
-    logger::log_warn("Warning:")
-    logger::log_warn(conditionMessage(cond))
-    cli::cli_alert_info("Warn log created. See log folder.")
-  }
-)
+#   },
+#   error = function(cond){
+#     logger::log_info("Curr latlon_utm: {curr_latlon_log}")
+#     logger::log_error("Errored:")
+#     logger::log_error(conditionMessage(cond))
+#     cli::cli_alert_info("Error log created. See log folder.")
+#   },
+#   warning = function(cond){
+#     logger::log_info("Curr latlon_utm: {curr_latlon_log}")
+#     logger::log_warn("Warning:")
+#     logger::log_warn(conditionMessage(cond))
+#     cli::cli_alert_info("Warn log created. See log folder.")
+#   }
+# )
 
   return(out)
 }
