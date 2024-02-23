@@ -15,9 +15,18 @@ make_similarity_lists <- function(combinations = NA, occurence_ids = NA) {
 
   # increase etage by one to avoid scaling around 0
   combinations = combinations[, etage := etage + 1]
-
+  
+  # alert user if large matrix is being calculated
+  if (nrow(combinations) > 1000){
+      cli::cli_alert_info("Calculating large matrices, this might take a while. Check log for progress.")
+  }
   ## similiarity calculations
   for (i in 1:nrow(combinations)) {
+    # print progress of large matrix to log
+    if (nrow(combinations) > 1000){
+      logger::log_info(paste0("Calculating similarity for ", i, " of ", nrow(combinations)))
+    }
+    
     # percentage of rooms scaled values are allowed to be off
     # e.g. what percentage of 8 rooms is 0.5 rooms
     # this feels way to complicated
@@ -56,7 +65,6 @@ make_similarity_lists <- function(combinations = NA, occurence_ids = NA) {
     similarity_dist_list[[i]] <- as.matrix(dist(data_to_similarity, method = "euclidean"))[i, ]
   }
 
-  ## clustering
   # transform to data.tables and set counting ids as column names
   similarity_dist_list <- as.data.table(similarity_dist_list)
   similarity_index_list <- as.data.table(similarity_index_list)

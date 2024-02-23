@@ -61,7 +61,7 @@ which_range <- function(non_list_reason_vec = NA) {
   return(list(returner_start, returner_end))
 }
 
-custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA, mod = 1000) {
+custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA, mod = 100) {
   # the .envir argument causes the progress_bar used to be the global one
   if (.GRP == 1) {
     start_time <<- Sys.time()
