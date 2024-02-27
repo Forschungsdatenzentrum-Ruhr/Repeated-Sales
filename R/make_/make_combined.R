@@ -1,18 +1,19 @@
 make_combined = function(repeated_index, hybrid_index, hedonic_index){
-    tar_load(hedonic_index)
-    tar_load(hybrid_index)
-    tar_load(repeated_index) 
+    # tar_load(hedonic_index)
+    # tar_load(hybrid_index)
+    # tar_load(repeated_index) 
 
     repeated_index = split(repeated_index, by = "i_type", sorted = T, keep.by = F)
     GRS_index = repeated_index[["GRS"]]
     ARS_index = repeated_index[["ARS"]]
+
 
     indicies = rbindlist(
 
         purrr::imap(
             list(
                 "GRS" = GRS_index,
-                #"ARS" = ARS_index#,
+                #"ARS" = ARS_index,
                 "hybrid_index" = hybrid_index,
                 "hedonic_index" = hedonic_index
                 ),
@@ -26,40 +27,38 @@ make_combined = function(repeated_index, hybrid_index, hedonic_index){
 
     plot1 = ggplot(indicies, aes(x = date_quarter, y = based_index, color = type, group = type)) + 
     geom_line() + 
-    # geom_smooth(
-    #   data = indicies[type == "GRS"],
-    #   method = "lm",
-    #   formula = y ~ x,
-    #   se = F,
-    #   aes(x = date_quarter, y = based_index),
-    #   col = "black",
-    #   linetype = "dashed"
-    # ) +
-    # geom_smooth(
-    #   data = indicies[type == "hybrid_index"],
-    #   method = "lm",
-    #   formula = y ~ x,
-    #   se = F,
-    #   aes(x = date_quarter, y = based_index),
-    #   col = "black",
-    #   linetype = "dashed"
-    # ) +
-    # geom_smooth(
-    #   data = indicies[type == "hedonic_index"],
-    #   method = "lm",
-    #   formula = y ~ x,
-    #   se = F,
-    #   aes(x = date_quarter, y = based_index),
-    #   col = "black",
-    #   linetype = "dashed"
-    # ) +
     theme_bw()
     ggsave("output/figures/combined_indicies.png", plot1, width = 10, height = 10)
+
+indicies = rbindlist(
+
+        purrr::imap(
+            list(
+                "GRS" = GRS_index
+                #"ARS" = ARS_index,
+                ),
+            function(x,y){prepare_combined(x,y,c("date_quarter","gid2019"))}  
+    )
+    )
+    # rebase values to make them comparable
+    base_quarter = "2007-02-01"
+    base_values =  indicies[date_quarter == base_quarter, .(base_index = mean_index), by = c("gid2019")]
+    indicies = indicies[base_values, on = "gid2019"][, based_index := (mean_index/base_index)*100]
+
+    plot1 = ggplot(indicies, aes(x = date_quarter, y = based_index, color = gid2019, group = gid2019)) + 
+    geom_line() + 
+    theme_bw()
+    ggsave("output/figures/combined_indicies.png", plot1, width = 10, height = 10)
+
+
+
+
+
     return(indicies)
     
 }
 
-prepare_combined = function(single_index,single_index_name){
+prepare_combined = function(single_index,single_index_name, grouping = c("date_quarter")){
     if (!("date_quarter" %in% names(single_index))){
         single_index = make_date_quarter(single_index)
     } else {
@@ -74,7 +73,7 @@ prepare_combined = function(single_index,single_index_name){
         )]
     }
     # "gid2019"
-    single_index = single_index[, .(mean_index = mean(index, na.rm = T)), by = c("date_quarter")][, type := single_index_name]
+    single_index = single_index[, .(mean_index = mean(index, na.rm = T)), by = grouping][, type := single_index_name]
 
     return(single_index)
 }

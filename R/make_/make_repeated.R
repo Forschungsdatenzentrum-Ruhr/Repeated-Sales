@@ -3,20 +3,16 @@ make_repeated <- function(self_merged_rs_pairs, grouping_var) {
 
   # bandaid to filter top bottom half a percent of pice variables to catch incredible outliers
   # there are still NAs in ARS -> accept or fix
-  #upper_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], 1 - (0.1 / 100))
-  #lower_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], (0.1 / 100))
+  upper_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], 1 - (0.1 / 100))
+  lower_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], (0.1 / 100))
   
   # taken from rsmatrix vignette
   # see also ?rs_matrix
-  # self_merged_rs_pairs = self_merged_rs_pairs[
-  #     price_var %between% c(lower_percentile, upper_percentile) &
-  #     kid2019 %in% c("1054")
-  #   ]
-  
   matrices <- with(
-    self_merged_rs_pairs
+    self_merged_rs_pairs[
       #!price_var == prev_price_var &
-      #price_var %between% c(lower_percentile, upper_percentile)
+      price_var %between% c(lower_percentile, upper_percentile)
+    ]
     ,
     rs_matrix(
       t2 = date_quarter,
@@ -37,18 +33,16 @@ make_repeated <- function(self_merged_rs_pairs, grouping_var) {
 
   # GRS ---------------------------------------------------------------------
   # index via Bailey(1963)
-  #grs_b <- qr.coef(qr(Z), y) #|> na.omit()
-  grs_b = lm(y ~ Z)
-  GRS = (exp(predict(grs_b, Z))-1)*100
+  grs_b <- qr.coef(qr(Z), y) #|> na.omit()
+  # grs_b = feols(y ~ Z)
+  # GRS = mean(grs_b$sumFE)
 
   # Calculate the GRS index in Bailey, Muth, and Nourse (1963) ss
-  GRS_old <- (exp(grs_b) * 100) 
-  print(identical(GRS, GRS_old))
+  GRS <- (exp(grs_b) * 100) 
 
   # GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
   #   diag() |>
   #   sqrt()
-
 
   
   dt_GRS = data.table(date_quarter = names(GRS), i_type = "GRS", index = GRS |> formatC(format = "f", digits = 4))
