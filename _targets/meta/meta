@@ -1,11 +1,11 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|bfe1be9c91991e82|||||||||||||||
+.Random.seed|object|8459c351b4ed1b02|||||||||||||||
 all_type_cleaning|function|1112e2d9f8552ff6|||||||||||||||
 between_ext|function|d7ad82142ba60623|||||||||||||||
 blid_targets|object|49c50843623ea3bd|||||||||||||||
 categories|object|02b110494c94bae2|||||||||||||||
-check_nonsensical_listings|function|e201fce58b88e843|||||||||||||||
-classification|stem|2f6ed50363f4ca19|9e252c912abbcb2d|db01dd61703c541d|-916892707||t19779.6538139212s|1f0482af26515e3b|351694324|fst_dt|local|vector|||2.6||
+check_nonsensical_listings|function|273e3f5bdb611589|||||||||||||||
+classification|stem|2f6ed50363f4ca19|9e252c912abbcb2d|db01dd61703c541d|-916892707||t19781.7962249959s|1f0482af26515e3b|351694324|fst_dt|local|vector|||2.47||
 classification_blid_1|stem|9fc6d008f0fb7ce6|16d3d12e25359db2|6d38ac771b1d4431|720011451||t19777.0446610586s|3f3c6daebc3afb4a|8833631|fst_dt|local|vector|||1751.33||
 classification_blid_10|stem|851248f491414222|2f2c3bd7d05a89a9|6d38ac771b1d4431|-1563373849||t19776.8804789428s|07f79fe922b869e3|1173824|fst_dt|local|vector|||204.19||
 classification_blid_11|stem|42776e3e102a5168|963c443792aa5f8d|6d38ac771b1d4431|-1919572879||t19776.9683519066s|308d78af8a1a46bf|49893286|fst_dt|local|vector|||7583.47||
@@ -26,16 +26,16 @@ classification_ids|object|5ae523c8e01b6b18|||||||||||||||
 classify_data|function|74d6c6a78c8867fb|||||||||||||||
 cluster|object|49aa5151ca209a87|||||||||||||||
 code_path|object|1f7034383e0d8fdd|||||||||||||||
-combined_index|stem|74386b45a18042da|a4beef4004a67d05|a2a6a699b116fb37|1820255497||t19779.6547399103s|d426e707b38a334a|3708|rds|local|vector|||65.65|NAs introduced by coercion. 1m22mRemoved 1 row containing missing values geom_line.|
+combined_index|stem|2c5d607732b00842|a4beef4004a67d05|86fb10814ec8fa5b|1820255497||t19781.7979300938s|2b6a12927271e5eb|3768|rds|local|vector|||60.64|NAs introduced by coercion. 1m22mRemoved 1 rows containing nonfinite values stat_smooth.|
 construct_file_name|function|29e72075f5539148|||||||||||||||
 cross_tabyl_arguments|object|63fc2b2090e69d82|||||||||||||||
-curr_date|object|6877e9fb5182f633|||||||||||||||
-custom_cross_tabyl|function|36418671273ca049|||||||||||||||
+curr_date|object|bbebf0c8dd438c27|||||||||||||||
+custom_cross_tabyl|function|9ce7bb824904aece|||||||||||||||
 custom_progress_bar|function|4bcbda46722b7f51|||||||||||||||
-custom_threeway_tabyl|function|5d97e3126e7dc587|||||||||||||||
+custom_threeway_tabyl|function|2d57b6de9d242141|||||||||||||||
 data_path|object|6d584800245b2c26|||||||||||||||
-datasummary_skim_categorical|function|f3e8387b4ce84010|||||||||||||||
-datasummary_skim_numerical|function|6f2137cf0d539bc6|||||||||||||||
+datasummary_skim_categorical|function|99b9ee698ddcee7a|||||||||||||||
+datasummary_skim_numerical|function|796af9201946d811|||||||||||||||
 etage_e_o|object|908ec9ea9f0a90f4|||||||||||||||
 etage_r_o|object|90eb3faa69000e32|||||||||||||||
 example_markdown|stem|1bac11c4aa7ae6f2|f5df13376ca3b5d4|673b8c27d3940639|-529819036|documentation/markdown_/example_markdown.pdf*documentation/markdown_/example_markdown.Rmd|t19672.5694401541s|7a505a6c0ce10755|259055|file|local|vector|||7.12||
@@ -56,12 +56,12 @@ hedonic_index|stem|91e1a2e38721c963|5157bf7790773e16|9ce0663a535bd415|1128335022
 hedonic_regression|function|2812cd6bd0351ac3|||||||||||||||
 high_cutoff|object|cc7577d4ebeecf8a|||||||||||||||
 hybrid_index|stem|009bd15b466982c0|72c0f5ba6d585f54|3954eb4aae91b1ba|593772814||t19777.7705863948s|14a9f24bcef47cc5|91757942|rds|local|vector|||43.76||
-indices_targets|object|2d13ba9e17712d17|||||||||||||||
+indices_targets|object|23663266ec4ad822|||||||||||||||
 load_data|function|c7cfa00dd28303f8|||||||||||||||
 low_cutoff|object|e2570f7cd005b47c|||||||||||||||
 main_path|object|ea0679eaa6fab246|||||||||||||||
 make_classification|function|0ad0ac947f0183fb|||||||||||||||
-make_combined|function|06077a2cb97bb03c|||||||||||||||
+make_combined|function|dafde2b612dcf3ff|||||||||||||||
 make_date_quarter|function|a9806e4c39dd19aa|||||||||||||||
 make_example_markdown_data|function|e0068e4481d2eb23|||||||||||||||
 make_hedonic|function|53f4432c732a6295|||||||||||||||
@@ -73,6 +73,7 @@ make_RED_file_name|function|b428051b8c107a73|||||||||||||||
 make_repeated|function|54a59f91f69f6c1c|||||||||||||||
 make_sensitivity|function|0a5dd89ac807e919|||||||||||||||
 make_similarity_lists|function|bbb245ac49bc10cf|||||||||||||||
+make_split|function|4d269f32eb8cb79d|||||||||||||||
 make_var|function|3866626a7a02c809|||||||||||||||
 make_X_1|function|d1637600bac402df|||||||||||||||
 make_X_2|function|f42cec1835143339|||||||||||||||
@@ -81,14 +82,15 @@ markdown_path|object|60fe05a35be50907|||||||||||||||
 markdown_targets|object|cda153fb1db7a790|||||||||||||||
 mid_cutoff|object|90eb3faa69000e32|||||||||||||||
 non_list_classification|function|df1dae2cfbc66ee1|||||||||||||||
-output_path|object|645d974641ea02d4|||||||||||||||
+output_path|object|124e6d61e14093ef|||||||||||||||
 output_path_json|function|83ea370d273f605b|||||||||||||||
-parent_counts|function|d237a9248e67f264|||||||||||||||
+parent_counts|function|e16e2d544f40c309|||||||||||||||
 pipeline_library|object|eb37a208c3497e0d|||||||||||||||
-prepare_combined|function|b4917fa26b635274|||||||||||||||
+prepare_combined|function|3f029247da28d90e|||||||||||||||
 prepare_hedonic|function|eb909cfdbc710a01|||||||||||||||
 prepare_RED|function|b3e3dcd8add59525|||||||||||||||
 prepare_repeated|function|ced3ba3242101fdc|||||||||||||||
+prepare_split|function|d401b3a84dd6d526|||||||||||||||
 prepared_hedonic|stem|b62346a046f44f9a|70823951541920d0|4e270b11c044406c|-74558916||t19777.7696431143s|bb032db431c226f1|34439225|rds|local|vector|||26.56||
 range_offsets|object|7a55d1c47b57d9cf|||||||||||||||
 read_federal_state|function|f4b7dfa9087ccd51|||||||||||||||
@@ -105,9 +107,10 @@ repeated_index|stem|d64d7836db0ce7a0|990cc1ca7d8dca6d|d64f31d798d4b68f|-24587159
 req_library|object|17c1871f45f23c76|||||||||||||||
 self_merged_rs_pairs|stem|8e3779ec8ed6f519|80a72b57314d1803|71731deffdee2e03|-1870437496||t19777.7690940973s|710e93074e9fee34|62683|fst_dt|local|vector|||20.12||
 sensitivity_suffix|object|7c33bdc44f2f12c3|||||||||||||||
-settings_used|stem|9dca878e0e36a09e|b52b8b06d08db237|e13c7fc4e0d7da9b|140349396||t19779.6533717741s|3bd8f66805fd112b|45|rds|local|vector|||1.12||
+settings_used|stem|9dca878e0e36a09e|b52b8b06d08db237|0c58ecfd97d39522|140349396||t19781.5715761874s|3bd8f66805fd112b|45|rds|local|vector|||1.28||
 similarity_classification|function|c68a5dfefd59eea0|||||||||||||||
 similarity_cost_function|function|1931e174a095fc27|||||||||||||||
+split_index|stem|f1f680ff653851dc|6082db313fd74e25|d2beffc39ae3377d|487492982||t19781.79716577s|9b4804c5feff23cc|60609|rds|local|vector|||67.81|NAs introduced by coercion. NAs introduced by coercion. 1m22mRemoved 398 rows containing nonfinite values stat_smooth.. 1m22mRemoved 399 rows containing nonfinite values stat_smooth.|
 start_time|object|d43bf697b3b4b40c|||||||||||||||
 sub_dir|object|d3e2a6ca47c45ecf|||||||||||||||
 summary_graph_sensitivity|function|1465aeb8d36108c7|||||||||||||||

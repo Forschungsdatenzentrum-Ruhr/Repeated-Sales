@@ -461,6 +461,15 @@ indices_targets <- rlang::list2(
     ),
     format = "rds"
   ),
+  tar_target(
+    split_index,
+    make_split(
+      repeated_index,
+      hybrid_index,
+      hedonic_index
+    ),
+    format = "rds"
+  ),
 )
 
 
