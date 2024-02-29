@@ -13,16 +13,16 @@ prepare_repeated <- function(RED_classified = NA, grouping_var = NA) {
 
   # self-merge data to construct required data structure
   # this is a called an update join
-  self_merged_rs_pairs_prep <- rs_pairs_prep[
+  prepared_repeated_prep <- rs_pairs_prep[
     rs_pairs_prep,
     on = c("rs_id==rs_id", "date_month>date_month"),
     # rename columns for clarity
     (glue::glue("prev_{prev_cols}")) := mget(glue::glue("i.{prev_cols}"))
   ]|> drop_na()
   
-  self_merged_rs_pairs_prep = self_merged_rs_pairs_prep[,.SD[.N >= 2], by = "rs_id"]
+  prepared_repeated_prep = prepared_repeated_prep[,.SD[.N >= 2], by = "rs_id"]
   
-  tar_assert_true(self_merged_rs_pairs_prep[prev_date_month > date_month, .N] == 0)
+  tar_assert_true(prepared_repeated_prep[prev_date_month > date_month, .N] == 0)
 
-  return(self_merged_rs_pairs_prep)
+  return(prepared_repeated_prep)
 }

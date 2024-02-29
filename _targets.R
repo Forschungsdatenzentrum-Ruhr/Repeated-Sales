@@ -2,18 +2,9 @@
 
 # add packagename before functions
 # figure out what to with same_time_listings
-# have pipeline run seperately for each of WK, HK, WM (make this a setting in setup)
-# or have it run all of them sequentially? might be kinda hard to implement
+# clean up the indices
 
-
-# the classification steps appear to be a mix of dbscan and k-neigherst neighoor?
-# swap out kaufpreis/kaltmiete mit preis_var to make indices functions universal
-
-#options(error = traceback)
 # Known Issues: ----------------------------------------------
-# blid 11 sometimes fails its callr subprocess for no apparent reason.
-# appears to be an timeout issue that vanishes after every restart of the server
-# currently attempting to use tar_make(callr_function=NULL) and selecting id 11 in isolationg
 
 # Packages-Setup: ----------------------------------------------
 
@@ -86,6 +77,8 @@ suppressPackageStartupMessages({
 })
 
 # Pipeline Settings ----------------------------------------------------------
+options(warn = 1)
+options("modelsummary_format_numeric_latex" = "plain")
 
 # target options
 tar_option_set(
@@ -107,17 +100,15 @@ plan(callr)
 
 # Globals -------------------------------------------------------------------
 
-# for now only can run one type at once
+static_RED_types <- c("WK", "WM") # "HK" not tried yet
 RED_version <- "v9"
-# one of WM / WK / HK
-RED_type <- "WK"
-
 
 ## similarity settings
 categories <- c("wohnflaeche", "etage", "zimmeranzahl")
 
+# time offset for readability
+time_offset <- 6
 
-# maybe set zimmeranzahl to 1?
 # resembling_offset
 wohnflaeche_r_o <- 0.1
 etage_r_o <- 1
@@ -127,7 +118,6 @@ zimmeranzahl_r_o <- 0.5
 wohnflaeche_e_o <- 0.05
 etage_e_o <- 0
 zimmeranzahl_e_o <- 0.5
-
 
 # plot_offset
 low_cutoff <- 0.1
@@ -149,15 +139,8 @@ wohnflaeche_ro_range <- wohnflaeche_ro_range[-1]
 
 sensitivity_suffix <- wohnflaeche_eo_range |> str_replace_all("\\.", "_")
 
-# time offset for readability
-time_offset <- fcase(
-  RED_type == "WM", 3,
-  RED_type %in% c("WK", "HK"), 6
-)
-
 # settings export setup
 exportJSON <- data.table(
-  "RED_type" = RED_type,
   "RED_version" = RED_version,
   "categories" = categories,
   "wohnflaeche_r_o" = wohnflaeche_r_o,
@@ -177,14 +160,6 @@ logger::log_appender(
   )
 )
 
-# tar_eval variables
-#federal_state_ids <- c(11)
-federal_state_ids <- 1:16
-#federal_state_ids <- c(1:10,12:16)
-classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
-
-curr_date <- Sys.Date() |> str_replace_all("-", "_")
-
 # Paths -------------------------------------------------------------------
 
 # main path, path where this file is located
@@ -198,8 +173,16 @@ data_path <- here::here("data")
 
 markdown_path <- here::here("documentation", "markdown_")
 
-# output path
-output_path <- here::here("output", RED_type, RED_version, curr_date)
+# output paths
+static_output_path <- here::here("output")
+
+output_path <- here::here("output", "curr")
+
+for (i in static_RED_types) {
+  if (!dir.exists(file.path(output_path, i))) {
+    dir.create(file.path(output_path, i), recursive = TRUE)
+  }
+}
 
 # Sourcing ----------------------------------------------------------------
 
@@ -226,13 +209,43 @@ for (sub_dir in c("read_", "make_", "summary_", "similarity_", "misc")) {
     source
   )
 }
+# ###########################################################################
+# # tar_eval constants------------------------------------------------------
+# ###########################################################################
+# # tar_eval variables
+# # one of WM / WK / HK
+# #federal_state_ids <- c(11)
+federal_state_ids <- 1:16
+classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
 
+# # constants used for branching in tar_eval
+# federal_state_ids <- c(1:16)
+static_RED_file_names <- glue::glue("{static_RED_types}_file_name")
+static_RED_full_data <- glue::glue("{static_RED_types}_full_data")
+static_RED_req_data <- glue::glue("{static_RED_types}_req_data")
+static_RED_classified <- glue::glue("{static_RED_types}_classifed")
+static_RED_classification = glue::glue("{static_RED_types}_classification")
+static_prepared_hedonic = glue::glue("{static_RED_types}_prepared_hedonic")
+static_hedonic_index = glue::glue("{static_RED_types}_hedonic_index")
+static_prepared_repeated = glue::glue("{static_RED_types}_prepared_repeated")
+static_repeated_index = glue::glue("{static_RED_types}_repeated_index")
+static_hybrid_index = glue::glue("{static_RED_types}_hybrid_index")
+static_combined_index = glue::glue("{static_RED_types}_combined_index")
+static_split_index = glue::glue("{static_RED_types}_split_index")
+
+
+# extend some constants to match lengths needed
+dynamic_federal_state_ids <- rep(federal_state_ids, length(static_RED_types))
+dynamic_RED_req_data = rep(static_RED_req_data, each = length(federal_state_ids))
+dynamic_RED_types <- rep(static_RED_types, each = length(federal_state_ids))
+dynamic_RED_classification_ids <- glue::glue("{dynamic_RED_types}_classification_blid_{dynamic_federal_state_ids}")
+ 
 
 ###########################################################################
-# FILE_TARGETS -----------------------------------------------------------
+# RED_TARGETS -----------------------------------------------------------
 ###########################################################################
 
-file_targets <- rlang::list2(
+RED_targets <- rlang::list2(
 
   # dump settings as json file to make results reproducible
   tar_target(
@@ -242,54 +255,61 @@ file_targets <- rlang::list2(
     ),
     deployment = "main"
   ),
-  # implement same split via tar_eval as in master
-  tar_target(
-    file_name,
-    # generates file_name used based on version and type
-    make_RED_file_name(
-      data_version = RED_version,
-      data_type = RED_type
-    )
-  ),
-  ## RED data
-  tar_file_read(
-    RED_all_columns,
-    file_name,
-    # read stata file, removes labels and mutate some variables
-    read_RED(!!.x),
-    deployment = "main"
-  ),
-  # cut down RED data to only columns required for classification
-  tar_fst_dt(
-    RED_req_columns,
-    prepare_RED(
-      RED_all_columns,
-      var_of_interest = c(
-        ## general info
-        "blid",
+  tar_eval(
+    list(
+      # generates file_name used based on version and type
+      tar_target(
+        RED_file_names,
+        make_RED_file_name(
+          data_version = RED_version,
+          data_type = RED_types
+        )
+      ),
+      # read stata file, removes labels and mutate some variables
+      tar_file_read(
+        RED_full_data,
+        RED_file_names,
+        read_RED(!!.x),
+        deployment = "worker"
+      ),
+      # cut down RED data to only columns required for classification
+      tar_fst_dt(
+        RED_req_columns,
+        prepare_RED(
+          RED_full_data,
+          var_of_interest = c(
+            ## general info
+            "blid",
 
-        ## object info
-        "wohnflaeche",
-        "zimmeranzahl",
-        "etage",
-        "balkon",
+            ## object info
+            "wohnflaeche",
+            "zimmeranzahl",
+            "etage",
+            "balkon",
 
-        ## mutated info
-        "counting_id",
-        "latlon_utm",
-        "amonths",
-        "emonths",
-        "price_var"
+            ## mutated info
+            "counting_id",
+            "latlon_utm",
+            "amonths",
+            "emonths",
+            "price_var"
+          )
+        ),
+        deployment = "worker"
       )
     ),
-    deployment = "main"
+    values = list(
+      RED_types = static_RED_types,
+      RED_file_names = rlang::syms(static_RED_file_names),
+      RED_full_data = rlang::syms(static_RED_full_data),
+      RED_req_columns = rlang::syms(static_RED_req_data)
+    )
   )
 )
 
-
-# ###########################################################################
-# # FEDERALSTATE_TARGETS -------------------------------------------------------------
-# ###########################################################################
+###########################################################################
+# FEDERALSTATE_TARGETS -------------------------------------------------------------
+###########################################################################
 # create targets for each federal states
 federal_state_targets <- rlang::list2(
 
@@ -298,19 +318,47 @@ federal_state_targets <- rlang::list2(
   # classify data
   tar_eval(
     tar_fst_dt(
-      classification_ids,
+      RED_classification_ids,
       make_classification(
         # this way of grouping causes targets problems when tracking changes
         # doesnt recognize changes to RED_req_columns and therefore doesnt rerun classification
-        geo_grouped_data = RED_req_columns[.(federal_state_ids), on = "blid"]
-      )
+        geo_grouped_data = RED_req_columns[.(RED_federal_state_ids), on = "blid"]
+      ),
+      deployment = "worker"
     ),
     values = rlang::list2(
-      federal_state_ids = federal_state_ids,
-      classification_ids = classification_ids
+      RED_federal_state_ids = dynamic_federal_state_ids,
+      RED_classification_ids = rlang::syms(dynamic_RED_classification_ids),
+      RED_req_columns = rlang::syms(dynamic_RED_req_data)
     )
   )
 )
+
+# ###########################################################################
+# # CLASSIFICATION_TARGETS -------------------------------------------------------------
+# ###########################################################################
+## combination helpers
+# effectively just split the list into halves, since types are guaranteed to be in order
+RED_type_count = length(static_RED_types)
+WK_indices <- seq(to = length(dynamic_RED_req_data) / RED_type_count)
+WM_indices <- length(dynamic_RED_req_data) / RED_type_count + WK_indices
+
+classification_targets = rlang::list2( 
+   # combine last step of federal state targets together into single output
+  tar_combine(
+    WK_classification,
+    federal_state_targets[[1]][WK_indices],
+    command = bind_rows(!!!.x),
+    format = "fst_dt"
+  ),
+  tar_combine(
+    WM_classification,
+    federal_state_targets[[1]][WM_indices],
+    command = bind_rows(!!!.x),
+    format = "fst_dt"
+  )
+)
+
 
 ###########################################################################
 # Markdown --------------------------------------------------------------
@@ -319,7 +367,7 @@ markdown_targets <- rlang::list2(
   tar_fst_dt(
     example_markdown_data,
     make_example_markdown_data(
-      geo_grouped_data = RED_req_columns[.(4), on = "blid"]
+      geo_grouped_data = WK_req_data[.(4), on = "blid"]
     ),
     deployment = "main"
   ),
@@ -388,112 +436,122 @@ markdown_targets <- rlang::list2(
 ###########################################################################
 # EXPORT-TARGETS -----------------------------------------------------------
 ###########################################################################
-export_targets <- rlang::list2(
-  tar_target(
-    export_classification,
-    export_data(
-      RED_classified,
-      data_version = RED_version,
-      data_type = RED_type
-    )
-  ),
-)
+# export_targets <- rlang::list2(
+#   tar_target(
+#     export_classification,
+#     export_data(
+#       RED_classified,
+#       data_version = RED_version,
+#       data_type = RED_type
+#     )
+#   ),
+# )
 
 ###########################################################################
 # Price Indices -----------------------------------------------------------
 ###########################################################################
 indices_targets <- rlang::list2(
-  tar_fst_dt(
-    RED_classified,
-    # this needs the initial version of red with all columns since some are
-    # used during regression but not during classification
-    remerge_RED(
-      classification,
-      RED_all_columns
+  tar_eval(
+    list(
+      # further process needs the initial version of red with all columns since some are
+      # used during regression but not during classification
+      tar_fst_dt(
+        RED_classified,
+        remerge_RED(
+          classification,
+          RED_full_data
+        )
+      ),
+      # do REDX-esque preperation of the hedonic data
+      tar_target(
+        prepared_hedonic,
+        prepare_hedonic(
+          RED_classified,
+          data_type = RED_types
+        )
+      ),
+      # hedonic regression + index calc
+      tar_target(
+        hedonic_index,
+        make_hedonic(
+          prepared_hedonic,
+          data_type = RED_types
+        ),
+        format = "rds"
+      ),
+      tar_fst_dt(
+        prepared_repeated,
+        prepare_repeated(
+          RED_classified,
+          grouping_var = "gid2019"
+        )
+      ),
+      # use remerged RED for now, since i need some variables not in classification
+      tar_target(
+        repeated_index,
+        make_repeated(
+          prepared_repeated,
+          grouping_var = "gid2019"
+        ),
+        format = "rds"
+      ),
+      tar_target(
+        hybrid_index,
+        make_hybrid(
+          RED_classified,
+          prepared_repeated,
+          data_type = RED_types
+        ),
+        format = "rds"
+      ),
+      tar_target(
+        combined_index,
+        make_combined(
+          repeated_index,
+          hybrid_index,
+          hedonic_index
+        ),
+        format = "rds"
+      ),
+      tar_target(
+        split_index,
+        make_split(
+          repeated_index,
+          hybrid_index,
+          hedonic_index
+        ),
+        format = "rds"
+      )
+    ),
+    values = rlang::list2(
+      RED_types = static_RED_types,
+      RED_classified = rlang::syms(static_RED_classified),
+      RED_full_data = rlang::syms(static_RED_full_data),
+      classification = rlang::syms(static_RED_classification),
+      prepared_hedonic = rlang::syms(static_prepared_hedonic),
+      hedonic_index = rlang::syms(static_hedonic_index),
+      prepared_repeated = rlang::syms(static_prepared_repeated),
+      repeated_index = rlang::syms(static_repeated_index),
+      hybrid_index = rlang::syms(static_hybrid_index),
+      combined_index = rlang::syms(static_combined_index),
+      split_index = rlang::syms(static_split_index)
+
     )
-  ),
-  tar_target(
-    prepared_hedonic,
-    prepare_hedonic(
-      RED_classified,
-      data_type = RED_type
-    )
-  ),
-  tar_target(
-    hedonic_index,
-    make_hedonic(
-      prepared_hedonic,
-      data_type = RED_type
-    ),
-    format = "rds"
-  ),
-  tar_fst_dt(
-    self_merged_rs_pairs,
-    prepare_repeated(
-      RED_classified,
-      grouping_var = "gid2019"
-    )
-  ),
-  # use remerged RED for now, since i need some variables not in classification
-  tar_target(
-    repeated_index,
-    make_repeated(
-      self_merged_rs_pairs,
-      grouping_var = "gid2019"
-    ),
-    format = "rds"
-  ),
-  tar_target(
-    hybrid_index,
-    make_hybrid(
-      RED_classified,
-      self_merged_rs_pairs,
-      data_type = RED_type
-    ),
-    format = "rds"
-  ),
-  tar_target(
-    combined_index,
-    make_combined(
-      repeated_index,
-      hybrid_index,
-      hedonic_index
-    ),
-    format = "rds"
-  ),
-  tar_target(
-    split_index,
-    make_split(
-      repeated_index,
-      hybrid_index,
-      hedonic_index
-    ),
-    format = "rds"
-  ),
+  )
 )
 
 
 ###########################################################################
 # FINAL_TARGETS -----------------------------------------------------------
 ###########################################################################
+
 ## combine to main pipeline
 rlang::list2(
-  file_targets,
-
-  # federal state targets
+  RED_targets,
   federal_state_targets,
-
-  # # combine last step of federal state targets together into single output
-  tar_combine(
-    classification,
-    federal_state_targets[[1]],
-    command = bind_rows(!!!.x),
-    format = "fst_dt",
-    cue = tar_cue(mode = "always")
-  ),
   markdown_targets,
-  #table_targets,
-  #figure_targets,
+  classification_targets,
+  # figure_targets,
   # export_targets,
   indices_targets
 )

@@ -1,15 +1,15 @@
-make_repeated <- function(self_merged_rs_pairs, grouping_var) {
+make_repeated <- function(prepared_repeated, grouping_var) {
   # add date column here -> might be time to make this a class as well ?
 
   # bandaid to filter top bottom half a percent of pice variables to catch incredible outliers
   # there are still NAs in ARS -> accept or fix
-  upper_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], 1 - (0.1 / 100))
-  lower_percentile <- quantile(self_merged_rs_pairs[price_var >= 0, price_var], (0.1 / 100))
+  upper_percentile <- quantile(prepared_repeated[price_var >= 0, price_var], 1 - (0.1 / 100))
+  lower_percentile <- quantile(prepared_repeated[price_var >= 0, price_var], (0.1 / 100))
   
   # taken from rsmatrix vignette
   # see also ?rs_matrix
   matrices <- with(
-    self_merged_rs_pairs[
+    prepared_repeated[
       #!price_var == prev_price_var &
       price_var %between% c(lower_percentile, upper_percentile)
     ]

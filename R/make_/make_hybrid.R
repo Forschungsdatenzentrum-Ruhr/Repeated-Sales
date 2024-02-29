@@ -1,4 +1,4 @@
-make_hybrid = function(RED_classified,self_merged_rs_pairs, data_type){
+make_hybrid = function(RED_classified,prepared_repeated, data_type){
   #tar_load(RED_classified); tar_load_globals()
   list_var = make_var(data_type = data_type)
   indepVar = list_var$indepVar
@@ -9,7 +9,7 @@ make_hybrid = function(RED_classified,self_merged_rs_pairs, data_type){
 
 # build by me based on Case and Quigley 1991
 # get ids of all listings that are classified as repeat sales (pure or changed)
-all_rs = self_merged_rs_pairs[["rs_id"]] |> unique()
+all_rs = prepared_repeated[["rs_id"]] |> unique()
 # split into repeat and hedonic
 RED_classified = prepare_hedonic(RED_classified, data_type)[,":="(
   hybrid_type = fifelse(rs_id %in% all_rs, "repeat", "hedonic"),

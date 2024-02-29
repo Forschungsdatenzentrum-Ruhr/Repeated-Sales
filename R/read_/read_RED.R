@@ -11,11 +11,11 @@ read_RED <- function(RED_file_name = NA) {
   #----------------------------------------------
 
   # read stata file and remove labels
-  RED_all_columns <- haven::read_dta(RED_file_name) |>
+  RED_full_data <- haven::read_dta(RED_file_name) |>
     haven::zap_labels() |>
     data.table::data.table(key = c("blid", "ajahr", "amonat"))
 
-  RED_all_columns = RED_all_columns[,
+  RED_full_data = RED_full_data[,
     ## mutations
     ":="(
       # combine coordinates
@@ -34,5 +34,5 @@ read_RED <- function(RED_file_name = NA) {
     )
   ]
   
-  return(RED_all_columns)
+  return(RED_full_data)
 }

@@ -11,7 +11,8 @@ make_hedonic <- function(prepared_hedonic, data_type = NA) {
     depVar = depVar, 
     fixed_effects = fixed_effects
   )
-  pindex = (exp(predict(hedonic_coef, prepared_hedonic))-1)*100
+  #pindex = (exp(predict(hedonic_coef, prepared_hedonic))-1)*100
+  pindex = mean(hedonic_coef$sumFE)
   out = copy(prepared_hedonic)[, index := pindex]
 
   return(out)
