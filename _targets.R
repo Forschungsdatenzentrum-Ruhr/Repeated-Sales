@@ -213,13 +213,10 @@ for (sub_dir in c("read_", "make_", "summary_", "similarity_", "misc")) {
 # # tar_eval constants------------------------------------------------------
 # ###########################################################################
 # # tar_eval variables
-# # one of WM / WK / HK
-# #federal_state_ids <- c(11)
 federal_state_ids <- 1:16
 classification_ids <- glue::glue("classification_blid_{federal_state_ids}")
 
 # # constants used for branching in tar_eval
-# federal_state_ids <- c(1:16)
 static_RED_file_names <- glue::glue("{static_RED_types}_file_name")
 static_RED_full_data <- glue::glue("{static_RED_types}_full_data")
 static_RED_req_data <- glue::glue("{static_RED_types}_req_data")
@@ -233,6 +230,9 @@ static_hybrid_index = glue::glue("{static_RED_types}_hybrid_index")
 static_combined_index = glue::glue("{static_RED_types}_combined_index")
 static_split_index = glue::glue("{static_RED_types}_split_index")
 
+# plots
+static_plot_combined = glue::glue("{static_RED_types}_plot_combined")
+static_plot_split = glue::glue("{static_RED_types}_plot_split")
 
 # extend some constants to match lengths needed
 dynamic_federal_state_ids <- rep(federal_state_ids, length(static_RED_types))
@@ -242,7 +242,7 @@ dynamic_RED_classification_ids <- glue::glue("{dynamic_RED_types}_classification
  
 
 ###########################################################################
-# RED_TARGETS -----------------------------------------------------------
+# RED -----------------------------------------------------------
 ###########################################################################
 
 RED_targets <- rlang::list2(
@@ -308,7 +308,7 @@ RED_targets <- rlang::list2(
 )
 
 ###########################################################################
-# FEDERALSTATE_TARGETS -------------------------------------------------------------
+# FEDERALSTATE -------------------------------------------------------------
 ###########################################################################
 # create targets for each federal states
 federal_state_targets <- rlang::list2(
@@ -335,7 +335,7 @@ federal_state_targets <- rlang::list2(
 )
 
 # ###########################################################################
-# # CLASSIFICATION_TARGETS -------------------------------------------------------------
+# # CLASSIFICATION -------------------------------------------------------------
 # ###########################################################################
 ## combination helpers
 # effectively just split the list into halves, since types are guaranteed to be in order
@@ -359,96 +359,8 @@ classification_targets = rlang::list2(
   )
 )
 
-
 ###########################################################################
-# Markdown --------------------------------------------------------------
-###########################################################################
-markdown_targets <- rlang::list2(
-  tar_fst_dt(
-    example_markdown_data,
-    make_example_markdown_data(
-      geo_grouped_data = WK_req_data[.(4), on = "blid"]
-    ),
-    deployment = "main"
-  ),
-  tar_render(
-    example_markdown,
-    paste0(markdown_path, "/example_markdown.Rmd")
-  ),
-  deployment = "main"
-)
-
-# ###########################################################################
-# # Summary --------------------------------------------------------------
-# ###########################################################################
-# # arguments to create summary_tables from
-# # first of arg1 vector correspondences to first argument of arg2 vector
-# cross_tabyl_arguments <- data.table(
-#   arg1 = c(
-#     "blid",
-#     "sim_index",
-#     "blid",
-#     "same_time_listing"
-#   ),
-#   arg2 = c(
-#     "sim_index",
-#     "non_list_reason",
-#     "non_list_reason",
-#     "non_list_reason"
-#   )
-# )[
-#   ,
-#   target_name := paste0("summary_table", "_", arg1, "_", arg2)
-# ]
-
-# # Tables ------------------------------------------------------------------
-# table_targets <- rlang::list2(
-
-#   # classification
-#   tar_target(
-#     summary_skim_numeric,
-#     datasummary_skim_numerical(
-#       classification
-#     )
-#   ),
-#   tar_target(
-#     summary_skim_cat,
-#     datasummary_skim_categorical(
-#       classification
-#     )
-#   ),
-#   tar_eval(
-#     tar_target(
-#       target_name,
-#       custom_cross_tabyl(
-#         classification,
-#         arg1 = arg1,
-#         arg2 = arg2
-#       )
-#     ),
-#     values = cross_tabyl_arguments
-#   ),
-# )
-# # Figures -----------------------------------------------------------------
-# figure_targets <- rlang::list2()
-
-
-###########################################################################
-# EXPORT-TARGETS -----------------------------------------------------------
-###########################################################################
-# export_targets <- rlang::list2(
-#   tar_target(
-#     export_classification,
-#     export_data(
-#       RED_classified,
-#       data_version = RED_version,
-#       data_type = RED_type
-#     )
-#   ),
-# )
-
-###########################################################################
-# Price Indices -----------------------------------------------------------
+# PRICE INDICES -----------------------------------------------------------
 ###########################################################################
 indices_targets <- rlang::list2(
   tar_eval(
@@ -540,6 +452,126 @@ indices_targets <- rlang::list2(
   )
 )
 
+###########################################################################
+# MARKDOWN --------------------------------------------------------------
+###########################################################################
+markdown_targets <- rlang::list2(
+  tar_fst_dt(
+    example_markdown_data,
+    make_example_markdown_data(
+      geo_grouped_data = WK_req_data[.(4), on = "blid"]
+    ),
+    deployment = "main"
+  ),
+  tar_render(
+    example_markdown,
+    paste0(markdown_path, "/example_markdown.Rmd")
+  ),
+  deployment = "main"
+)
+# ###########################################################################
+# # PLOT --------------------------------------------------------------
+# ###########################################################################
+plot_targets = rlang::list2(
+  tar_eval(
+    list(
+      # plot combined
+      tar_target(
+        p_combined,
+        plot_combined(
+          combined_index,
+          data_type = RED_types
+        )
+      ),
+      # plot split
+      tar_target(
+        p_split,
+        plot_split(
+          split_index,
+          data_type = RED_types
+        )
+      )
+    ),
+    values = rlang::list2(
+      RED_types = static_RED_types,
+      combined_index = rlang::syms(static_combined_index),
+      split_index = rlang::syms(static_split_index),
+      p_split = rlang::syms(static_plot_split),
+      p_combined = rlang::syms(static_plot_combined)
+    )
+  )
+
+)
+
+
+# ###########################################################################
+# # SUMMARY --------------------------------------------------------------
+# ###########################################################################
+# # arguments to create summary_tables from
+# # first of arg1 vector correspondences to first argument of arg2 vector
+# cross_tabyl_arguments <- data.table(
+#   arg1 = c(
+#     "blid",
+#     "sim_index",
+#     "blid",
+#     "same_time_listing"
+#   ),
+#   arg2 = c(
+#     "sim_index",
+#     "non_list_reason",
+#     "non_list_reason",
+#     "non_list_reason"
+#   )
+# )[
+#   ,
+#   target_name := paste0("summary_table", "_", arg1, "_", arg2)
+# ]
+
+# # Tables ------------------------------------------------------------------
+# table_targets <- rlang::list2(
+
+#   # classification
+#   tar_target(
+#     summary_skim_numeric,
+#     datasummary_skim_numerical(
+#       classification
+#     )
+#   ),
+#   tar_target(
+#     summary_skim_cat,
+#     datasummary_skim_categorical(
+#       classification
+#     )
+#   ),
+#   tar_eval(
+#     tar_target(
+#       target_name,
+#       custom_cross_tabyl(
+#         classification,
+#         arg1 = arg1,
+#         arg2 = arg2
+#       )
+#     ),
+#     values = cross_tabyl_arguments
+#   ),
+# )
+# # Figures -----------------------------------------------------------------
+# figure_targets <- rlang::list2()
+
+
+###########################################################################
+# EXPORT-TARGETS -----------------------------------------------------------
+###########################################################################
+# export_targets <- rlang::list2(
+#   tar_target(
+#     export_classification,
+#     export_data(
+#       RED_classified,
+#       data_version = RED_version,
+#       data_type = RED_type
+#     )
+#   ),
+# )
 
 ###########################################################################
 # FINAL_TARGETS -----------------------------------------------------------
@@ -551,7 +583,7 @@ rlang::list2(
   federal_state_targets,
   markdown_targets,
   classification_targets,
-  # figure_targets,
+  plot_targets,
   # export_targets,
   indices_targets
 )
