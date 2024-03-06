@@ -37,7 +37,13 @@ pipeline_library <- c(
   "fst", #
   "modelsummary",
   "janitor",
-  "htmlTable"
+  "htmlTable",
+  "rsmatrix",
+  "kableExtra",
+  "fixest",
+  "qs",
+  "scatterplot3d",
+  "jsonlite"
 )
 
 suppressPackageStartupMessages({
