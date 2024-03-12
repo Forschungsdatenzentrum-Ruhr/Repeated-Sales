@@ -112,7 +112,7 @@ similarity_cost_function <- function(clustering_centers = NA) {
         # calculate gains of being x being a parent
         parent_gains <- parent_children_competitors[
           ,
-          .("cluster_sim_dist" = mean(sim_dist)),
+          .("cluster_sim_dist" = sum(sim_dist)), #mean(sim_dist)),
           by = "parent",
         ]
 
@@ -132,6 +132,9 @@ similarity_cost_function <- function(clustering_centers = NA) {
         tar_assert_true(nrow(child_gains) == nrow(parent_gains))
 
         # Compare gains and choose lower sim_dist (more similiarity gained)
+        # this can have conflicting outcomes -> ISSUE
+        # children chose each other as their parent -> stronger rule?
+        # maybe remove best gains and apply recursively?
         gains_comparison <- parent_gains[
           child_gains,
           .(

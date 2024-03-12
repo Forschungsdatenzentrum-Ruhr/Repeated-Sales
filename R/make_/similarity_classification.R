@@ -49,7 +49,7 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
         distance = similarity_dist_list
       )
       clustering$determine_cluster_centers()
-
+      
     } else {
       # this could be function since im doing it more than once
       # does this make the if within cluster-class irrelevant?
@@ -62,24 +62,25 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
         "sim_dist" = 0,
         "sim_index" = 0
       )
+      
+      
     }
     
     # remerge non-duplicates to clustering results
-    # the idea here is to do the heavy lifting on as little data as possible
-    # and then remerge the results to the original data
-    id_key = clustering$centers[geo_grouped_data, on = "counting_id"][,counting_id:= NULL]
+    id_key =  geo_grouped_data[clustering$centers, on = "counting_id"][,counting_id := NULL]
     
     # should this also allow deviations?
     id_combinations = combinations[id_key,
-                                   on = .(wohnflaeche, etage, zimmeranzahl), 
+                                   on = .(wohnflaeche,zimmeranzahl,etage), 
                                    allow.cartesian = TRUE]
     
-    # check if all rows that were in the original data are still in the clustering results
-    #tar_assert_true(nrow(clustering$centers[id_combinations, on = .(counting_id)]) == nrow(clustering$centers), msg = head(id_combinations))
+    # check if everything has atleast been chosen once
+    tar_assert_true(nrow(id_combinations) >= nrow(geo_grouped_data), msg = glue::glue("Underspecfication produced in {first(id_combinations$counting_id)}"))
     
     # reassign to clustering for further processing
     clustering_names = names(clustering$centers)
     clustering$centers = id_combinations[, ..clustering_names]
+    
     
     if (anyDuplicated(clustering$centers$counting_id)) {
       # filter/fix duplicates within $centers here if they exist

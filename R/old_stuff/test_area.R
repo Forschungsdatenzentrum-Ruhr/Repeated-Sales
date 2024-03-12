@@ -1,15 +1,14 @@
 # Known Issues: ----------------------------------------------
-# odd behavior at 5914513.11605105604957.285071247 for WM -> why are they not parent/child but seperat?
 # odd behavior at 5914585.94429017603205.12213582 for WM -> should be part of bigger parent there?
 
 # test area
 library(targets)
 tar_load_globals()
-tar_load(WM_full_data)
+tar_load(WM_req_data)
 
-geo_grouped_data = WM_full_data[latlon_utm == "5914513.11605105604957.285071247"]
+geo_grouped_data = WM_req_data[latlon_utm == "5914585.94429017603205.12213582"]
 tst = make_classification(geo_grouped_data)
-tst$parent
+
 # 
 # # # 50 k -> 5
 # size = nrow(geo_grouped_data)/10000

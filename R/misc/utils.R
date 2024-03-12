@@ -262,3 +262,8 @@ prepare_split = function(single_index,single_index_name, grouping = c("date_quar
 
     return(single_index)
 }
+
+between_helper = function(i_value, j_value, offset){
+  out = abs(i_value - j_value) <= offset
+  return(out)
+}
