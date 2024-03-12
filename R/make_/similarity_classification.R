@@ -11,8 +11,6 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
     #----------------------------------------------
   ## Preperation
 
-# tryCatch(
-#   {
     # make copy to modifiy keys
     geo_grouped_data <- copy(geo_grouped_data)
     setkey(geo_grouped_data, counting_id)
@@ -52,32 +50,6 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
       )
       clustering$determine_cluster_centers()
 
-      # remerge non-duplicates to clustering results
-      # the idea here is to do the heavy lifting on as little data as possible
-      # and then remerge the results to the original data
-      id_key = clustering$centers[geo_grouped_data, on = "counting_id"][,counting_id:= NULL]
-
-      # should this also allow deviations?
-      id_combinations = combinations[id_key, on = .(wohnflaeche, etage, zimmeranzahl), allow.cartesian = TRUE]
-
-      # check if all rows that were in the original data are still in the clustering results
-      #tar_assert_true(nrow(clustering$centers[id_combinations, on = .(counting_id)]) == nrow(clustering$centers), msg = head(id_combinations))
-      
-      # reassign to clustering for further processing
-      clustering_names = names(clustering$centers)
-      clustering$centers = id_combinations[, ..clustering_names]
-
-      if (anyDuplicated(clustering$centers$counting_id)) {
-        # filter/fix duplicates within $centers here if they exist
-        # currently its always being parents > being a child to ease calc
-        # otherwise there has to be a cost assigned for non-parenthood
-        # can prob just compare sim_dist to parent (gain from being child) vs
-        # sum(sim_dist) to children (gain from being parent/cost)
-        clustering$centers <- clustering$centers[
-          ,
-          similarity_cost_function(.SD)
-        ]
-      }
     } else {
       # this could be function since im doing it more than once
       # does this make the if within cluster-class irrelevant?
@@ -85,11 +57,40 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
         cluster_options = NULL
       )
       clustering$centers <- data.table(
-        "counting_id" = as.numeric(occurence_ids),
-        "parent" = as.numeric(occurence_ids),
+        "counting_id" = as.numeric(unique_occurence_ids),
+        "parent" = as.numeric(unique_occurence_ids),
         "sim_dist" = 0,
         "sim_index" = 0
       )
+    }
+    
+    # remerge non-duplicates to clustering results
+    # the idea here is to do the heavy lifting on as little data as possible
+    # and then remerge the results to the original data
+    id_key = clustering$centers[geo_grouped_data, on = "counting_id"][,counting_id:= NULL]
+    
+    # should this also allow deviations?
+    id_combinations = combinations[id_key,
+                                   on = .(wohnflaeche, etage, zimmeranzahl), 
+                                   allow.cartesian = TRUE]
+    
+    # check if all rows that were in the original data are still in the clustering results
+    #tar_assert_true(nrow(clustering$centers[id_combinations, on = .(counting_id)]) == nrow(clustering$centers), msg = head(id_combinations))
+    
+    # reassign to clustering for further processing
+    clustering_names = names(clustering$centers)
+    clustering$centers = id_combinations[, ..clustering_names]
+    
+    if (anyDuplicated(clustering$centers$counting_id)) {
+      # filter/fix duplicates within $centers here if they exist
+      # currently its always being parents > being a child to ease calc
+      # otherwise there has to be a cost assigned for non-parenthood
+      # can prob just compare sim_dist to parent (gain from being child) vs
+      # sum(sim_dist) to children (gain from being parent/cost)
+      clustering$centers <- clustering$centers[
+        ,
+        similarity_cost_function(.SD)
+      ]
     }
     
     # Unit-Test ---------------------------------------------------------------
@@ -101,25 +102,6 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
       on = .(counting_id)
     ]
     
-    # make sure we dont output more obs than we input
-    # tar_assert_true(nrow(geo_grouped_data) == nrow(out))
-    
-    # check if no NAs were created somewhere
-    # tar_assert_true(!out[,anyNA(.SD), .SDcols = c("sim_index","sim_dist","parent")])
-#   },
-#   error = function(cond){
-#     logger::log_info("Curr latlon_utm: {curr_latlon_log}")
-#     logger::log_error("Errored:")
-#     logger::log_error(conditionMessage(cond))
-#     cli::cli_alert_info("Error log created. See log folder.")
-#   },
-#   warning = function(cond){
-#     logger::log_info("Curr latlon_utm: {curr_latlon_log}")
-#     logger::log_warn("Warning:")
-#     logger::log_warn(conditionMessage(cond))
-#     cli::cli_alert_info("Warn log created. See log folder.")
-#   }
-# )
 
   return(out)
 }

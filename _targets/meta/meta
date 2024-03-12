@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|646ce591c7cb2ecf|||||||||||||||
+.Random.seed|object|d46ed7363f0eff24|||||||||||||||
 all_type_cleaning|function|1112e2d9f8552ff6|||||||||||||||
 between_ext|function|d7ad82142ba60623|||||||||||||||
 blid_targets|object|49c50843623ea3bd|||||||||||||||
@@ -23,7 +23,7 @@ classification_blid_7|stem|ace4ab624a58aad8|47adb1f1b51a5ce8|6d38ac771b1d4431|-8
 classification_blid_8|stem|375c5467b638e243|a032cbf7a0e7c945|6d38ac771b1d4431|-496963659||t19777.5725620349s|4cb83140cbfcafc5|60252558|fst_dt|local|vector|||14824.52||
 classification_blid_9|stem|cfb92f1ef9dffb7e|715fd69c1056ebc5|6d38ac771b1d4431|1796800803||t19777.7560239879s|df07d3d993a2c73a|61641778|fst_dt|local|vector|||15839.89||
 classification_ids|object|5ae523c8e01b6b18|||||||||||||||
-classification_targets|object|ca5dd032cfc25684|||||||||||||||
+classification_targets|object|f16a1dd3bb18485b|||||||||||||||
 classify_data|function|74d6c6a78c8867fb|||||||||||||||
 cluster|object|49aa5151ca209a87|||||||||||||||
 code_path|object|1f7034383e0d8fdd|||||||||||||||
@@ -49,7 +49,8 @@ export_data|function|c0e0ea7fe9c76cfc|||||||||||||||
 export_targets|object|87e6101d0a8b7523|||||||||||||||
 exportJSON|object|e99b92f7d957a5a9|||||||||||||||
 federal_state_ids|object|f333a8046a41b273|||||||||||||||
-federal_state_targets|object|49bd54a3ddc02d75|||||||||||||||
+federal_state_targets|object|03e460a14bb713fa|||||||||||||||
+feols_regression|function|2812cd6bd0351ac3|||||||||||||||
 figure_targets|object|ed7cf0cb2b8d968e|||||||||||||||
 file_name|stem|9ead61a518e12722|cd30a872c8501a4b|0f3c57d4a1817b3a|-812837814||t19779.65337645s|5c82a6b436969051|120|rds|local|vector|||0||
 file_targets|object|8d88aad24dedd03a|||||||||||||||
@@ -58,11 +59,10 @@ final_cutoff|object|8cbe1afa12de9337|||||||||||||||
 function_name|function|7f751aef04cd03cd|||||||||||||||
 geo_grouped_data|object|aed897e62d4512f0|||||||||||||||
 hedonic_index|stem|91e1a2e38721c963|5157bf7790773e16|9ce0663a535bd415|1128335022||t19779.5936362005s|3f8f725da00ddf57|42126242|rds|local|vector|||13.23||
-hedonic_regression|function|2812cd6bd0351ac3|||||||||||||||
 high_cutoff|object|cc7577d4ebeecf8a|||||||||||||||
 hybrid_index|stem|009bd15b466982c0|72c0f5ba6d585f54|3954eb4aae91b1ba|593772814||t19777.7705863948s|14a9f24bcef47cc5|91757942|rds|local|vector|||43.76||
 i|object|2edcaf0c6874d40c|||||||||||||||
-indices_targets|object|6602e7d346935c4e|||||||||||||||
+indices_targets|object|f1aa7e99b3d92d86|||||||||||||||
 load_data|function|c7cfa00dd28303f8|||||||||||||||
 low_cutoff|object|e2570f7cd005b47c|||||||||||||||
 main_path|object|ea0679eaa6fab246|||||||||||||||
@@ -70,11 +70,11 @@ make_classification|function|0ad0ac947f0183fb|||||||||||||||
 make_combined|function|85df158ac25c1b4b|||||||||||||||
 make_date_quarter|function|a9806e4c39dd19aa|||||||||||||||
 make_example_markdown_data|function|e0068e4481d2eb23|||||||||||||||
-make_hedonic|function|89c2c0edcd2f49f4|||||||||||||||
+make_hedonic|function|afac9c3b6f8c50d1|||||||||||||||
 make_hedonic_HK|function|c0e78a778954d1a1|||||||||||||||
 make_hedonic_WK|function|7473df249875ab5d|||||||||||||||
 make_hedonic_WM|function|eca54acbaef2d691|||||||||||||||
-make_hybrid|function|e1cd75237e93f12f|||||||||||||||
+make_hybrid|function|176efc4cd06f369a|||||||||||||||
 make_RED_file_name|function|b428051b8c107a73|||||||||||||||
 make_repeated|function|a06960940cfcc417|||||||||||||||
 make_sensitivity|function|0a5dd89ac807e919|||||||||||||||
@@ -85,14 +85,16 @@ make_X_1|function|d1637600bac402df|||||||||||||||
 make_X_2|function|f42cec1835143339|||||||||||||||
 make_X_3|function|806b08d0fc3da9a1|||||||||||||||
 markdown_path|object|60fe05a35be50907|||||||||||||||
-markdown_targets|object|9d27143044bab38b|||||||||||||||
+markdown_targets|object|7a56e9769324be05|||||||||||||||
 mid_cutoff|object|90eb3faa69000e32|||||||||||||||
 non_list_classification|function|df1dae2cfbc66ee1|||||||||||||||
 output_path|object|b675d4d8b08209fa|||||||||||||||
 output_path_json|function|43670857e911780f|||||||||||||||
 parent_counts|function|9ded310e5bf786be|||||||||||||||
-pipeline_library|object|eb37a208c3497e0d|||||||||||||||
-plot_targets|object|569760ed52bb96ca|||||||||||||||
+pipeline_library|object|312e34b79b433bd6|||||||||||||||
+plot_combined|function|7894b7d9bedf520f|||||||||||||||
+plot_split|function|b1ba1293e6c32564|||||||||||||||
+plot_targets|object|a5a9a160ee1b623a|||||||||||||||
 prepare_combined|function|3f029247da28d90e|||||||||||||||
 prepare_hedonic|function|eb909cfdbc710a01|||||||||||||||
 prepare_RED|function|083f453637f5f68f|||||||||||||||
@@ -107,7 +109,7 @@ RED_all_columns_file|stem|f86510199112346f|4017515ba350ea95|81eae7455cf67e4d|-10
 RED_classified|stem|3037cab04ca4d9ab|23d26efb8453c672|396a73a4c289b647|91979869||t19777.7686547219s|6bde5ef4b889c9c6|518471757|fst_dt|local|vector|||957.16||
 RED_full_data|stem|f03cf58e6d59dc90|f76c89bd3a591fcf|dc112a36901cb805|-522537164||t19776.5863901258s|730f7d53877a8c9d|986466054|rds|local|vector|||392.39||
 RED_req_columns|stem|f2b4bce05e53d65c|bd68a1eeb1cacd7f|4386941247fc14d0|9893660||t19776.5875142833s|8494a092c91c9d7d|307706442|fst_dt|local|vector|||8.28||
-RED_targets|object|9a781dfe3bc69926|||||||||||||||
+RED_targets|object|718d51381999fdc1|||||||||||||||
 RED_type|object|458806832dd1877f|||||||||||||||
 RED_type_count|object|a20f4c32e0040a66|||||||||||||||
 RED_version|object|6cb372de77d31089|||||||||||||||
@@ -137,7 +139,7 @@ static_RED_req_data|object|a5c9c46e9a37054c|||||||||||||||
 static_RED_types|object|1a496da7b60bd7a2|||||||||||||||
 static_repeated_index|object|5206a7c0183f57a9|||||||||||||||
 static_split_index|object|eadd2df8cd920f81|||||||||||||||
-sub_dir|object|d3e2a6ca47c45ecf|||||||||||||||
+sub_dir|object|910b07d833022dcd|||||||||||||||
 summary_graph_sensitivity|function|1465aeb8d36108c7|||||||||||||||
 summary_skim_cat|stem|9dca878e0e36a09e|90877f8ffd9153bf|940ddc168ee421ea|-1742637262||t19754.6955241926s|3bd8f66805fd112b|45|rds|local|vector|||9.77|These variables were omitted because they include more than 50 levels latlon_utm.|
 summary_skim_numeric|stem|9dca878e0e36a09e|1539f76f352b3832|e9eb314e0ada9d07|886218535||t19754.6956032656s|3bd8f66805fd112b|45|rds|local|vector|||6||
@@ -170,14 +172,22 @@ WK_classification_blid_6|stem|65c0c161b2effb52|9a3959b50095637c|442963bcc77b7327
 WK_classification_blid_7|stem|ace4ab624a58aad8|8f6d39b5f2d56c42|442963bcc77b7327|-1851090565||t19787.6927757027s|c17e42ea98daa612|12400779|fst_dt|local|vector|||2320.6||
 WK_classification_blid_8|stem|375c5467b638e243|0389e15a0e8fb452|442963bcc77b7327|-1615809145||t19787.8344877982s|4cb83140cbfcafc5|60252558|fst_dt|local|vector|||12219.61||
 WK_classification_blid_9|stem|cfb92f1ef9dffb7e|d268d23c99c2bfcd|442963bcc77b7327|-194453770||t19787.8582327216s|df07d3d993a2c73a|61641778|fst_dt|local|vector|||12146.17||
+WK_combined_index|stem|087cb7537ba07a0b|dd94b7a5976ffc57|cb646db4c21233e9|1212116037||t19794.6915138934s|c37dee75deb12729|1767|rds|local|vector|||59.38|NAs introduced by coercion|
 WK_file_name|stem|9ead61a518e12722|b5e74848d91ae487|e883103474b42ebe|-451501804||t19783.9880816695s|5c82a6b436969051|120|rds|local|vector|||0||
 WK_full_data|stem|f03cf58e6d59dc90|1b2ec82018637177|cf1ecb874f13a961|-91103406||t19784.025013003s|730f7d53877a8c9d|986466054|rds|local|vector|||354.56||
 WK_full_data_file|stem|f86510199112346f|53c45d592477a12b|e3be04f9b012a33f|1257077557|M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v9/WK_allVersions_ohneText.dta|t19580.2830755168s|e354b8e02357d723|5020148817|file|local|vector|||0||
-WK_hybrid_index|stem|009bd15b466982c0|7d45270313fc9c85|396bacdcb805ff84|-1525157640||t19787.8642595309s|14a9f24bcef47cc5|91757942|rds|local|vector|||43.3||
+WK_hedonic_index|stem|8098d33a8e2da38a|b585b1fb00d29b11|467ae699d3dad359|-1537380915||t19794.6858261707s|639f8d2a4459cc3a|34470581|rds|local|vector|||7.16||
+WK_hybrid_index|stem|89bfecacace0e770|7d45270313fc9c85|ab63cda031273288|-1525157640||t19794.6905542321s|41baeb82bd85ef61|79493186|rds|local|vector|||38.31|argument is not numeric or logical returning NA|
 WK_indices|object|f333a8046a41b273|||||||||||||||
+WK_plot_combined|stem|9dca878e0e36a09e|26ab69022e8bbc5a|d042eddde931ec59|989498027||t19794.6927543992s|3bd8f66805fd112b|45|rds|local|vector|||1.28|Removed 67 rows containing nonfinite values stat_smooth.. Computation failed in stat_smoothCaused by error in gam.reparam NANaNInf in foreign function call arg 3|
+WK_plot_split|stem|9dca878e0e36a09e|0fada761a53dd535|78bfa06210053c21|-1516642305||t19794.6926200254s|3bd8f66805fd112b|45|rds|local|vector|||6.2|Removed 398 rows containing nonfinite values stat_smooth.. Removed 399 rows containing nonfinite values stat_smooth.. Removed 990 rows containing nonfinite values stat_smooth.. Computation failed in stat_smoothCaused by error in gam.reparam NANaNInf in foreign function call arg 3|
+WK_prepared_hedonic|stem|b62346a046f44f9a|a501d68aeb38e785|ec29533248692fbb|-740487572||t19794.680511452s|bb032db431c226f1|34439225|rds|local|vector|||29.24||
 WK_prepared_repeated|stem|8e3779ec8ed6f519|b954f6e652f7da1f|798e887582a05e24|197130981||t19787.8632249392s|710e93074e9fee34|62683|fst_dt|local|vector|||17.3||
-WK_repeated_index|stem||01b3e9c95ed264aa|0895a7c3540cb24d|-1811452666||t19787.8643704795s||0|rds|local|vector|||0.06||could not find function rs_matrix
+WK_repeated_index|stem|d64d7836db0ce7a0|01b3e9c95ed264aa|0895a7c3540cb24d|-1811452666||t19794.6799359339s|75494b771b4b405a|14224|rds|local|vector|||5.06||
 WK_req_data|stem|f2b4bce05e53d65c|9ed1f4794baecde2|2b3bfae003b0ad41|2114630366||t19784.0284121292s|8494a092c91c9d7d|307706442|fst_dt|local|vector|||8.29||
+WK_split_index|stem|753eb9d708eb0243|264a29aa032d2b25|be0d2ef65fecf71e|-351519584||t19794.6924275159s|3d2e429830e217a5|20809|rds|local|vector|||59.9|NAs introduced by coercion. NAs introduced by coercion|
+WM_classifed|stem||3308efa7109bf22b|e00963ba3c0b3a9f|1943284418||t19789.6499014305s||0|fst_dt|local|vector|||1086.97||31mallcheck_geo2 does not evaluate not TRUE.39m
+WM_classification|stem|f4d7f88055363ab8|c4d167e39f5f6c39|a06ccdb56c7c1849|-2010257911||t19789.6090500497s|12559a65f10c8bb9|1131111942|fst_dt|local|vector|||36.13||
 WM_classification_blid_1|stem|3c4f49b8f43cb89c|b686eacd1c5caceb|9358c7d4f61ee34a|-1419521087||t19785.0745999883s|dbd0cb735cf80763|28843245|fst_dt|local|vector|||9365.83||
 WM_classification_blid_10|stem|373405b4c7c928fb|815ad8d872c9418e|9358c7d4f61ee34a|-420499140||t19784.0345901798s|a9332d8bd57510a9|2415682|fst_dt|local|vector|||511.75||
 WM_classification_blid_11|stem|309490d92370aeb8|3e9646fea54027c0|9358c7d4f61ee34a|-1197550437||t19784.3051490055s|5d5274d9c3555519|110369165|fst_dt|local|vector|||23352.67||
@@ -191,6 +201,9 @@ WM_classification_blid_3|stem|71943062333ae127|49a22ccd66acf954|9358c7d4f61ee34a
 WM_classification_blid_4|stem|823f56f33fa2de23|91172bccffd4a2e4|9358c7d4f61ee34a|-218832158||t19785.4785408669s|c58d8eea4822c274|11137194|fst_dt|local|vector|||3790.58||
 WM_classification_blid_5|stem|43e5c1b9e81b5d4d|6adf7e5a7def91e1|9358c7d4f61ee34a|-457488785||t19786.980156883s|49698071163c04cf|288040773|fst_dt|local|vector|||129710.43||
 WM_classification_blid_6|stem|d4548e50b521f662|32636eb15e5a7c58|9358c7d4f61ee34a|263822415||t19787.5636937635s|a4501994fcad6eca|93843501|fst_dt|local|vector|||50382.58||
+WM_classification_blid_7|stem|f68aae2ab1185176|86fb8adda338caae|9358c7d4f61ee34a|527645634||t19788.9010159011s|9c8597a4eff7b3a5|33015093|fst_dt|local|vector|||7306.52||
+WM_classification_blid_8|stem|84ae08d720d3306d|6525066b95976fe6|9358c7d4f61ee34a|-319695168||t19789.195945327s|1678a6e96b8b81a8|98650706|fst_dt|local|vector|||25461.91||
+WM_classification_blid_9|stem|9003381339c424ec|4f9bf8c4376323d9|9358c7d4f61ee34a|-88575411||t19789.6079315495s|25d980db7bb078d6|123446268|fst_dt|local|vector|||35572.95||
 WM_file_name|stem|fafdb37095bba87f|920dee7239dbf16e|e883103474b42ebe|193940245||t19783.9880767725s|5c82a6b436969051|120|rds|local|vector|||1.23||
 WM_full_data|stem|f1e3bb7898e0988e|cfa644b90f12a9e6|c419892d7820617b|755498174||t19784.0164833187s|871d82bc105f3c5d|2596189970|rds|local|vector|||1291.25||
 WM_full_data_file|stem|37adf73ef74df76e|418d7637e32f5bea|2a1bf96b6638d8c7|-325195622|M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v9/WM_allVersions_ohneText.dta|t19580.2870615592s|392b1002d62069d0|12607005625|file|local|vector|||0||

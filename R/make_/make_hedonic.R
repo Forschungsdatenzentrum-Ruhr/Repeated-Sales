@@ -5,7 +5,7 @@ make_hedonic <- function(prepared_hedonic, data_type = NA) {
   indepVar = list_var$indepVar
   fixed_effects = list_var$fixed_effects
 
-  hedonic_coef = hedonic_regression(
+  hedonic_coef = feols_regression(
     RED_data = prepared_hedonic, 
     indepVar = indepVar, 
     depVar = depVar, 

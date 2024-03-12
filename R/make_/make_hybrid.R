@@ -97,20 +97,20 @@ Y = log(
     )
 )
 
-test = cbind(Z,Y)[,counting_id := c(hedonic_counting_id, pure_counting_id, changed_counting_id)] |> na.omit()
+combined_hybrid = cbind(Z,Y)[,counting_id := c(hedonic_counting_id, pure_counting_id, changed_counting_id)] |> na.omit()
 
 # final clean up -> these shouldnt really happend beforehand
-test = test[pre_zimmeranzahl != -Inf & sub_zimmeranzahl != -Inf & Y > 0]
+combined_hybrid = combined_hybrid[pre_zimmeranzahl != -Inf & sub_zimmeranzahl != -Inf & Y > 0]
 
-beta = lm(Y ~ ., data = test[,-"counting_id"])
+f <- sprintf("%s ~ %s", 
+"Y", 
+names(Z) |> paste(collapse = " + ")
+) |> as.formula()
+  
+hybrid_regression = feols(f, combined_hybrid, combine.quick = F, mem.clean = T)
 
-pindex = (exp(predict(beta, test))-1)*100
-out = RED_classified[test[,index := pindex], on = "counting_id"]
-# reattach this to the original data
-# only works if same nrow -> merge final cleanup into clean up above
-
-# return full data for both hedonic and hybrid -> bring into same format as repeat via average 
-# prob. need to base all of them, so that they are comparable
+pindex = mean(hybrid_regression$sumFE)
+out = RED_classified[combined_hybrid[,index := pindex], on = "counting_id"]
 
  return(out)
 }

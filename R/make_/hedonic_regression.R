@@ -1,4 +1,4 @@
-hedonic_regression = function(RED_data = NA,indepVar = NA, depVar = NA, fixed_effects= NA ){
+feols_regression = function(RED_data = NA,indepVar = NA, depVar = NA, fixed_effects= NA ){
   
   tar_assert_true(all(indepVar %in% names(RED_data)))
   

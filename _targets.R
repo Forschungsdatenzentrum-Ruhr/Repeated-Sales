@@ -4,8 +4,6 @@
 # figure out what to with same_time_listings
 # clean up the indices
 
-# Known Issues: ----------------------------------------------
-
 # Packages-Setup: ----------------------------------------------
 
 # used during setup of pipeline
@@ -204,7 +202,7 @@ lapply(
 )
 
 # Read code files
-for (sub_dir in c("read_", "make_", "summary_", "similarity_", "misc")) {
+for (sub_dir in c("read_", "make_", "summary_", "similarity_", "misc","plot_")) {
   lapply(
     list.files(
       file.path(code_path, glue::glue("{sub_dir}")),
