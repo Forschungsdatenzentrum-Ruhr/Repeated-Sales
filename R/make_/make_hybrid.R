@@ -1,10 +1,13 @@
 make_hybrid = function(RED_classified,prepared_repeated, data_type){
-  #tar_load(RED_classified); tar_load_globals()
+  
   list_var = make_var(data_type = data_type)
   indepVar = list_var$indepVar
   depVar = list_var$depVar
-  # think of a solution for this, they are mutated in prepare_hedonic
-  var_to_keep = c(indepVar,"rs_id","emonths","depVar","rs_id","counting_id")
+  
+  # FE attempt
+  fixed_effects = list_var$fixed_effects
+  
+  var_to_keep = c(indepVar,"rs_id","emonths","depVar","counting_id")
 # one consideration is that we have to decide between using or dropping updates from hedonic as well
 
 # build by me based on Case and Quigley 1991
@@ -99,17 +102,23 @@ Y = log(
 
 combined_hybrid = cbind(Z,Y)[,counting_id := c(hedonic_counting_id, pure_counting_id, changed_counting_id)] |> na.omit()
 
+# remerge fixed effects
+var_to_keep = c(fixed_effects,"counting_id")
+combined_hybrid = combined_hybrid[RED_classified[,.SD,.SDcols = var_to_keep], on = c("counting_id")]
+
+
 # final clean up -> these shouldnt really happend beforehand
 combined_hybrid = combined_hybrid[pre_zimmeranzahl != -Inf & sub_zimmeranzahl != -Inf & Y > 0]
 
-f <- sprintf("%s ~ %s", 
+f <- sprintf("%s ~ %s | %s", 
 "Y", 
-names(Z) |> paste(collapse = " + ")
+names(Z) |> paste(collapse = " + "),
+fixed_effects |> paste(collapse = " + ")
 ) |> as.formula()
   
 hybrid_regression = feols(f, combined_hybrid, combine.quick = F, mem.clean = T)
 
-pindex = mean(hybrid_regression$sumFE)
+pindex = hybrid_regression$sumFE
 out = RED_classified[combined_hybrid[,index := pindex], on = "counting_id"]
 
  return(out)

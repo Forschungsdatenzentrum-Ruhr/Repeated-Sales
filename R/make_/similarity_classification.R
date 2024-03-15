@@ -9,7 +9,7 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
     #' @return WIP
     #' @author Thorben Wiebe
     #----------------------------------------------
-  ## Preperation
+    ## Preperation
 
     # make copy to modifiy keys
     geo_grouped_data <- copy(geo_grouped_data)

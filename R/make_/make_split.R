@@ -20,6 +20,8 @@ make_split = function(repeated_index, hybrid_index, hedonic_index){
     # rebase values to make them comparable
     base_quarter = "2007-02-01"
     base_values =  indicies[date_quarter == base_quarter, .(base_index = mean_index), by = c("gid2019","index_type")]
+    # replace missings with just 100
+    base_values = base_values[is.na(base_index), base_index := 100]
     indicies = indicies[base_values, on = c("gid2019","index_type")][, based_index := (mean_index/base_index)*100]
 
     return(indicies)

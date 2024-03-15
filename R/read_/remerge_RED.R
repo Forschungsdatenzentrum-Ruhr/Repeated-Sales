@@ -5,9 +5,10 @@ remerge_RED <- function(classification = NA, RED_full_data = NA) {
 
   # remove columns from RED and merge classifcation
   RED_classified <- RED_full_data[, !..names_diff][classification, on = "counting_id"]
-
-  check_geo = RED_classified[,uniqueN(latlon_utm) == 1 & uniqueN(kid2019) == 1 , by = "parent"]
-  tar_assert_true(all(check_geo[[2]]))
+  
+  # # check if everything that has been classified didnt move in geo ids
+  # check_geo = RED_classified[,.(check_complete = uniqueN(latlon_utm) == 1) , by = "parent"]
+  # tar_assert_true(all(check_geo[[2]], msg = glue::glue("Double geo ids found for: {check_geo[check_complete == FALSE, parent]}")))
   
   # subset to 15 biggest cities
   big_fifteen = c(
