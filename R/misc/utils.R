@@ -20,13 +20,11 @@ output_path_json <- function(output_path = NA) {
 filter_unique_options <- function(unique_options, new_names, use_which = T) {
   # error in this function which causes overflow in data.table???
   if (!is.null(unique_options)) {
-    
     unique_options <- data.table::transpose(unique_options) |>
       setnames(new = new_names)
     unique_options <- unique(unique_options)
-    
+
     if (use_which) {
-      
       unique_options <- unique_options |>
         is.na() |>
         not() |>
@@ -61,7 +59,7 @@ which_range <- function(non_list_reason_vec = NA) {
   return(list(returner_start, returner_end))
 }
 
-custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA, mod = 100) {
+custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA, mod = 1000) {
   # the .envir argument causes the progress_bar used to be the global one
   if (.GRP == 1) {
     start_time <<- Sys.time()
@@ -71,7 +69,7 @@ custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA,
     cli::cli_progress_bar("  Classifying ...", total = (.GRPN / mod), .envir = parent.frame(n = sys.nframe()))
   } else if (.GRP == .GRPN) {
     # Finish and cleanup
-    cli::cli_alert_success(glue::glue("Finished {classification_type} after {format(Sys.time() - start_time, format = '%H:%M:%S')}"))
+    cli::cli_alert_success(glue::glue("Finished {classification_type} after {format(Sys.time() - start_time, format = '%H:%M')}"))
     cli::cli_progress_done(.envir = parent.frame(n = sys.nframe()))
   } else if (!(.GRP %% mod)) {
     # Update everytime mod times x is hit
@@ -113,157 +111,8 @@ check_nonsensical_listings <- function(data_connected = NA, data_name = NA) {
   }
 }
 
-make_var = function(data_type){
 
-  if (data_type == "WK") {
-    depVar <- "ln_flatprice_sqm"
-    indepVar <- c(
-
-      # raw
-      "balkon",
-      "garten",
-      "einbaukueche",
-      "gaestewc",
-      "aufzug",
-      "keller",
-      "betreut",
-      "ausstattung",
-      "zimmeranzahl",
-
-      # mutated
-      "declared_wohngeld",
-      "baujahr_cat",
-      "first_occupancy",
-      "num_floors",
-      "floors_cat"
-    )
-    fixed_effects <- c("gid2019", "ejahr")
-      
-    } else if (data_type == "WM") {
-      depVar <- "ln_rent_sqm"
-      indepVar <- c(
-
-      # raw
-      "balkon",
-      "garten",
-      "einbaukueche",
-      "gaestewc",
-      "aufzug", # this isnt in REDX; why?
-      "keller",
-      "ausstattung",
-      "zimmeranzahl",
-
-      # mutated
-      "baujahr_cat",
-      "first_occupancy"
-    )
-    } else if (data_type == "HK") {
-    depVar <- "ln_houseprice_sqm"
-
-    indepVar <- c(
-
-      # raw
-      "gaestewc",
-      "einliegerwohnung",
-      "ausstattung",
-      "zimmeranzahl",
-
-      # mutated
-      "baujahr_cat",
-      "first_occupancy",
-      "plotarea_cat",
-      "type_cat"
-    )
-    fixed_effects <- c("gid2019", "ejahr")
-
-  }
-  list_var = list(depVar = depVar, indepVar = indepVar, fixed_effects = fixed_effects)
-  return(list_var)
-}
-
-make_date_quarter = function(input_data){
-  # reverse year to month conversion done during initial reading since subsequent functions require dates
-  out <- copy(input_data)[,
-    ":="(
-      year = emonths %/% 12,
-      month = emonths - ((emonths %/% 12) * 12)
-    )
-  ][
-    # december is converted to an additional year, is this already a problem before this?
-    # maybe use yearmon from zoo instead, shouldnt be a big change
-    month == 0,
-    ":="(
-      month = 12,
-      year = year - 1
-    )
-  ][, ":="(
-    # sprintf is used to pad leading zeros for months while pasteing at the same time
-    # %d means digits
-    # %02d means digit with leading zeros until length 2
-    date_month = sprintf(
-      "%d-%02d-01",
-      year,
-      month
-    ) |> as.Date(format = "%Y-%m-%d"))][,
-    ":="(
-    date_quarter =  sprintf(
-      "%d-%02d-01",
-      year,
-      quarter(date_month)
-    ) |> as.Date(format = "%Y-%m-%d"),
-    year = NULL,
-    month = NULL,
-    emonths = NULL
-  )]#
-  return(out)
-
-}
-
-prepare_combined = function(single_index,single_index_name, grouping = c("date_quarter")){
-    if (!("date_quarter" %in% names(single_index))){
-        single_index = make_date_quarter(single_index)
-    } else {
-        # repeated index calculation combines the date_quarter and gid2019 columns
-        # resplit them here
-        
-        gid_date = single_index[["date_quarter"]] |> tstrsplit("\\.") 
-        single_index = single_index[, ":="(
-            gid2019 = gid_date[[1]],
-            date_quarter = gid_date[[2]] |> as.Date("%Y-%m-%d"),
-            index = as.numeric(index)
-        )]
-        # # remove stuttgard
-        # single_index = single_index[gid2019 != 08111000]
-    }
-    # "gid2019"
-    single_index = single_index[, .(mean_index = mean(na.omit(index), na.rm = T)), by = grouping][, index_type := single_index_name]
-
-    return(single_index)
-}
-prepare_split = function(single_index,single_index_name, grouping = c("date_quarter","gid2019")){
-    if (!("date_quarter" %in% names(single_index))){
-        single_index = make_date_quarter(single_index)
-    } else {
-        # repeated index calculation combines the date_quarter and gid2019 columns
-        # resplit them here
-        
-        gid_date = single_index[["date_quarter"]] |> tstrsplit("\\.") 
-        single_index = single_index[, ":="(
-            gid2019 = gid_date[[1]],
-            date_quarter = gid_date[[2]] |> as.Date("%Y-%m-%d"),
-            index = as.numeric(index)
-        )]
-        # # remove stuttgard
-        # single_index = single_index[gid2019 != 08111000]
-    }
-    # "gid2019"
-    
-    single_index = single_index[, .(mean_index = mean(na.omit(index), na.rm = T)), by = grouping][, index_type := single_index_name]
-
-    return(single_index)
-}
-
-between_helper = function(i_value, j_value, offset){
-  out = abs(i_value - j_value) <= offset
+between_helper <- function(i_value, j_value, offset) {
+  out <- abs(i_value - j_value) <= offset
   return(out)
 }

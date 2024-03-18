@@ -63,7 +63,6 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
         "sim_index" = 0
       )
       
-      
     }
     
     # remerge non-duplicates to clustering results
