@@ -1,28 +1,24 @@
 make_hedonic_WM <- function(RED_classified = NA) {
-  # Definitions -------------------------------------------------------------
-  depVar <- "ln_rent_sqm"
-  indepVar <- c(
+  #' @title WIP
+  #'
+  #' @description WIP
+  #' @param WIP
+  #' @param WIP
+  #' @note
+  #'
+  #' @return WIP
+  #' @author Thorben Wiebe
+  #----------------------------------------------
 
-    # raw
-    "balkon",
-    "garten",
-    "einbaukueche",
-    "gaestewc",
-    "aufzug", # this isnt in REDX; why?
-    "keller",
-    "ausstattung",
-    "zimmeranzahl",
-
-    # mutated
-    "baujahr_cat",
-    "first_occupancy"
-  )
-  fixed_effects <- c("gid2019", "ejahr")
+  # setup of regression
+  list_var <- make_var(data_type = "WM")
+  depVar <- list_var$depVar
+  indepVar <- list_var$indepVar
+  fixed_effects <- list_var$fixed_effects
 
   # depVar ------------------------------------------------------------------
   RED_classified[mietekalt < 0, mietekalt := 0]
   RED_classified[, "ln_rent_sqm" := log(mietekalt / wohnflaeche)]
-
 
   # indepVar ----------------------------------------------------------------
   var_to_keep <- c(
@@ -44,12 +40,15 @@ make_hedonic_WM <- function(RED_classified = NA) {
   upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
   lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
 
+
+  # do rule based cleanup and drop all unsed variables to reduce RAM
+  RED_classified = RED_classified[zimmeranzahl < 8 &
+      mietekalt %between% c(0, 5000) &
+      wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep]
+
   # clean data with procedure identical for all data_types
   RED_WM <- all_type_cleaning(
-    # drop everything else to reduce RAM usage
-    RED_classified[zimmeranzahl < 8 &
-      mietekalt %between% c(0, 5000) &
-      wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep],
+    RED_classified,
     var_to_replace_missings = c(
       "balkon",
       "garten",
@@ -61,5 +60,6 @@ make_hedonic_WM <- function(RED_classified = NA) {
     )
   )
 
+  #----------------------------------------------
   return(RED_WM)
 }

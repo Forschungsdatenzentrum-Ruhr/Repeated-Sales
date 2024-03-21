@@ -113,43 +113,16 @@ categories <- c("wohnflaeche", "etage", "zimmeranzahl")
 # time offset for readability
 time_offset <- 6
 
-# resembling_offset
-wohnflaeche_r_o <- 0.1
-etage_r_o <- 1
-zimmeranzahl_r_o <- 0.5
-
 # exact_offset
 wohnflaeche_e_o <- 0.05
 etage_e_o <- 0
 zimmeranzahl_e_o <- 0.5
 
-# plot_offset
-low_cutoff <- 0.1
-mid_cutoff <- 1
-high_cutoff <- 20
-final_cutoff <- 100
-
-wohnflaeche_ro_range <- c(
-  seq(from = 0, to = low_cutoff, by = 0.02),
-  seq(from = low_cutoff, to = mid_cutoff, by = 0.1),
-  seq(from = mid_cutoff - 1, to = high_cutoff, by = 5),
-  seq(from = high_cutoff, to = final_cutoff, by = 20)
-) |> unique()
-
-wohnflaeche_eo_range <- shift(wohnflaeche_ro_range)
-
-wohnflaeche_eo_range <- wohnflaeche_eo_range[-1]
-wohnflaeche_ro_range <- wohnflaeche_ro_range[-1]
-
-sensitivity_suffix <- wohnflaeche_eo_range |> str_replace_all("\\.", "_")
-
 # settings export setup
 exportJSON <- data.table(
   "RED_version" = RED_version,
   "categories" = categories,
-  "wohnflaeche_r_o" = wohnflaeche_r_o,
-  "etage_r_o" = etage_r_o,
-  "zimmeranzahl_r_o" = zimmeranzahl_r_o,
+  "etag_e_o" = etage_e_o,
   "wohnflaeche_e_o" = wohnflaeche_e_o,
   "zimmeranzahl_e_o" = zimmeranzahl_e_o,
   "time_offset" = time_offset
@@ -190,25 +163,15 @@ for (i in static_RED_types) {
 
 # Sourcing ----------------------------------------------------------------
 
-# Read main files
-lapply(
-  list.files(
-    file.path(code_path),
-    pattern = "\\.R$",
-    full.names = TRUE,
-    all.files = FALSE
-  ),
-  source
-)
-
 # Read code files
-for (sub_dir in c("read_", "make_", "summary_", "similarity_", "misc","plot_")) {
+for (sub_dir in c("RED_", "make_", "summary_", "similarity_", "misc","plot_")) {
   lapply(
     list.files(
       file.path(code_path, glue::glue("{sub_dir}")),
       pattern = "\\.R$",
       full.names = TRUE,
-      all.files = FALSE
+      all.files = FALSE,
+      recursive =TRUE
     ),
     source
   )
@@ -233,6 +196,7 @@ static_repeated_index = glue::glue("{static_RED_types}_repeated_index")
 static_hybrid_index = glue::glue("{static_RED_types}_hybrid_index")
 static_combined_index = glue::glue("{static_RED_types}_combined_index")
 static_split_index = glue::glue("{static_RED_types}_split_index")
+static_export = glue::glue("{static_RED_types}_export")
 
 # plots
 static_plot_combined = glue::glue("{static_RED_types}_plot_combined")
@@ -566,16 +530,23 @@ plot_targets = rlang::list2(
 ###########################################################################
 # EXPORT-TARGETS -----------------------------------------------------------
 ###########################################################################
-# export_targets <- rlang::list2(
-#   tar_target(
-#     export_classification,
-#     export_data(
-#       RED_classified,
-#       data_version = RED_version,
-#       data_type = RED_type
-#     )
-#   ),
-# )
+export_targets <- rlang::list2(
+  tar_eval(
+    tar_target(
+      export_classification,
+      export_data(
+        RED_classified,
+        data_version = RED_version,
+        data_type = RED_types
+      )
+    ),
+    values = rlang::list2(
+      RED_types = static_RED_types,
+      RED_classified = rlang::syms(static_RED_classified),
+      export_classification = rlang::syms(static_export)
+    )
+  )
+)
 
 ###########################################################################
 # FINAL_TARGETS -----------------------------------------------------------
@@ -588,6 +559,6 @@ rlang::list2(
   markdown_targets,
   classification_targets,
   plot_targets,
-  # export_targets,
+  export_targets,
   indices_targets
 )

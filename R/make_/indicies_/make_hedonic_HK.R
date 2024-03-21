@@ -1,29 +1,26 @@
 make_hedonic_HK <- function(RED_classified = NA) {
-  # Definitions -------------------------------------------------------------
-  depVar <- "ln_houseprice_sqm"
+  #' @title WIP
+  #'
+  #' @description WIP
+  #' @param WIP
+  #' @param WIP
+  #' @note
+  #'
+  #' @return WIP
+  #' @author Thorben Wiebe
+  #----------------------------------------------
+  
+  # setup of regression
+  list_var <- make_var(data_type = "HK")
+  depVar <- list_var$depVar
+  indepVar <- list_var$indepVar
+  fixed_effects <- list_var$fixed_effects
 
-  indepVar <- c(
-
-    # raw
-    "gaestewc",
-    "einliegerwohnung",
-    "ausstattung",
-    "zimmeranzahl",
-
-    # mutated
-    "baujahr_cat",
-    "first_occupancy",
-    "plotarea_cat",
-    "type_cat"
-  )
-  fixed_effects <- c("gid2019", "ejahr")
-
-  # depVar ------------------------------------------------------------------
+  # depVar prep
   RED_classified[kaufpreis < 0, kaufpreis := 0]
   RED_classified[, "ln_houseprice_sqm" := log(kaufpreis / wohnflaeche)]
 
-
-  # indepVar ----------------------------------------------------------------
+  # indepVar prep
   var_to_keep <- c(
     intersect(
       names(RED_classified),
@@ -38,26 +35,29 @@ make_hedonic_HK <- function(RED_classified = NA) {
     "emonths",
     "counting_id"
   )
-  # TODO: make the cutting a function and equal for all -> do it after merging?
+  
   # drop extreme values of variables
   # this is exclusive in REDX and inclusive here
   upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
   lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
   
+  # do rule based cleanup and drop all unsed variables to reduce RAM
+  RED_classified = RED_classified[
+      zimmeranzahl < 15 &
+      kaufpreis %between% c(0, 5000000) &
+      wohnflaeche %between% c(lower_percentile, upper_percentile),
+      grundstuecksflaeche > 2500, ..var_to_keep]
+
+
   # clean data with procedure identical for all data_types
   RED_HK <- all_type_cleaning(
-    # drop everything else to reduce RAM usage
-    RED_classified[
-      zimmeranzahl < 15 &
-        kaufpreis %between% c(0, 5000000) &
-        wohnflaeche %between% c(lower_percentile, upper_percentile),
-      grundstuecksflaeche > 2500, ..var_to_keep],
+    RED_classified,
     var_to_replace_missings = c(
       "gaestewc",
       "ausstattung"
     )
   )
-
+  # type specific mutations
   RED_HK = RED_HK[,
     ":="(
       plotarea_cat = fcase(
@@ -103,6 +103,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
     )
   ]
 
+  #----------------------------------------------
   return(RED_HK)
 }
 

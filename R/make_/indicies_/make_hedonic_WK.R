@@ -1,34 +1,27 @@
 make_hedonic_WK <- function(RED_classified = NA) {
-  # Definitions -------------------------------------------------------------
-  depVar <- "ln_flatprice_sqm"
-  indepVar <- c(
+  #' @title WIP
+  #'
+  #' @description WIP
+  #' @param WIP
+  #' @param WIP
+  #' @note
+  #'
+  #' @return WIP
+  #' @author Thorben Wiebe
+  #----------------------------------------------
 
-    # raw
-    "balkon",
-    "garten",
-    "einbaukueche",
-    "gaestewc",
-    "aufzug",
-    "keller",
-    "betreut",
-    "ausstattung",
-    "zimmeranzahl",
+  # setup of regression
+  list_var <- make_var(data_type = "WK")
+  depVar <- list_var$depVar
+  indepVar <- list_var$indepVar
+  fixed_effects <- list_var$fixed_effects
 
-    # mutated
-    "declared_wohngeld",
-    "baujahr_cat",
-    "first_occupancy",
-    "num_floors",
-    "floors_cat"
-  )
-  fixed_effects <- c("gid2019", "ejahr")
-
-  # depVar ------------------------------------------------------------------
+  # depVar prep
   RED_classified[kaufpreis < 0, kaufpreis := 0]
   RED_classified[, "ln_flatprice_sqm" := log(kaufpreis / wohnflaeche)]
 
 
-  # indepVar ----------------------------------------------------------------
+  # indepVar prep
   var_to_keep <- c(
     intersect(
       names(RED_classified),
@@ -49,12 +42,15 @@ make_hedonic_WK <- function(RED_classified = NA) {
   upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
   lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
 
+
+  # do rule based cleanup and drop all unsed variables to reduce RAM
+  RED_classified = RED_classified[zimmeranzahl < 8 &
+      kaufpreis %between% c(0, 2000000) &
+      wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep]
+
   # clean data with procedure identical for all data_types
   RED_WK <- all_type_cleaning(
-    # drop everything else to reduce RAM usage
-    RED_classified[zimmeranzahl < 8 &
-      kaufpreis %between% c(0, 2000000) &
-      wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep],
+    RED_classified,
     var_to_replace_missings = c(
       "balkon",
       "garten",
@@ -67,6 +63,7 @@ make_hedonic_WK <- function(RED_classified = NA) {
     )
   )
 
+  # type specific mutations
   RED_WK = RED_WK[,
     ":="(
       # wohngeld
@@ -119,5 +116,6 @@ make_hedonic_WK <- function(RED_classified = NA) {
     )
   ]
 
+  #----------------------------------------------
   return(RED_WK)
 }

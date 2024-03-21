@@ -11,11 +11,12 @@ make_hedonic <- function(prepared_hedonic, data_type = NA) {
     depVar = depVar, 
     fixed_effects = fixed_effects
   )
-  #pindex = (exp(predict(hedonic_coef, prepared_hedonic))-1)*100
+
   pindex = hedonic_coef$sumFE
-  out = copy(prepared_hedonic)[, index := pindex]
+  removed_ids = hedonic_coef$obs_selection$obsRemoved
+
+  out = copy(prepared_hedonic)[removed_ids][, index := pindex]
 
   return(out)
 }
-# repeated_index |> group_by(i_type) |> summarise(a = mean(as.numeric(index)), b = mean(as.numeric(index), na.rm = T))
-# summary(repeated_index)
+

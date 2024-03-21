@@ -116,11 +116,11 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
     fixed_effects |> paste(collapse = " + ")
   ) |> as.formula()
 
-  print(names(combined_hybrid))
   hybrid_regression <- feols(f, combined_hybrid, combine.quick = F, mem.clean = T)
-
+  
   pindex <- hybrid_regression$sumFE
-  out <- RED_classified[combined_hybrid[, index := pindex], on = "counting_id"]
+  removed_ids = hybrid_regression$obs_selection$obsRemoved
+  out <- RED_classified[combined_hybrid[removed_ids][, index := pindex], on = "counting_id"]
 
   return(out)
 }

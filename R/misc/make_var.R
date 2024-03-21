@@ -71,7 +71,7 @@ make_var <- function(data_type) {
       "keller", 
       "ausstattung",
       "baujahr_cat", 
-      "first_occupancy", 
+      "first_occupancy" 
     )
     cont_names <- c("zimmeranzahl")
     
