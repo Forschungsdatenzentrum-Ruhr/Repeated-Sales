@@ -1,4 +1,4 @@
-read_RED <- function(RED_file_name = NA) {
+read_RED <- function(RED_file_name) {
   #' @title WIP
   #'
   #' @description WIP

@@ -1,4 +1,4 @@
-make_X_1 = function(hedonic = NA, x_conts = NA , x_binaries = NA, t_month = NA){
+make_X_1 = function(hedonic, x_conts , x_binaries, t_month){
     # Case and Quigley 1991 -> hedonic (X_1)
 
     # transform variables
@@ -28,7 +28,7 @@ make_X_1 = function(hedonic = NA, x_conts = NA , x_binaries = NA, t_month = NA){
     #------------------------------------------------
     return(X_1)
 }
-make_X_2 = function(pure = NA, x_conts = NA , x_binaries = NA, t_month = NA, T_month = NA){
+make_X_2 = function(pure, x_conts , x_binaries, t_month, T_month){
     # Case and Quigley 1991 -> pure repeated sales (X_2)
 
     # transform variables
@@ -60,7 +60,7 @@ make_X_2 = function(pure = NA, x_conts = NA , x_binaries = NA, t_month = NA, T_m
     #------------------------------------------------
     return(X_2)
 }
-make_X_3 = function(changed = NA, x_conts = NA, x_binaries = NA, t_month = NA, T_month = NA){
+make_X_3 = function(changed, x_conts, x_binaries, t_month, T_month){
     # Case and Quigley 1991 -> changed repeated sales (X_3)
     
     # transform variables

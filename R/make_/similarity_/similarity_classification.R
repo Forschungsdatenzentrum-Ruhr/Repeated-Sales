@@ -1,4 +1,4 @@
-similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
+similarity_classification <- function(geo_grouped_data, curr_latlon_log) {
     #' @title WIP
     #'
     #' @description WIP
@@ -41,7 +41,7 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
       
       # exclude similarity distances maybe irrelevant by similarity index (values are not in interval)
       # this reduces computation substantially since we don't have to compare n x n each time but n x m instead (n > m)
-      similarity_dist_list[is.na(similarity_index_list)] = NA
+      similarity_dist_list[is.na(similarity_index_list)]
 
       # setup and run the actual clustering
       clustering <- cluster$new(
@@ -77,7 +77,7 @@ similarity_classification <- function(geo_grouped_data = NA, curr_latlon_log) {
     tar_assert_true(nrow(id_combinations) >= nrow(geo_grouped_data), msg = glue::glue("Underspecfication produced in {first(id_combinations$counting_id)}"))
     
     # reassign to clustering for further processing
-    clustering_names = names(clustering$centers)
+    clustering_namesmes(clustering$centers)
     clustering$centers = id_combinations[, ..clustering_names]
     
     

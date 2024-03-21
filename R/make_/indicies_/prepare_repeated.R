@@ -1,4 +1,4 @@
-prepare_repeated <- function(RED_classified = NA, grouping_var = NA) {
+prepare_repeated <- function(RED_classified, grouping_var) {
   
   # declare which variables are used during preparation
   vars_needed <- c("rs_id", "emonths", "price_var", grouping_var)

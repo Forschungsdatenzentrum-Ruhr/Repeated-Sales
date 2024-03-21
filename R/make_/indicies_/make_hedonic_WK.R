@@ -1,4 +1,4 @@
-make_hedonic_WK <- function(RED_classified = NA) {
+make_hedonic_WK <- function(RED_classified) {
   #' @title WIP
   #'
   #' @description WIP
@@ -85,7 +85,7 @@ make_hedonic_WK <- function(RED_classified = NA) {
       ) |> factor(
         0:4,
         c(
-          NA_character_,
+          "MISSING",
           "1-3 floors",
           "4-5 floors",
           "6-10 floors",
@@ -104,7 +104,7 @@ make_hedonic_WK <- function(RED_classified = NA) {
       ) |> factor(
         0:6,
         c(
-          NA_character_,
+          "MISSING",
           "ground floor (UG)",
           "first floor (EG)",
           "2nd to 3rd floor",

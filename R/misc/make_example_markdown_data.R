@@ -1,4 +1,4 @@
-make_example_markdown_data <- function(geo_grouped_data = NA) {
+make_example_markdown_data <- function(geo_grouped_data) {
   
   # tabulate coordinate counts in blid
   obs_coord <- table(geo_grouped_data[, latlon_utm])

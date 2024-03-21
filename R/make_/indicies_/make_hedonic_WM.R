@@ -1,4 +1,4 @@
-make_hedonic_WM <- function(RED_classified = NA) {
+make_hedonic_WM <- function(RED_classified) {
   #' @title WIP
   #'
   #' @description WIP

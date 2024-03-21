@@ -1,4 +1,4 @@
-make_RED_file_name <- function(data_version = NA, data_type = c("Wk", "Wm")) {
+make_RED_file_name <- function(data_version, data_type = c("Wk", "Wm")) {
   #' @title Creation of Filename for specified real estate data (RED)
   #'
   #' @description constructs file name (full file path) of the file to

@@ -1,4 +1,4 @@
-make_similarity_lists <- function(combinations = NA, occurence_ids = NA) {
+make_similarity_lists <- function(combinations, occurence_ids) {
   #' @title WIP
   #'
   #' @description WIP
@@ -39,7 +39,7 @@ make_similarity_lists <- function(combinations = NA, occurence_ids = NA) {
           between_helper(1,etage,etage_e_o),
         0,
         # no matches
-        default = NA
+        default
       ))
     ] |> as.matrix()
 

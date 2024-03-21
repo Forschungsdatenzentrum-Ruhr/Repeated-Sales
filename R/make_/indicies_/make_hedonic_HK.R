@@ -1,4 +1,4 @@
-make_hedonic_HK <- function(RED_classified = NA) {
+make_hedonic_HK <- function(RED_classified) {
   #' @title WIP
   #'
   #' @description WIP
@@ -71,7 +71,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
       ) |> factor(
         0:6,
         c(
-          NA_character_,
+          "MISSING",
           "(0-200]",
           "(200-400]",
           "(400-600]",
@@ -91,7 +91,7 @@ make_hedonic_HK <- function(RED_classified = NA) {
       ) |> factor(
         0:7,
         c(
-          NA_character_,
+          "MISSING",
           "typ_freistehend",
           "typ_DHH",
           "typ_Reihenhaus",

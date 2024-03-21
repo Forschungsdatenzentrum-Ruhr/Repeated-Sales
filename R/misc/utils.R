@@ -5,7 +5,7 @@
 #' Section and debugging
 #'
 
-output_path_json <- function(output_path = NA) {
+output_path_json <- function(output_path) {
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = T)
   }
@@ -39,7 +39,7 @@ filter_unique_options <- function(unique_options, new_names, use_which = T) {
   }
 }
 
-which_range <- function(non_list_reason_vec = NA) {
+which_range <- function(non_list_reason_vec) {
   # helps connect selling point to first preceding update
   # update chain upto and including selling point are connected into one listing
 
@@ -59,7 +59,7 @@ which_range <- function(non_list_reason_vec = NA) {
   return(list(returner_start, returner_end))
 }
 
-custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA, mod = 1000) {
+custom_progress_bar <- function(classification_type, .GRP, .GRPN, mod = 1000) {
   # the .envir argument causes the progress_bar used to be the global one
   if (.GRP == 1) {
     start_time <<- Sys.time()
@@ -78,7 +78,7 @@ custom_progress_bar <- function(classification_type = NA, .GRP = NA, .GRPN = NA,
 
   return(NULL)
 }
-check_nonsensical_listings <- function(data_connected = NA, data_name = NA) {
+check_nonsensical_listings <- function(data_connected, data_name) {
   # calc ayear/eyear from amonths/emonths
   data_connected <- copy(data_connected)[, ":="(ayear = amonths %/% 12, eyear = emonths %/% 12)]
 

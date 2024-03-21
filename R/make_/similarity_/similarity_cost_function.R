@@ -1,4 +1,4 @@
-similarity_cost_function <- function(clustering_centers = NA) {
+similarity_cost_function <- function(clustering_centers) {
   #' @title WIP
   #'
   #' @description WIP
@@ -28,7 +28,7 @@ similarity_cost_function <- function(clustering_centers = NA) {
   # Explanation + Prep ------------------------------------------------------
   
   # empty data.table to appended to
-  new_names = names(clustering_centers)
+  new_namesmes(clustering_centers)
   final_removal = setNames(data.table(matrix(nrow = 0, ncol = length(new_names))), new_names)
   
   # each observation can only be a parent or child, never both

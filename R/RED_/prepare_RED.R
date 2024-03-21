@@ -1,4 +1,4 @@
-prepare_RED <- function(RED_full_data = NA, var_of_interest = NA) {
+prepare_RED <- function(RED_full_data, var_of_interest) {
   var_to_replace_missings = c("balkon")#,"etage","zimmeranzahl","wohnflaeche")
   RED_full_data <- RED_full_data[,
       (var_to_replace_missings) := lapply(.SD, function(x) {

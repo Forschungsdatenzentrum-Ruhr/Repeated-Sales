@@ -1,4 +1,4 @@
-custom_cross_tabyl <- function(combined_federal_states = NA, arg1 = NA, arg2 = NA) {
+custom_cross_tabyl <- function(combined_federal_states, arg1, arg2) {
   cross_tabyl <- combined_federal_states |>
     tabyl(!!sym(arg1), !!sym(arg2)) |>
     adorn_totals("row") |>
@@ -14,7 +14,7 @@ custom_cross_tabyl <- function(combined_federal_states = NA, arg1 = NA, arg2 = N
   return(cross_tabyl)
 }
 
-datasummary_skim_numerical <- function(combined_federal_states = NA) {
+datasummary_skim_numerical <- function(combined_federal_states) {
   modelsummary::datasummary_skim(
     combined_federal_states,
     type = "numeric",
@@ -25,7 +25,7 @@ datasummary_skim_numerical <- function(combined_federal_states = NA) {
   return(NULL)
 }
 
-datasummary_skim_categorical <- function(combined_federal_states = NA) {
+datasummary_skim_categorical <- function(combined_federal_states) {
   modelsummary::datasummary_skim(
     combined_federal_states,
     type = "categorical",
@@ -36,7 +36,7 @@ datasummary_skim_categorical <- function(combined_federal_states = NA) {
   return(NULL)
 }
 
-custom_threeway_tabyl <- function(combined_federal_states = NA, arg1 = NA, arg2 = NA, arg3 = NA) {
+custom_threeway_tabyl <- function(combined_federal_states, arg1, arg2, arg3) {
   cross_tabyl <- combined_federal_states |>
     tabyl(!!sym(arg1), !!sym(arg2), !!sym(arg3)) |>
     adorn_totals("row") |>
@@ -52,7 +52,7 @@ custom_threeway_tabyl <- function(combined_federal_states = NA, arg1 = NA, arg2 
   return(cross_tabyl)
 }
 
-parent_counts <- function(combined_federal_states = NA) {
+parent_counts <- function(combined_federal_states) {
   
   counts_federal = combined_federal_states["Sold",.("Count" = .N, "Federal" = blid), by = "parent", on = "non_list_reason"]|>  unique()
   counts_federal_table = counts_federal |> filter(Count <= 5) |> tabyl(Federal, Count) |>

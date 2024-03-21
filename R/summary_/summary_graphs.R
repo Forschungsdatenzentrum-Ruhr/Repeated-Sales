@@ -1,4 +1,4 @@
-# summary_table_sensitivity <- function(sensitivity = NA) {
+# summary_table_sensitivity <- function(sensitivity) {
 #   
 #   # subset to only sold listings and calculate number of parents
 #   sensitivity_parent_counts <- sensitivity[

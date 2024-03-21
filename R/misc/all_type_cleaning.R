@@ -1,4 +1,4 @@
-all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA) {
+all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
   # this batch replaces all missings with zero and converts columns to factor
   RED_cleaned <- RED_classified[,
     (var_to_replace_missings) := lapply(.SD, function(x) {
@@ -27,7 +27,7 @@ all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA)
         factor(
           levels = 0:9,
           labels = c(
-            NA_character_,
+            "MISSING",
             "<1900",
             "1900-1945",
             "1946-1959",
@@ -59,7 +59,7 @@ all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA)
       ausstattung = factor(
         ausstattung,
         0:4,
-        c(NA_character_, "Simple", "Normal", "Sophisticated", "Deluxe")
+        c("MISSING",, "Simple", "Normal", "Sophisticated", "Deluxe")
       )
     )
   ] |> drop_na(ausstattung, baujahr_cat)

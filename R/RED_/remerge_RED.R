@@ -1,4 +1,4 @@
-remerge_RED <- function(classification = NA, RED_full_data = NA) {
+remerge_RED <- function(classification, RED_full_data) {
   # find all columns that are present in both, classification columns take precedence
   # disregarding counting_id, since this is used for the merge
   names_diff <- setdiff(intersect(names(classification), names(RED_full_data)), "counting_id")

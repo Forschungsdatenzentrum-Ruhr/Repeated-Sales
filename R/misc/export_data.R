@@ -1,4 +1,4 @@
-export_data <- function(classification = NA, data_version = NA, data_type = NA) {
+export_data <- function(classification, data_version, data_type) {
   #' @title WIP
   #'
   #' @description WIP

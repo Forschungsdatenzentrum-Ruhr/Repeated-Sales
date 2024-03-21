@@ -1,4 +1,4 @@
-make_classification <- function(geo_grouped_data = NA) {
+make_classification <- function(geo_grouped_data) {
 
   # it might help quite a bit to move this into a markdown file with a
   # synthetic example of how every step works. might be useful to structure

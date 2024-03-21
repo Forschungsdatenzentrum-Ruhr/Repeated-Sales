@@ -1,4 +1,4 @@
-non_list_classification <- function(parent_grouped_data = NA, data_end_date = NA) {
+non_list_classification <- function(parent_grouped_data, data_end_date) {
   # WK data !!
   # latlon_utm == 5914585.51138591603185.2001455
   # contains long update chain + miss example
