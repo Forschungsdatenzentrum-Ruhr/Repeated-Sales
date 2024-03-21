@@ -14,7 +14,6 @@ prepare_split <- function(single_index, single_index_name, grouping = c("date_qu
     # # remove stuttgard
     # single_index = single_index[gid2019 != 08111000]
   }
-  # "gid2019"
   
   single_index <- single_index[, .(mean_index = mean(na.omit(index), na.rm = T)), by = grouping][, index_type := single_index_name]
   

@@ -1,8 +1,6 @@
 make_repeated <- function(prepared_repeated, grouping_var) {
-  # add date column here -> might be time to make this a class as well ?
 
   # bandaid to filter top bottom half a percent of pice variables to catch incredible outliers
-  # there are still NAs in ARS -> accept or fix
   upper_percentile <- quantile(prepared_repeated[price_var >= 0, price_var], 1 - (0.1 / 100))
   lower_percentile <- quantile(prepared_repeated[price_var >= 0, price_var], (0.1 / 100))
   
@@ -10,10 +8,8 @@ make_repeated <- function(prepared_repeated, grouping_var) {
   # see also ?rs_matrix
   matrices <- with(
     prepared_repeated[
-      #!price_var == prev_price_var &
       price_var %between% c(lower_percentile, upper_percentile)
-    ]
-    ,
+    ],
     rs_matrix(
       t2 = date_quarter,
       t1 = prev_date_quarter,
@@ -24,41 +20,28 @@ make_repeated <- function(prepared_repeated, grouping_var) {
     )
   )
   
-  # Prep --------------------------------------------------------------------
-  # TODO: make the cutting a function and equal for all -> do it after merging?
+  # Prep 
   Z <- matrices("Z")
   y <- matrices("y")
   X <- matrices("X")
   Y <- matrices("Y")
 
-  # GRS ---------------------------------------------------------------------
-  # index via Bailey(1963)
-  grs_b <- qr.coef(qr(Z), y) #|> na.omit()
-  # grs_b = feols(y ~ Z)
-  # GRS = mean(grs_b$sumFE)
-
-  # Calculate the GRS index in Bailey, Muth, and Nourse (1963) ss
+  # Calculate the GRS index in Bailey, Muth, and Nourse (1963) 
+  grs_b <- qr.coef(qr(Z), y)
   GRS <- (exp(grs_b) * 100) 
 
   # GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
   #   diag() |>
   #   sqrt()
 
-  
+  # append GRS to data.table
   dt_GRS = data.table(date_quarter = names(GRS), i_type = "GRS", index = GRS |> formatC(format = "f", digits = 4))
 
-  # ARS ---------------------------------------------------------------------
-
-  # index via Shiller (1991)
+  # Calculate the ARS index in Shiller (1991)
   ars_b <- qr.coef(
     qr(t(Z) %*% X),
     t(Z) %*% Y
-  ) #|> na.omit()
-  
-  # this helps the divide by zero issue but is still kinda weird
-  # doesnt fix the weird values
-  # ars_b[ars_b == 0] = NA
-  
+  )
   ARS = (100 / ars_b) |> as.vector()
 
   # vcov <- rs_var(Y - X %*% ars_b, Z, X) |>
@@ -66,12 +49,13 @@ make_repeated <- function(prepared_repeated, grouping_var) {
   #   sqrt()
   # ARS_vcov <- vcov * ARS^2
 
+  # append ARS to data.table
   dt_ARS = data.table(date_quarter = rownames(ars_b), i_type = "ARS", index = ARS |> formatC(format = "f", digits = 4)) 
  
-# combined ----------------------------------------------------------------
-  #repeated_indices = dt_GRS[.(dt_ARS), on = "date_quarter"] |>  drop_na()
+  # combined repeated indices
   repeated_indices = rbind(dt_ARS,dt_GRS)
 
+  #--------------------------------s
   return(repeated_indices)
 }
 

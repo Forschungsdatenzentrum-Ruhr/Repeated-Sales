@@ -62,7 +62,7 @@ all_type_cleaning <- function(RED_classified = NA, var_to_replace_missings = NA)
         c(NA_character_, "Simple", "Normal", "Sophisticated", "Deluxe")
       )
     )
-  ]
+  ] |> drop_na(ausstattung, baujahr_cat)
 
 
   
