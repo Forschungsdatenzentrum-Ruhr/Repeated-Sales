@@ -94,7 +94,7 @@ similarity_cost_function <- function(clustering_centers) {
         # calculate gains of being x being a parent
         parent_gains <- parent_children_competitors[
           ,
-          .("cluster_sim_dist" = sum(1-sim_dist)),
+          .("cluster_sim_dist" = mean(sim_dist)),
           by = "parent",
         ]
 
@@ -107,7 +107,7 @@ similarity_cost_function <- function(clustering_centers) {
 
         child_gains <- child_parent_competitors[
           counting_id != parent,
-          .("counting_id" = counting_id, "single_sim_dist" = 1-sim_dist),
+          .("counting_id" = counting_id, "single_sim_dist" = sim_dist),
         ]
 
 
