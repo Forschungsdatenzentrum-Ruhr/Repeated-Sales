@@ -94,7 +94,9 @@ similarity_cost_function <- function(clustering_centers) {
         # calculate gains of being x being a parent
         parent_gains <- parent_children_competitors[
           ,
-          .("cluster_sim_dist" = mean(sim_dist)),
+          .(
+            "cluster_sim_dist" = sum(sim_dist) / (.N - 1) # average excluding parent itself
+          ),
           by = "parent",
         ]
 
@@ -147,6 +149,26 @@ similarity_cost_function <- function(clustering_centers) {
             on = .(counting_id = counting_id)
           ][!parent == counting_id]
 
+          # determine if these choices are exclusive -> select one with best sim_dist average
+
+          mutual_removal_ids <- child_removal[counting_id %in% parent, .(parent)]
+          # this is probably too complicated, but does its job
+          # make temp id which groups two consecutive items
+          mutual_removal_pairs <- parent_gains[mutual_removal_ids, on = "parent"][
+            ,
+            temp_id := fifelse(
+              .I %% 2 == 0,
+              .I - 1,
+              .I
+            )
+          ]
+          ids_to_keep <- mutual_removal_pairs[, .SD[which.min(cluster_sim_dist)], by = temp_id][,.(parent)]
+
+          # anti-join to only keep what should be dropped
+          child_removal = child_removal[!ids_to_keep, on = "parent"]
+
+          # should always be multiple of 2
+          tar_assert_true(length(mutual_removal_ids) %% 2 == 0, msg = "removal_ids not multiple of two")
 
           # check if this merge did what its intended to do
           tar_assert_true(all(child_removal[counting_id %in% winner_ids$parent, counting_id != parent]), msg = "Child removal failed")
