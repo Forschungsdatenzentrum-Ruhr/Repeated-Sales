@@ -24,7 +24,7 @@ prepare_repeated <- function(RED_classified, grouping_var) {
   
   prepared_repeated_prep = prepared_repeated_prep[,.SD[.N >= 2], by = "rs_id"]
   # Unit test
-  tar_assert_true(prepared_repeated_prep[prev_date_month > date_month, .N] == 0)
+  tar_assert_true(prepared_repeated_prep[prev_date_month > date_month, .N] == 0, msg = "Date month is not in order")
 
   return(prepared_repeated_prep)
 }

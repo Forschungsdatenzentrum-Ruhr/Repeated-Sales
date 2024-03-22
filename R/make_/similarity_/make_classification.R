@@ -23,7 +23,7 @@ make_classification <- function(geo_grouped_data) {
   ]
 
   # check if everything was classified
-  tar_assert_true(geo_grouped_data[,.N] == geo_grouped_data_similarity[, .N])
+  tar_assert_true(geo_grouped_data[,.N] == geo_grouped_data_similarity[, .N], msg = "Underspecification in similarity_classification")
 
   # create panel structure based on parent-child relationship created above
   # connects listings based on months between occurrences
@@ -41,7 +41,7 @@ make_classification <- function(geo_grouped_data) {
   unique_parents = unique(geo_grouped_data_connected[,parent])
   unique_ids = unique(geo_grouped_data_connected[,counting_id])
   
-  tar_assert_true(all(unique_parents %in% unique_ids), msg = glue::glue("{unique(geo_grouped_data_connected$latlon_utm)}"))
+  tar_assert_true(all(unique_parents %in% unique_ids), msg = glue::glue("Unequal parents and ids: {unique(geo_grouped_data_connected$latlon_utm)}"))
   
   
   # unit-test

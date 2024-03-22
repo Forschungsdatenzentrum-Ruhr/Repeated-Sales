@@ -47,7 +47,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   is.na(changed_boolean) <- FALSE
 
   # Unit test
-  tar_assert_true(length(changed_boolean) == nrow(pure_rs))
+  tar_assert_true(length(changed_boolean) == nrow(pure_rs), msg = "Length of changed_boolean does not match pure_rs")
   
   pure_rs[, changed_to := changed_boolean][, changed_from := lead(changed_to, 1), by = rs_id]
 

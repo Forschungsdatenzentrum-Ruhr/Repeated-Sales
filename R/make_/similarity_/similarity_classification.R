@@ -94,7 +94,7 @@ similarity_classification <- function(geo_grouped_data, curr_latlon_log) {
     }
     
     # Unit-Test ---------------------------------------------------------------
-    tar_assert_true(nrow(clustering$centers) == nrow(geo_grouped_data), msg = head(geo_grouped_data$counting_id))
+    tar_assert_true(nrow(clustering$centers) == nrow(geo_grouped_data), msg = glue::glue("Similarity classification produced unequal rows: {head(geo_grouped_data$counting_id}"))
     
     # merge cluster results to inital data and return
     out <- geo_grouped_data[

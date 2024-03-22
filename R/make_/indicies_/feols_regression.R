@@ -12,11 +12,11 @@ feols_regression = function(RED_data,indepVar, depVar, fixed_effects){
 
   # Unit test
   # check if all names made it into the data
-  tar_assert_true(all(indepVar %in% names(RED_data)))
+  tar_assert_true(all(indepVar %in% names(RED_data)), msg = paste0("Missing: ", setdiff(indepVar, names(RED_data))))
 
   # check for NAs that got through cleaning
   NA_check = RED_data[,lapply(.SD, function(x){anyNA(x)}), .SDcols = c(indepVar,fixed_effects)] |> unlist()
-  tar_assert_true(!any(NA_check), msg = names(NA_check)[NA_check])
+  tar_assert_true(!any(NA_check), msg = names(NA_check)[NA_check], msg = "NAs in data")
   
   # construct regression formula
   rhs <- indepVar |> paste(collapse = " + ")
