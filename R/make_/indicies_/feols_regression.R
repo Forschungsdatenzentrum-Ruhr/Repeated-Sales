@@ -1,4 +1,4 @@
-feols_regression = function(RED_data,indepVar depVar, fixed_effects){
+feols_regression = function(RED_data,indepVar, depVar, fixed_effects){
   #' @title WIP
   #'
   #' @description WIP

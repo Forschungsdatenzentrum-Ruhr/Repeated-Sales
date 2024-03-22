@@ -77,7 +77,7 @@ similarity_classification <- function(geo_grouped_data, curr_latlon_log) {
     tar_assert_true(nrow(id_combinations) >= nrow(geo_grouped_data), msg = glue::glue("Underspecfication produced in {first(id_combinations$counting_id)}"))
     
     # reassign to clustering for further processing
-    clustering_namesmes(clustering$centers)
+    clustering_names = names(clustering$centers)
     clustering$centers = id_combinations[, ..clustering_names]
     
     
