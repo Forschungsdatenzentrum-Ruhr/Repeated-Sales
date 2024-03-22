@@ -4,10 +4,10 @@
 # test area
 library(targets)
 tar_load_globals()
-tar_load(WM_req_data)
-latlon = WM_req_data[counting_id == "7430743",.(latlon_utm)][[1]]
+tar_load(WK_req_data)
+latlon = WK_req_data[counting_id == "15188",.(latlon_utm)][[1]]
 
-geo_grouped_data = WM_req_data[latlon_utm == latlon]
+geo_grouped_data = WK_req_data[latlon_utm == latlon]
 tst = make_classification(geo_grouped_data)
 
 # 
