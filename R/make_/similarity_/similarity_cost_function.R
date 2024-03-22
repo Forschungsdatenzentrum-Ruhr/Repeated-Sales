@@ -108,14 +108,15 @@ similarity_cost_function <- function(clustering_centers) {
           .(parent_children_ids),
           on = "counting_id"
         ]
-
+        # this kinda does nothing anymore? refactor this
         child_gains <- child_parent_competitors[
           counting_id != parent,
-          .("counting_id" = counting_id, "single_sim_dist" = sim_dist),
+          .("single_sim_dist" = min(sim_dist)),
+          by = "counting_id"
         ]
 
 
-        tar_assert_true(nrow(child_gains) == nrow(parent_gains), msg = "Different number of gains")
+        tar_assert_true(nrow(child_gains) == nrow(parent_gains), msg = glue::glue("Different number of gains:{parent_gains$parent}"))
 
         # Compare gains and choose lower sim_dist (more similiarity gained)
         # maybe remove best gains and apply recursively?

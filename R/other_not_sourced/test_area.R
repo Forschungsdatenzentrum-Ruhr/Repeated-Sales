@@ -5,7 +5,7 @@
 library(targets)
 tar_load_globals()
 tar_load(WK_req_data)
-latlon = WK_req_data[counting_id == "15188",.(latlon_utm)][[1]]
+latlon = WK_req_data[counting_id == "59314",.(latlon_utm)][[1]]
 
 geo_grouped_data = WK_req_data[latlon_utm == latlon]
 tst = make_classification(geo_grouped_data)
