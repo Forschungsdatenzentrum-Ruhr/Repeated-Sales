@@ -46,37 +46,39 @@ similarity_cost_function <- function(clustering_centers) {
   ]
 
   # check if cleaning up NAs fixed the problem already
-  if (length(competing_parents) != 0) {
-    # parent vs parent competing ----------------------------------------------
+  if (nrow(competing_parents) != 0) {
+    
+    # superceded by later decision making
+    # # # parent vs parent competing ----------------------------------------------
+    # # 
+    # # x is potential child of y or z but not itself -> choose lowest sim_dist
+    # # this also contains all listings with are their own parent -> used in first option
+    # parent_parent_winners <- competing_parents[
+    #   parent != counting_id,
+    #   .SD[which.min(sim_dist)],
+    #   by = "counting_id"
+    # ]
+    # 
+    # # isolate losers that arent parents of themselves
+    # parent_parent_loser <- competing_parents[
+    #   !parent_parent_winners,
+    #   on = .(counting_id, parent)
+    # ][parent != counting_id]
+    # 
+    # # remove non-winning classifications from cluster via anti-join
+    # unique_clustering_centers <- unique_clustering_centers[
+    #   !parent_parent_loser,
+    #   on = .(counting_id, parent)
+    # ]
+    # 
+    # # recheck if conflicts still exist
+    # competing_parents <- unique_clustering_centers[
+    #   ,
+    #   .SD[.N >= 2],
+    #   by = "counting_id"
+    # ]
 
-    # x is potential child of y or z but not itself -> choose lowest sim_dist
-    # this also contains all listings with are their own parent -> used in first option
-    parent_parent_winners <- competing_parents[
-      parent != counting_id,
-      .SD[which.min(sim_dist)],
-      by = "counting_id"
-    ]
-
-    # isolate losers that arent parents of themselves
-    parent_parent_loser <- competing_parents[
-      !parent_parent_winners,
-      on = .(counting_id, parent)
-    ][parent != counting_id]
-
-    # remove non-winning classifications from cluster via anti-join
-    unique_clustering_centers <- unique_clustering_centers[
-      !parent_parent_loser,
-      on = .(counting_id, parent)
-    ]
-
-    # recheck if conflicts still exist
-    competing_parents <- unique_clustering_centers[
-      ,
-      .SD[.N >= 2],
-      by = "counting_id"
-    ]
-
-    if (length(competing_parents) != 0) {
+    if (nrow(competing_parents) != 0) {
       # parent vs child competing -----------------------------------------------
       # find parents which have conflicting classifications
       parent_children_ids <- competing_parents[
@@ -152,6 +154,9 @@ similarity_cost_function <- function(clustering_centers) {
           # determine if these choices are exclusive -> select one with best sim_dist average
 
           mutual_removal_ids <- child_removal[counting_id %in% parent, .(parent)]
+          # should always be multiple of 2
+          tar_assert_true(nrow(mutual_removal_ids) %% 2 == 0, msg = "removal_ids not multiple of two")
+          
           # this is probably too complicated, but does its job
           # make temp id which groups two consecutive items
           mutual_removal_pairs <- parent_gains[mutual_removal_ids, on = "parent"][
@@ -165,10 +170,7 @@ similarity_cost_function <- function(clustering_centers) {
           ids_to_keep <- mutual_removal_pairs[, .SD[which.min(cluster_sim_dist)], by = temp_id][,.(parent)]
 
           # anti-join to only keep what should be dropped
-          child_removal = child_removal[!ids_to_keep, on = "parent"]
-
-          # should always be multiple of 2
-          tar_assert_true(length(mutual_removal_ids) %% 2 == 0, msg = "removal_ids not multiple of two")
+          child_removal = child_removal[!mutual_removal_ids[ids_to_keep, on = "parent"], on = "parent"]
 
           # check if this merge did what its intended to do
           tar_assert_true(all(child_removal[counting_id %in% winner_ids$parent, counting_id != parent]), msg = "Child removal failed")
@@ -181,10 +183,12 @@ similarity_cost_function <- function(clustering_centers) {
       }
     }
   }
-
+  
+  # gets lost somewhere: 66764
   # Unit-test
-  tar_assert_true(anyDuplicated(unique_clustering_centers) == 0, msg = "Duplicates still found in unique_clustering_centers")
-
+  tar_assert_true(anyDuplicated(unique_clustering_centers$counting_id) == 0, msg = "Duplicates still found in unique_clustering_centers")
+  id_check = unique(clustering_centers$counting_id) %in% unique_clustering_centers$counting_id
+  tar_assert_true(all(id_check), msg = glue::glue("missings ids:{unique(clustering_centers$counting_id)[!id_check]}"))
 
   return(unique_clustering_centers)
 }
