@@ -41,7 +41,7 @@ similarity_classification <- function(geo_grouped_data, curr_latlon_log) {
       
       # exclude similarity distances maybe irrelevant by similarity index (values are not in interval)
       # this reduces computation substantially since we don't have to compare n x n each time but n x m instead (n > m)
-      similarity_dist_list[is.na(similarity_index_list)]
+      similarity_dist_list[is.na(similarity_index_list)] = NA
 
       # setup and run the actual clustering
       clustering <- cluster$new(

@@ -52,22 +52,6 @@ custom_threeway_tabyl <- function(combined_federal_states, arg1, arg2, arg3) {
   return(cross_tabyl)
 }
 
-parent_counts <- function(combined_federal_states) {
-  
-  counts_federal = combined_federal_states["Sold",.("Count" = .N, "Federal" = blid), by = "parent", on = "non_list_reason"]|>  unique()
-  counts_federal_table = counts_federal |> filter(Count <= 5) |> tabyl(Federal, Count) |>
-    adorn_totals("row") |>
-    adorn_percentages("row") |>
-    adorn_pct_formatting(digits = 2) |>
-    adorn_ns()
-  
-  # save to file
-  counts_federal_table |>
-    htmlTable(rnames = F) |>
-    kableExtra::save_kable(paste0(output_path, "/counts_federal.png"))
-  
-  return(counts_federal_table)
-}  
   
   
   

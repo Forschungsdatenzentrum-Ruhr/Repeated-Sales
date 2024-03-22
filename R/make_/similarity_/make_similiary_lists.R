@@ -39,7 +39,7 @@ make_similarity_lists <- function(combinations, occurence_ids) {
           between_helper(1,etage,etage_e_o),
         0,
         # no matches
-        default
+        default = NA
       ))
     ] |> as.matrix()
 
