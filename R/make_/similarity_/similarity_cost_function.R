@@ -64,7 +64,11 @@ similarity_cost_function <- function(clustering_centers) {
     parent_gains <- parent_children_competitors[
       ,
       .(
-        "cluster_sim_dist" = sum(sim_dist) / (.N - 1) # average excluding parent itself
+        "cluster_sim_dist" = fifelse(
+          .N > 1,
+          sum(sim_dist) / (.N - 1), # average excluding parent itself
+          1 # just the parent itself, undesirable
+        )
       ),
       by = "parent",
     ]
@@ -78,7 +82,7 @@ similarity_cost_function <- function(clustering_centers) {
     # this kinda does nothing anymore? refactor this
     child_gains <- child_parent_competitors[
       counting_id != parent,
-      .("single_sim_dist" = min(sim_dist)),
+      .("single_sim_dist" = mean(sim_dist)),
       by = "counting_id"
     ]
 
@@ -116,7 +120,7 @@ similarity_cost_function <- function(clustering_centers) {
     child_removal <- competing_parents[
       .(winner_ids$parent),
       on = .(counting_id = counting_id)
-    ][!parent == counting_id]
+    ][!parent == counting_id]# & parent %in% counting_id
 
     # determine if these choices are exclusive -> select one with best sim_dist average
 
@@ -141,17 +145,32 @@ similarity_cost_function <- function(clustering_centers) {
 
     # check if this merge did what its intended to do
     tar_assert_true(all(child_removal[counting_id %in% winner_ids$parent, counting_id != parent]), msg = "Child removal failed")
-
+    
+    
     unique_clustering_centers <- unique_clustering_centers[
       !child_removal,
       on = .(parent)
     ]
+    
+    # testing additionally removing parents 
+    parent_removal <- competing_parents[
+      .(winner_ids$child),
+      on = .(parent = counting_id)
+    ][parent == counting_id]
+    # dont remove what was already dealt with above
+    parent_removal = parent_removal[!child_removal, on = "parent"]
+    
+    unique_clustering_centers <- unique_clustering_centers[
+      !parent_removal,
+      on = .(parent,counting_id)
+    ]
   }
 
   # Unit-test
-  tar_assert_true(anyDuplicated(unique_clustering_centers$counting_id) == 0, msg = glue::glue("Duplicates still found:{unique_clustering_centers$counting_id}"))
   id_check <- unique(clustering_centers$counting_id) %in% unique_clustering_centers$counting_id
   tar_assert_true(all(id_check), msg = glue::glue("missings ids:{unique(clustering_centers$counting_id)[!id_check]}"))
+  tar_assert_true(anyDuplicated(unique_clustering_centers$counting_id) == 0, msg = glue::glue("Duplicates still found:{unique_clustering_centers$counting_id}"))
+  
 
   return(unique_clustering_centers)
 }
