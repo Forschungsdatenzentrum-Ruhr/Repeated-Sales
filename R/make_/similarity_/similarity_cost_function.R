@@ -17,10 +17,6 @@ similarity_cost_function <- function(clustering_centers) {
 
   # Explanation + Prep ------------------------------------------------------
 
-  # empty data.table to appended to
-  new_names <- names(clustering_centers)
-  final_removal <- setNames(data.table(matrix(nrow = 0, ncol = length(new_names))), new_names)
-
   # each observation can only be a parent or child, never both
   # to dissolve this conflict compare similarity gains from each case
   # another way to think about it: similarity is lost if the other option is chosen
@@ -111,59 +107,53 @@ similarity_cost_function <- function(clustering_centers) {
       !any(winner_ids$child %in% winner_ids$parent),
       msg = "Overlapping winners found! {winner_ids$child %in% winner_ids$parent}"
     )
-    # Edge case -> no parents chosen, happens when everything is within decimals
+    # Edge case -> no parents chosen, default to best parent
     if (length(winner_ids$parent) == 0) {
       winner_ids$parent <- parent_gains[,.SD[which.min(cluster_sim_dist)], .SDcols = "parent"] |> setnames("counting_id")
     }
-
-    # all parent-type winners eliminate them being a child of someone else
-    child_removal <- competing_parents[
-      .(winner_ids$parent),
-      on = .(counting_id = counting_id)
-    ][!parent == counting_id]# & parent %in% counting_id
-
-    # determine if these choices are exclusive -> select one with best sim_dist average
-
-    mutual_removal_ids <- child_removal[counting_id %in% parent, .(parent)]
-    # should always be multiple of 2
-    tar_assert_true(nrow(mutual_removal_ids) %% 2 == 0, msg = "removal_ids not multiple of two")
-
-    # this is probably too complicated, but does its job
-    # make temp id which groups two consecutive items
-    mutual_removal_pairs <- parent_gains[mutual_removal_ids, on = "parent"][
-      ,
-      temp_id := fifelse(
-        .I %% 2 == 0,
-        .I - 1,
-        .I
-      )
-    ]
-    ids_to_keep <- mutual_removal_pairs[, .SD[which.min(cluster_sim_dist)], by = temp_id][, .(parent)]
-
-    # anti-join to only keep what should be dropped
-    child_removal <- child_removal[!mutual_removal_ids[ids_to_keep, on = "parent"], on = "parent"]
-
-    # check if this merge did what its intended to do
-    tar_assert_true(all(child_removal[counting_id %in% winner_ids$parent, counting_id != parent]), msg = "Child removal failed")
     
-    
-    unique_clustering_centers <- unique_clustering_centers[
-      !child_removal,
-      on = .(parent)
-    ]
-    
-    # testing additionally removing parents 
-    parent_removal <- competing_parents[
-      .(winner_ids$child),
-      on = .(parent = counting_id)
-    ][parent == counting_id]
-    # dont remove what was already dealt with above
-    parent_removal = parent_removal[!child_removal, on = "parent"]
-    
-    unique_clustering_centers <- unique_clustering_centers[
-      !parent_removal,
-      on = .(parent,counting_id)
-    ]
+    if(length(winner_ids) == 2){
+      
+      unique_clustering_centers = child_removal_f(parent_gains, winner_ids, unique_clustering_centers)
+      
+      if(anyDuplicated(unique_clustering_centers$counting_id) != 0){
+        parent_removal <- competing_parents[
+          .(winner_ids$child),
+          on = .(parent = counting_id)
+        ][parent == counting_id]
+        
+        # # dont remove what was already dealt with above
+        # parent_removal = parent_removal[!child_removal, on = "parent"]
+        
+        unique_clustering_centers <- unique_clustering_centers[
+          !parent_removal,
+          on = .(parent)
+        ]
+      }
+      
+      
+    } else {
+      unique_clustering_centers = child_removal_f(parent_gains, winner_ids, unique_clustering_centers)
+      if(anyDuplicated(unique_clustering_centers$counting_id) != 0){
+        unique_clustering_centers = unique_clustering_centers[, .SD[which.min(sim_dist)], by = "counting_id"]
+      }
+    }
+    # this some magic -> if it works refactor
+    missing_ids = clustering_centers[!unique_clustering_centers, on = "counting_id"] |> na.omit() |> unique()
+    if(nrow(missing_ids) != 0 ){
+      alternative_parent = missing_ids[, .SD[which.min(sim_dist)], by = "counting_id"]
+      if(any(alternative_parent$parent %in% unique_clustering_centers$parent)){
+        unique_clustering_centers = rbind(
+          unique_clustering_centers, 
+          alternative_parent
+          )
+      } else {
+        unique_clustering_centers = rbind(unique_clustering_centers, alternative_parent)
+      }
+      
+      
+      
+    }
   }
 
   # Unit-test

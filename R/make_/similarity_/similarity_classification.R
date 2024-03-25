@@ -10,6 +10,7 @@ similarity_classification <- function(geo_grouped_data, curr_latlon_log) {
     #' @author Thorben Wiebe
     #----------------------------------------------
     ## Preperation
+    logger::log_info(glue::glue("Working on {curr_latlon_log}; N = {nrow(geo_grouped_data)}"))
 
     # make copy to modifiy keys
     geo_grouped_data <- copy(geo_grouped_data)
