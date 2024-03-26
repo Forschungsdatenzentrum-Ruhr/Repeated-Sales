@@ -14,7 +14,7 @@ child_removal_f = function(parent_gains, winner_ids,unique_clustering_centers){
   
   # determine if these choices are exclusive -> select one with best sim_dist average
   mutual_removal_ids <- child_removal[parent %in% counting_id, .(parent)]
-  if(nrow(mutual_removal_ids != 0)){
+  if(nrow(mutual_removal_ids) > 1){
     # should always be multiple of 2
     tar_assert_true(nrow(mutual_removal_ids) %% 2 == 0, msg = glue::glue("removal_ids not multiple of two {mutual_removal_ids$parent}"))
     

@@ -134,23 +134,27 @@ similarity_cost_function <- function(clustering_centers) {
       
     } else {
       unique_clustering_centers = child_removal_f(parent_gains, winner_ids, unique_clustering_centers)
-      if(anyDuplicated(unique_clustering_centers$counting_id) != 0){
-        unique_clustering_centers = unique_clustering_centers[, .SD[which.min(sim_dist)], by = "counting_id"]
-      }
     }
+    
+    ## these are mostly bandaids for edge-cases
     # this some magic -> if it works refactor
     missing_ids = clustering_centers[!unique_clustering_centers, on = "counting_id"] |> na.omit() |> unique()
     if(nrow(missing_ids) != 0 ){
-      alternative_parent = missing_ids[, .SD[which.min(sim_dist)], by = "counting_id"]
+      alternative_parent = missing_ids[parent != counting_id, .SD[which.min(sim_dist)], by = "counting_id"]
       if(any(alternative_parent$parent %in% unique_clustering_centers$parent)){
         unique_clustering_centers = rbind(
           unique_clustering_centers, 
           alternative_parent
           )
-      } else {
+      missing_ids = clustering_centers[!unique_clustering_centers, on = "counting_id"] |> na.omit() |> unique()
+      }
+      if(nrow(missing_ids) != 0 ){
+        alternative_parent = missing_ids[, .SD[which.min(sim_dist)], by = "counting_id"]
         unique_clustering_centers = rbind(unique_clustering_centers, alternative_parent)
       }
-      
+      if(anyDuplicated(unique_clustering_centers$counting_id) != 0){
+        unique_clustering_centers = unique_clustering_centers[, .SD[which.min(sim_dist)], by = "counting_id"]
+      }
       
       
     }
@@ -159,7 +163,7 @@ similarity_cost_function <- function(clustering_centers) {
   # Unit-test
   id_check <- unique(clustering_centers$counting_id) %in% unique_clustering_centers$counting_id
   tar_assert_true(all(id_check), msg = glue::glue("missings ids:{unique(clustering_centers$counting_id)[!id_check]}"))
-  tar_assert_true(anyDuplicated(unique_clustering_centers$counting_id) == 0, msg = glue::glue("Duplicates still found:{unique_clustering_centers$counting_id}"))
+  tar_assert_true(anyDuplicated(unique_clustering_centers$counting_id) == 0, msg = glue::glue("Duplicates still found:{unique_clustering_centers$counting_id[duplicated(unique_clustering_centers$counting_id)]}"))
   
 
   return(unique_clustering_centers)

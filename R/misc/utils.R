@@ -113,6 +113,7 @@ check_nonsensical_listings <- function(data_connected, data_name) {
 
 
 between_helper <- function(i_value, j_value, offset) {
-  out <- abs(i_value - j_value) <= offset
+  abs_diff = abs(i_value - j_value)
+  out <- (abs_diff < offset) | all.equal(abs_diff, offset)
   return(out)
 }
