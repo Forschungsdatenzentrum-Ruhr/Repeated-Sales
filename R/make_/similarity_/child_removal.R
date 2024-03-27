@@ -13,21 +13,23 @@ child_removal_f = function(parent_gains, winner_ids,unique_clustering_centers){
   ][!parent == counting_id]# & parent %in% counting_id
   
   # determine if these choices are exclusive -> select one with best sim_dist average
-  mutual_removal_ids <- child_removal[parent %in% counting_id, .(parent)]
+  mutual_removal_ids <- child_removal[parent %in% counting_id][counting_id %in% parent]
+  
+  # this has to be more percise -> parent of x is child y and inverse -> figure out how to group these
   if(nrow(mutual_removal_ids) > 1){
     # should always be multiple of 2
     tar_assert_true(nrow(mutual_removal_ids) %% 2 == 0, msg = glue::glue("removal_ids not multiple of two {mutual_removal_ids$parent}"))
     
     # this is probably too complicated, but does its job
-    # make temp id which groups two consecutive items
-    mutual_removal_pairs <- parent_gains[mutual_removal_ids, on = "parent"][
-      ,
-      temp_id := fifelse(
-        .I %% 2 == 0,
-        .I - 1,
-        .I
-      )
-    ]
+    mutual_removal_pairs = mutual_removal_ids[mutual_removal_ids[,.(parent,counting_id)], pair_row_number := .I, on  = .(parent == counting_id, counting_id == parent)]
+    for(i in seq_along(nrow(mutual_removal_pairs))){
+      # extract the pair 
+      pair_row_number_vector = c(i,mutual_removal_pairs[i,"pair_row_number"] |> pull()) |> sort()
+      # combine pair into temp id and assign
+      mutual_removal_pairs[pair_row_number_vector, temp_id := paste0(pair_row_number_vector,collapse = "_")]
+    }
+    # add gains to pairs to make decision
+    mutual_removal_pairs = parent_gains[mutual_removal_pairs, on = "parent"]
     ids_to_keep <- mutual_removal_pairs[, .SD[which.min(cluster_sim_dist)], by = temp_id][, .(parent)] |> unique()
     
     
