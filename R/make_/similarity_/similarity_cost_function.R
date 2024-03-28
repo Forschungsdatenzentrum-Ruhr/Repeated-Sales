@@ -152,11 +152,9 @@ similarity_cost_function <- function(clustering_centers) {
         alternative_parent = missing_ids[, .SD[which.min(sim_dist)], by = "counting_id"]
         unique_clustering_centers = rbind(unique_clustering_centers, alternative_parent)
       }
-      if(anyDuplicated(unique_clustering_centers$counting_id) != 0){
-        unique_clustering_centers = unique_clustering_centers[, .SD[which.min(sim_dist)], by = "counting_id"]
-      }
-      
-      
+    }
+    if(anyDuplicated(unique_clustering_centers$counting_id) != 0){
+      unique_clustering_centers = unique_clustering_centers[, .SD[which.min(sim_dist)], by = "counting_id"]
     }
   }
 

@@ -1,12 +1,12 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|95f6f98ff7527477|||||||||||||||
+.Random.seed|object|e92b6c567aeaad3d|||||||||||||||
 all_type_cleaning|function|c6d838ef54279c82|||||||||||||||
 between_ext|function|d7ad82142ba60623|||||||||||||||
 between_helper|function|70bda0c8c1e4bb1f|||||||||||||||
 blid_targets|object|49c50843623ea3bd|||||||||||||||
 categories|object|02b110494c94bae2|||||||||||||||
 check_nonsensical_listings|function|91494e6ec8c3c418|||||||||||||||
-child_removal_f|function|7ab9728805fb6eb8|||||||||||||||
+child_removal_f|function|5d4bfac330b751b2|||||||||||||||
 classification_ids|object|5ae523c8e01b6b18|||||||||||||||
 classification_targets|object|f16a1dd3bb18485b|||||||||||||||
 classify_data|function|74d6c6a78c8867fb|||||||||||||||
@@ -47,7 +47,7 @@ indices_targets|object|4483766694e31416|||||||||||||||
 load_data|function|c7cfa00dd28303f8|||||||||||||||
 low_cutoff|object|e2570f7cd005b47c|||||||||||||||
 main_path|object|ea0679eaa6fab246|||||||||||||||
-make_classification|function|aa93b6d3928eea78|||||||||||||||
+make_classification|function|1d3f4bb136281701|||||||||||||||
 make_combined|function|76cd4a0c76316d83|||||||||||||||
 make_date_quarter|function|a9806e4c39dd19aa|||||||||||||||
 make_example_markdown_data|function|af1e316745bbf713|||||||||||||||
@@ -93,8 +93,8 @@ removal|function|85e68f2ce5dae16f|||||||||||||||
 req_library|object|17c1871f45f23c76|||||||||||||||
 sensitivity_suffix|object|7c33bdc44f2f12c3|||||||||||||||
 settings_used|stem|9dca878e0e36a09e|b52b8b06d08db237|b7a612b78411a41b|140349396||t19803.8465440278s|3bd8f66805fd112b|45|rds|local|vector|||0.03||
-similarity_classification|function|e7ef3eae38b3969c|||||||||||||||
-similarity_cost_function|function|b5f35060c46a2e38|||||||||||||||
+similarity_classification|function|d74d44e73b6eb224|||||||||||||||
+similarity_cost_function|function|9058c323c598e9ad|||||||||||||||
 start_time|object|d43bf697b3b4b40c|||||||||||||||
 static_combined_index|object|1c1224caecf31cc2|||||||||||||||
 static_export|object|53ae852a61428117|||||||||||||||
@@ -170,7 +170,7 @@ WM_classification_blid_4|stem|4ee203def80ed5db|91172bccffd4a2e4|776209c7d4f55922
 WM_classification_blid_5|stem|6ce6a91837541e81|6adf7e5a7def91e1|776209c7d4f55922|-457488785||t19801.783632457s|73d86e8f3593d2f2|291065734|fst_dt|local|vector|||68463.28||
 WM_classification_blid_6|stem|63be72e12c493c45|32636eb15e5a7c58|776209c7d4f55922|263822415||t19801.2182426958s|27670f4b6885eb1e|94942436|fst_dt|local|vector|||19192.93||
 WM_classification_blid_7|stem|bbd1dc4f0b5b1adb|86fb8adda338caae|776209c7d4f55922|527645634||t19801.1720558261s|8a88b4a4ebfef977|33343880|fst_dt|local|vector|||6614.79||
-WM_classification_blid_8|stem|e0221986c1d2d577|6525066b95976fe6|27f102a987688a09|-319695168||t19808.781540828s||98348924|fst_dt|local|vector|||33.42||31mremoval_ids not multiple of two 1195406939m36m39m 31mremoval_ids not multiple of two 1171926239m36m39m 31mremoval_ids not multiple of two 1195406939m36m39m 31mremoval_ids not multiple of two 1171926239m36m39m 31mremoval_ids not multiple of two 1185913039m36m39m 31mremoval_ids not multiple of two 1191148139m36m39m 31mremoval_ids not multiple of two 1172128839m36m39m 31mremoval_ids not multiple of two 1185913039m36m39m 31mremoval_ids not multiple of two 1191148139m36m39m 31mremoval_ids not multiple of two 1172128839m36m39m 31mremoval_ids not multiple of two 1172128839m36m39m 31mremoval_ids not multiple of two 1183593239m36m39m 31mremoval_ids not multiple of two 1201448539m36m39m 31mremoval_ids not multiple of two 1177160539m36m39m 31mremoval_ids not multiple of two 1177160539m
+WM_classification_blid_8|stem|e0221986c1d2d577|6525066b95976fe6|c7382848ff5228da|-319695168||t19808.781540828s||98348924|fst_dt|local|vector|||5608.77||i2 is 3 which is out of range 1,nrow2
 WM_classification_blid_9|stem|9b991862b14a707f|4f9bf8c4376323d9|2403e28636410254|-88575411||t19809.1178329277s|55cdb7ac0d426fe3|122994426|fst_dt|local|vector|||29030.77||
 WM_classified|stem|08e2f0e76082b901|3308efa7109bf22b|681c77ac7aae13a2|1136871167||t19797.5786093063s|10ec04bc536b85ed|1685190307|fst_dt|local|vector|||47.49||
 WM_export|stem|9dca878e0e36a09e|e269a1a04787b594|54fb62ff0da4ab4c|-513569705||t19802.8790556119s|3bd8f66805fd112b|45|rds|local|vector|||76.9||
