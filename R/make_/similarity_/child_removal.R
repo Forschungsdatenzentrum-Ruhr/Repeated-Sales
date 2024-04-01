@@ -28,7 +28,7 @@ child_removal_f <- function(parent_gains, winner_ids, unique_clustering_centers)
       # extract the pair
       pair_row_number_vector <- c(i, mutual_removal_pairs |> slice(i) |> select("pair_row_number") |> pull()) |> sort()
       # combine pair into temp id and assign
-      mutual_removal_pairs[pair_row_number_vector, temp_id := paste0(pair_row_number_vector, collapse = "_")]
+      mutual_removal_pairs[pair_row_number %in% pair_row_number_vector, temp_id := paste0(pair_row_number_vector, collapse = "_")]
     }
     # add gains to pairs to make decision
     mutual_removal_pairs <- parent_gains[mutual_removal_pairs, on = "parent"]
