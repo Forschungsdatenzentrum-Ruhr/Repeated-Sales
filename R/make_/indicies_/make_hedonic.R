@@ -11,11 +11,14 @@ make_hedonic <- function(prepared_hedonic, data_type) {
     depVar = depVar, 
     fixed_effects = fixed_effects
   )
-
-  pindex = hedonic_coef$sumFE
+  # really feel like this should be possible with data.table but cant find it
   removed_ids = hedonic_coef$obs_selection$obsRemoved
-
-  out = copy(prepared_hedonic)[removed_ids][, index := pindex]
+  pindex = (exp(hedonic_coef$sumFE)-1)*100
+  # drop ids that were removed during regression and assign index
+  if(length(removed_ids) > 0){
+    prepared_hedonic = dplyr::slice(prepared_hedonic,removed_ids*-1)
+  }
+  out = prepared_hedonic[, index := pindex]
 
   return(out)
 }

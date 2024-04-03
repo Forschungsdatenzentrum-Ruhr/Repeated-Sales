@@ -59,7 +59,7 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
       ausstattung = factor(
         ausstattung,
         0:4,
-        c("MISSING",, "Simple", "Normal", "Sophisticated", "Deluxe")
+        c("MISSING", "Simple", "Normal", "Sophisticated", "Deluxe")
       )
     )
   ] |> drop_na(ausstattung, baujahr_cat)

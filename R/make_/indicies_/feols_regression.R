@@ -16,7 +16,7 @@ feols_regression = function(RED_data,indepVar, depVar, fixed_effects){
 
   # check for NAs that got through cleaning
   NA_check = RED_data[,lapply(.SD, function(x){anyNA(x)}), .SDcols = c(indepVar,fixed_effects)] |> unlist()
-  tar_assert_true(!any(NA_check), msg = names(NA_check)[NA_check], msg = "NAs in data")
+  tar_assert_true(!any(NA_check), msg = glue::glue("NAs in data, columns: {names(NA_check)[NA_check]}"))
   
   # construct regression formula
   rhs <- indepVar |> paste(collapse = " + ")

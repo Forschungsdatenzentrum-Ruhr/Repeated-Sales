@@ -1,4 +1,4 @@
-export_data <- function(classification, data_version, data_type) {
+export_data <- function(classification, data_type) {
   #' @title WIP
   #'
   #' @description WIP
@@ -11,9 +11,8 @@ export_data <- function(classification, data_version, data_type) {
   #----------------------------------------------
 
   # paste path together
-  final_path = glue::glue("{output_path}/classification_{data_type}_{data_version}.fst")
+  final_path = glue::glue("{output_path}/RED_RSR_{data_type}_{RED_version}.fst")
   
-  #subset data to only contain sell events
   classification |>
       # write to file
      fst::write.fst(

@@ -100,7 +100,8 @@ make_hedonic_WK <- function(RED_classified) {
         between(etage, 2, 3), 3,
         between(etage, 4, 5), 4,
         between(etage, 6, 10), 5,
-        anzahletagen > 10, 6
+        anzahletagen > 10, 6,
+        default = 0
       ) |> factor(
         0:6,
         c(

@@ -22,6 +22,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   # get ids of all listings that are classified as repeat sales (pure or changed)
   all_rs <- prepared_repeated[["rs_id"]] |> unique()
   # split into repeat and hedonic
+  # something in here causes a data.table warning: Invalid .internal.selfref detected 
   RED_classified <- prepare_hedonic(RED_classified, data_type)[, ":="(
     hybrid_type = fifelse(rs_id %in% all_rs, "repeat", "hedonic"),
     depVar = exp(get(depVar))
@@ -47,7 +48,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   is.na(changed_boolean) <- FALSE
 
   # Unit test
-  tar_assert_true(length(changed_boolean) == nrow(pure_rs), msg = "Length of changed_boolean does not match pure_rs")
+  tar_assert_true(length(changed_boolean) == nrow(pure_rs), "Length of changed_boolean does not match pure_rs")
   
   pure_rs[, changed_to := changed_boolean][, changed_from := lead(changed_to, 1), by = rs_id]
 
@@ -116,15 +117,11 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   combined_hybrid <- combined_hybrid[pre_zimmeranzahl != -Inf & sub_zimmeranzahl != -Inf & Y > 0]
 
   # run regression
-  hybrid_regression <- feols_regression(
-    RED_data = combined_hybrid,
-    indepVar = names(Z),
-    depVar = "Y",
-    fixed_effects = fixed_effects
-  )
+  hybrid_regression <- lm(Y ~ ., data = combined_hybrid)
+  
+  pindex = (exp(predict(hybrid_regression, combined_hybrid))-1)*100
 
-  # add pindex to data
-  pindex <- hybrid_regression$sumFE
+  # add pindex to datas
   combined_hybrid = combined_hybrid[, .(index = pindex, counting_id)]
   out <- RED_classified[combined_hybrid, on = "counting_id"]
 

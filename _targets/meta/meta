@@ -1,12 +1,12 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|809ee37bbcd8ce07|||||||||||||||
-all_type_cleaning|function|c6d838ef54279c82|||||||||||||||
+.Random.seed|object|0fad0e7a04633e42|||||||||||||||
+all_type_cleaning|function|d1c88755b4348a4c|||||||||||||||
 between_ext|function|d7ad82142ba60623|||||||||||||||
 between_helper|function|70bda0c8c1e4bb1f|||||||||||||||
 blid_targets|object|49c50843623ea3bd|||||||||||||||
 categories|object|02b110494c94bae2|||||||||||||||
-check_nonsensical_listings|function|91494e6ec8c3c418|||||||||||||||
-child_removal_f|function|ea8b9a861c6f110c|||||||||||||||
+check_nonsensical_listings|function|9552adf184b23a01|||||||||||||||
+child_removal_f|function|d3152551c29316dd|||||||||||||||
 classification_ids|object|5ae523c8e01b6b18|||||||||||||||
 classification_targets|object|56368eac8ad8a142|||||||||||||||
 classify_data|function|74d6c6a78c8867fb|||||||||||||||
@@ -15,12 +15,12 @@ code_path|object|1f7034383e0d8fdd|||||||||||||||
 construct_file_name|function|29e72075f5539148|||||||||||||||
 cross_tabyl_arguments|object|63fc2b2090e69d82|||||||||||||||
 curr_date|object|bbebf0c8dd438c27|||||||||||||||
-custom_cross_tabyl|function|5b2884d3c7c06f3c|||||||||||||||
+custom_cross_tabyl|function|cdeac8f864c440dd|||||||||||||||
 custom_progress_bar|function|c5c1d196efadd371|||||||||||||||
-custom_threeway_tabyl|function|67fe53d29d9265de|||||||||||||||
+custom_threeway_tabyl|function|ac7f69aebb00e13f|||||||||||||||
 data_path|object|6d584800245b2c26|||||||||||||||
-datasummary_skim_categorical|function|5664c118be0e8129|||||||||||||||
-datasummary_skim_numerical|function|2e7e58086080e09c|||||||||||||||
+datasummary_skim_categorical|function|0465ce235032a8b0|||||||||||||||
+datasummary_skim_numerical|function|536eaaaf4032f947|||||||||||||||
 dynamic_federal_state_ids|object|12ba419d724e5d12|||||||||||||||
 dynamic_RED_classification_ids|object|d62ef6338e0273af|||||||||||||||
 dynamic_RED_req_data|object|3e7aaa7d3c62aa01|||||||||||||||
@@ -28,13 +28,13 @@ dynamic_RED_types|object|fe2075a43f285936|||||||||||||||
 etage_e_o|object|908ec9ea9f0a90f4|||||||||||||||
 etage_r_o|object|90eb3faa69000e32|||||||||||||||
 example_markdown|stem|de00831289951595|f5df13376ca3b5d4|673b8c27d3940639|-529819036|documentation/markdown_/example_markdown.pdf*documentation/markdown_/example_markdown.Rmd|t19797.5748337312s|cadc980a0ceaa931|293996|file|local|vector|||19.2||
-example_markdown_data|stem|4b152b495dbad8f6|63cd2a50b067a8db|842544a03b91e51b|-1781556804||t19787.7942048808s|b97397602bbc5bca|1676|fst_dt|local|vector|||0.12||
-export_data|function|d9af97bf92105f4f|||||||||||||||
-export_targets|object|e47bca29eceeaa0a|||||||||||||||
+example_markdown_data|stem|4b152b495dbad8f6|63cd2a50b067a8db|708330257b83b559|-1781556804||t19815.0748879686s|b97397602bbc5bca|1676|fst_dt|local|vector|||0.13||
+export_data|function|b79980248b99b0eb|||||||||||||||
+export_targets|object|c562bac3debf13cf|||||||||||||||
 exportJSON|object|26a0e34d8e75068f|||||||||||||||
 federal_state_ids|object|f333a8046a41b273|||||||||||||||
 federal_state_targets|object|1d531a34cb9c7554|||||||||||||||
-feols_regression|function|fe9532c1ee2c8235|||||||||||||||
+feols_regression|function|1f6b98b3731bd939|||||||||||||||
 figure_targets|object|ed7cf0cb2b8d968e|||||||||||||||
 file_targets|object|8d88aad24dedd03a|||||||||||||||
 filter_unique_options|function|1c153f6d3ce31928|||||||||||||||
@@ -47,15 +47,15 @@ indices_targets|object|c728f138329651db|||||||||||||||
 load_data|function|c7cfa00dd28303f8|||||||||||||||
 low_cutoff|object|e2570f7cd005b47c|||||||||||||||
 main_path|object|ea0679eaa6fab246|||||||||||||||
-make_classification|function|86feadca2fbca3c4|||||||||||||||
+make_classification|function|996a138e17ea8ee8|||||||||||||||
 make_combined|function|76cd4a0c76316d83|||||||||||||||
 make_date_quarter|function|a9806e4c39dd19aa|||||||||||||||
 make_example_markdown_data|function|af1e316745bbf713|||||||||||||||
-make_hedonic|function|b768e270617e81ba|||||||||||||||
-make_hedonic_HK|function|db13a71d4a655078|||||||||||||||
-make_hedonic_WK|function|815635f5d41c34d8|||||||||||||||
-make_hedonic_WM|function|344711bbcf881664|||||||||||||||
-make_hybrid|function|5186d7b16322f0eb|||||||||||||||
+make_hedonic|function|d4e67cab3436bb6d|||||||||||||||
+make_hedonic_HK|function|24c99ed0c30e2535|||||||||||||||
+make_hedonic_WK|function|119bbf071d179780|||||||||||||||
+make_hedonic_WM|function|be043d5f49b2871e|||||||||||||||
+make_hybrid|function|b662fbd92822919a|||||||||||||||
 make_RED_file_name|function|d856b417ea714c6e|||||||||||||||
 make_repeated|function|a06960940cfcc417|||||||||||||||
 make_sensitivity|function|b6ce4fea1867062f|||||||||||||||
@@ -69,7 +69,7 @@ markdown_path|object|60fe05a35be50907|||||||||||||||
 markdown_targets|object|1ca28d464cb41960|||||||||||||||
 mid_cutoff|object|90eb3faa69000e32|||||||||||||||
 non_list_classification|function|e75fa5cb13755d55|||||||||||||||
-output_path|object|b675d4d8b08209fa|||||||||||||||
+output_path|object|5cfba7c4d3a6d60f|||||||||||||||
 output_path_json|function|5b85fc4adb7f807a|||||||||||||||
 parent_counts|function|fa9f3945dd686f89|||||||||||||||
 pipeline_library|object|312e34b79b433bd6|||||||||||||||
@@ -77,7 +77,7 @@ plot_combined|function|3497f6f86a60f44b|||||||||||||||
 plot_split|function|b1ba1293e6c32564|||||||||||||||
 plot_targets|object|05cc09d0012379e2|||||||||||||||
 prepare_combined|function|d1e3a4e6b91dff32|||||||||||||||
-prepare_hedonic|function|d44d3103079dcbfc|||||||||||||||
+prepare_hedonic|function|7362c83bbb691690|||||||||||||||
 prepare_RED|function|d6df8fe691ba4bd0|||||||||||||||
 prepare_repeated|function|89003500a8c90f3a|||||||||||||||
 prepare_split|function|72ef95cbb9cf38aa|||||||||||||||
@@ -92,9 +92,9 @@ remerge_RED|function|d29c88c1bc1824d6|||||||||||||||
 removal|function|85e68f2ce5dae16f|||||||||||||||
 req_library|object|17c1871f45f23c76|||||||||||||||
 sensitivity_suffix|object|7c33bdc44f2f12c3|||||||||||||||
-settings_used|stem|9dca878e0e36a09e|b52b8b06d08db237|b7a612b78411a41b|140349396||t19803.8465440278s|3bd8f66805fd112b|45|rds|local|vector|||0.03||
-similarity_classification|function|609883d213f89c31|||||||||||||||
-similarity_cost_function|function|cdb9d29b591c0410|||||||||||||||
+settings_used|stem|9dca878e0e36a09e|b52b8b06d08db237|7235ec95da945e2f|140349396||t19815.5311968342s|3bd8f66805fd112b|45|rds|local|vector|||1.11||
+similarity_classification|function|95b56a8049dda750|||||||||||||||
+similarity_cost_function|function|8db0c3c9c11ccb30|||||||||||||||
 start_time|object|d43bf697b3b4b40c|||||||||||||||
 static_combined_index|object|1c1224caecf31cc2|||||||||||||||
 static_export|object|53ae852a61428117|||||||||||||||
@@ -122,68 +122,72 @@ tbl_transpose|function|d10868d824564491|||||||||||||||
 template|function|12e54d9faee64db2|||||||||||||||
 time_offset|object|6b4735fb220fef3a|||||||||||||||
 which_range|function|9f3bbce186851282|||||||||||||||
-WK_classification|stem|8af6998c979f8324|a64b169dee3117bf|25a423c44289af20|-465676772||t19795.1488140186s|7273e151b3c20dcd|355932008|fst_dt|local|vector|||2.38||
-WK_classification_blid_1|stem|773f0caaa95468e9|5d407a37c1545284|b5d725bbec3ab1ac|1301025019||t19801.4413059543s||8933015|fst_dt|local|vector|||3.23||Duplicates still found254860 Duplicates still found259069 Duplicates still found256803 Duplicates still found257351 Duplicates still found258464 Duplicates still found259951 Duplicates still found254860 Duplicates still found259069 Duplicates still found256803 Duplicates still found257351 Duplicates still found258464 Duplicates still found259951 Duplicates still found254860 Duplicates still found259069 Duplicates still found256803 Duplicates still found257351 Duplicates still found258464 Duplicates still found259951 Duplicates still found254860 Duplicates still found259069 Duplicates still found256803 Duplicates still found257351 Duplicates still found258464 Duplicates still found259951 Duplicates still found254860 Duplicates still found259069 Duplicates still found256803 Duplicates still found257351 Duplicates still found258464 Duplicates still found259951
-WK_classification_blid_10|stem|18a667cb09d3c903|6e89facc9d28e2d9|09234838ccc548f8|1771659486||t19801.4438248751s||1180921|fst_dt|local|vector|||0.58||7430743 7431409 7431619 7431845 7432291 7440690
-WK_classification_blid_11|stem|b77ca3f6ea8eeb4b|54db952de0c9133c|fd0d0f88a72bcbdc|1599229008||t19801.5221414685s|f79d0bfc55934baf|50617602|fst_dt|local|vector|||6745.05||
-WK_classification_blid_12|stem|ac8a1ad4d9ed2714|c9181b50d9fa4f73|fd0d0f88a72bcbdc|649681691||t19801.5291636412s|b3b2e4442fab757d|4470398|fst_dt|local|vector|||574.6||
-WK_classification_blid_13|stem|c6850239fe43568c|baf6e96c405bc2c6|fd0d0f88a72bcbdc|1017480951||t19801.5359521008s|f071ede0d11346ca|3817180|fst_dt|local|vector|||557.69||
-WK_classification_blid_14|stem|274d883bc4b8369b|c53d164efc8072cc|fd0d0f88a72bcbdc|-1264912672||t19801.5650622483s|00ef1d9dfe352375|20508543|fst_dt|local|vector|||2487.15||
-WK_classification_blid_15|stem|94325fa5e029f236|dcb804f6f1ff20b4|fd0d0f88a72bcbdc|-1571138977||t19801.5484810335s|165d1d5dcbc53d34|2466432|fst_dt|local|vector|||326.92||
-WK_classification_blid_16|stem|103f714106fe1a42|3bf598c10c596627|fd0d0f88a72bcbdc|-1911084583||t19801.5527808017s|80b690d686dc1b52|2107906|fst_dt|local|vector|||301.74||
-WK_classification_blid_2|stem|45834d1859051c46|2d06d42d3c3a8605|fd0d0f88a72bcbdc|1539386725||t19801.5693996558s|2fc1e489969a5531|7838847|fst_dt|local|vector|||1376.42||
-WK_classification_blid_3|stem|2c5d7b0db5c9d6ec|4525d44dbed12c03|fd0d0f88a72bcbdc|1248135917||t19801.6013164142s|241ea50e76e41204|18032210|fst_dt|local|vector|||3101.23||
-WK_classification_blid_4|stem|9cc7d45d693d5bf0|87386c3dbf1fbe16|fd0d0f88a72bcbdc|1486301009||t19801.5742011845s|79e64dac8558ec59|2227306|fst_dt|local|vector|||385.1||
-WK_classification_blid_5|stem|e6a584577a30c8e1|4d2c0a5a8763cf03|fd0d0f88a72bcbdc|-1390587808||t19801.7021262854s|b042daeea583ce94|68612400|fst_dt|local|vector|||11022.24||
-WK_classification_blid_6|stem|410e349990276bcd|9a3959b50095637c|fd0d0f88a72bcbdc|-1150522114||t19801.65360904s|9d4af72d54b08db5|29031059|fst_dt|local|vector|||4481.67||
-WK_classification_blid_7|stem|4c5d5f644206e983|8f6d39b5f2d56c42|fd0d0f88a72bcbdc|-1851090565||t19801.6748552188s|e07a5fbfa89c486e|12539012|fst_dt|local|vector|||1800.64||
-WK_classification_blid_8|stem|0236a93cdfbc9aac|0389e15a0e8fb452|fd0d0f88a72bcbdc|-1615809145||t19802.7477502575s|f7d13bf64d45fc6e|61095408|fst_dt|local|vector|||9894||
-WK_classification_blid_9|stem|7ef7e5b6ae8562b3|d268d23c99c2bfcd|fd0d0f88a72bcbdc|-194453770||t19802.8773294301s|0af55860d52d3c84|62527890|fst_dt|local|vector|||11185.73||
-WK_classified|stem|76bd5f94a95557ba|c87b9e67ac2d5b4f|7c91f446318080a5|1829056544||t19797.5801676618s|fa1e37f49b1d0a85|521733994|fst_dt|local|vector|||10.55||
-WK_combined_index|stem|47c54fde7d5956b8|dd94b7a5976ffc57|bd77e8ae31047b99|1212116037||t19795.8487923202s|842e5d27e82fce44|1769|rds|local|vector|||58.78|NAs durch Umwandlung erzeugt|
-WK_export|stem|9dca878e0e36a09e|11ca63e157b1ded7|5a599ff6a4629b37|-558327302||t19802.8794479943s|3bd8f66805fd112b|45|rds|local|vector|||18.03||
+WK_classification|stem|b2cf02aedb1c64da|a64b169dee3117bf|b211225b5951c096|-465676772||t19815.1199337152s|8ea49a903edbc454|356151914|fst_dt|local|vector|||2.42||
+WK_classification_blid_1|stem|a70312113a769d31|5d407a37c1545284|a4d11a90213f4c09|1301025019||t19814.9125994763s|cd3e1cb7d2b6dd58|8948181|fst_dt|local|vector|||1014.25||
+WK_classification_blid_10|stem|653e83c077833d46|6e89facc9d28e2d9|a4d11a90213f4c09|1771659486||t19814.9143507602s|803a697cb95db8b6|1178043|fst_dt|local|vector|||130.48||
+WK_classification_blid_11|stem|4102da37e053799b|54db952de0c9133c|a4d11a90213f4c09|1599229008||t19814.9805578202s|af560dfb272aea1a|50476004|fst_dt|local|vector|||5699.2||
+WK_classification_blid_12|stem|4d83f2dbd6eadd64|c9181b50d9fa4f73|a4d11a90213f4c09|649681691||t19814.9217469716s|fbf4d004c6b9d495|4465635|fst_dt|local|vector|||459.17||
+WK_classification_blid_13|stem|c4941e846fbafc7f|baf6e96c405bc2c6|a4d11a90213f4c09|1017480951||t19814.9270803616s|55910449ec1c2fe2|3811788|fst_dt|local|vector|||441.42||
+WK_classification_blid_14|stem|8735ba64f3944249|c53d164efc8072cc|a4d11a90213f4c09|-1264912672||t19814.9490387751s|097a38b665378ecc|20496852|fst_dt|local|vector|||1877.62||
+WK_classification_blid_15|stem|f4f75e374e9e252a|dcb804f6f1ff20b4|a4d11a90213f4c09|-1571138977||t19814.9522026317s|842be4dd233a9162|2466491|fst_dt|local|vector|||248.24||
+WK_classification_blid_16|stem|4a6e6daa7e6ddced|3bf598c10c596627|a4d11a90213f4c09|-1911084583||t19814.9550278945s|7248ac8bdb412b53|2106308|fst_dt|local|vector|||217.42||
+WK_classification_blid_2|stem|4e206ad5d0c7ef54|2d06d42d3c3a8605|a4d11a90213f4c09|1539386725||t19814.9654451225s|ab1cf1977a2e5463|7851087|fst_dt|local|vector|||880.94||
+WK_classification_blid_3|stem|53d09d0977370aab|4525d44dbed12c03|a4d11a90213f4c09|1248135917||t19814.9898529034s|470973b390dbaed3|18053921|fst_dt|local|vector|||2089.22||
+WK_classification_blid_4|stem|e63be33a6a360130|87386c3dbf1fbe16|a4d11a90213f4c09|1486301009||t19814.9837952046s|737d049255af5361|2222667|fst_dt|local|vector|||258.46||
+WK_classification_blid_5|stem|79e7363839056087|4d2c0a5a8763cf03|a4d11a90213f4c09|-1390587808||t19815.0747509991s|a947d4f18a4b19f6|68816737|fst_dt|local|vector|||7835.86||
+WK_classification_blid_6|stem|f97f7bf548dcdcbf|9a3959b50095637c|a4d11a90213f4c09|-1150522114||t19815.0289186824s|75a51e519e505039|29049705|fst_dt|local|vector|||3355.24||
+WK_classification_blid_7|stem|0c06a652c2d30ec6|8f6d39b5f2d56c42|a4d11a90213f4c09|-1851090565||t19815.0089859254s|c0415020ac781600|12539990|fst_dt|local|vector|||1419.05||
+WK_classification_blid_8|stem|ca67d19050e36c16|0389e15a0e8fb452|a4d11a90213f4c09|-1615809145||t19815.0984996747s|43a3d1269cb9f999|61178780|fst_dt|local|vector|||7713.36||
+WK_classification_blid_9|stem|68d04b65733f9f1e|d268d23c99c2bfcd|a4d11a90213f4c09|-194453770||t19815.119331674s|23bc3a7085732edc|62552812|fst_dt|local|vector|||7790.59||
+WK_classified|stem|235a3108c92cb8f3|c87b9e67ac2d5b4f|3fabf071bb347c8e|1829056544||t19815.1212917974s|214762265b5abc01|521116819|fst_dt|local|vector|||13.51||
+WK_combined_index|stem|76ba2b35151aecb8|dd94b7a5976ffc57|506ee8f8f6a57c0b|1212116037||t19815.7171760955s|e44a7c275b977fa2|3718|rds|local|vector|||57.17|NAs durch Umwandlung erzeugt|
+WK_export|stem|9dca878e0e36a09e|d12233a872650e5a|475319597f5e5023|-558327302||t19815.5368395237s|3bd8f66805fd112b|45|rds|local|vector|||17.31||
 WK_file_name|stem|9ead61a518e12722|b5e74848d91ae487|25ef10b8382bc321|-451501804||t19803.8465399305s|5c82a6b436969051|120|rds|local|vector|||0||
 WK_full_data|stem|f03cf58e6d59dc90|1b2ec82018637177|1fbfc810650dead1|-91103406||t19803.8773829654s|730f7d53877a8c9d|986466054|rds|local|vector|||394.94||
 WK_full_data_file|stem|f86510199112346f|53c45d592477a12b|e3be04f9b012a33f|1257077557|M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v9/WK_allVersions_ohneText.dta|t19580.2830755168s|e354b8e02357d723|5020148817|file|local|vector|||0||
-WK_hedonic_index|stem|087df68f17e199aa|b585b1fb00d29b11|900ef6a0774c0999|-1537380915||t19795.8478847703s||2.2250738585072e-308|rds|local|vector|||0.21||31mfloors_cat39m
-WK_hybrid_index|stem|963530c349badb54|a95bc8bf545203f1|19344df821cb3dad|-1525157640||t19803.7668377587s|bc766dce0c741f0b|44141908|rds|local|vector|||39.89|Invalid .internal.selfref detected and fixed by taking a shallow copy of the data.table so that  can add this new column by reference. At an earlier point, this data.table has been copied by R or was created manually using structure or similar. Avoid names and attr which in R currently and oddly may copy the whole data.table. Use set syntax instead to avoid copying set, setnames and setattr. If this message doesnt help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.|
+WK_hedonic_index|stem|e87fad0df0f05f15|b585b1fb00d29b11|6898b51de9e16a5b|-1537380915||t19815.7087327583s|f6d879c83e1d749e|34281964|rds|local|vector|||5.97||
+WK_hybrid_index|stem|95b688eab9362c28|a95bc8bf545203f1|53b49493e64650aa|-1525157640||t19815.7163284218s|6239eafd7573eca0|56710168|rds|local|vector|||47.1|Invalid .internal.selfref detected and fixed by taking a shallow copy of the data.table so that  can add this new column by reference. At an earlier point, this data.table has been copied by R or was created manually using structure or similar. Avoid names and attr which in R currently and oddly may copy the whole data.table. Use set syntax instead to avoid copying set, setnames and setattr. If this message doesnt help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.|
 WK_indices|object|f333a8046a41b273|||||||||||||||
-WK_plot_combined|stem|9dca878e0e36a09e|26ab69022e8bbc5a|53fa44eabae1dd1d|989498027||t19795.8500539967s|3bd8f66805fd112b|45|rds|local|vector|||1.33|Removed 67 rows containing nonfinite values stat_smooth.. Computation failed in stat_smoothCaused by error in gam.reparam NANaNInf in externem Funktionsaufruf arg 3|
-WK_plot_split|stem|9dca878e0e36a09e|0fada761a53dd535|d5d71de23f998fdc|-1516642305||t19795.8499104327s|3bd8f66805fd112b|45|rds|local|vector|||7.55|Removed 143 rows containing nonfinite values stat_smooth.. Removed 143 rows containing nonfinite values stat_smooth.. Removed 990 rows containing nonfinite values stat_smooth.. Computation failed in stat_smoothCaused by error in gam.reparam NANaNInf in externem Funktionsaufruf arg 3|
-WK_prepared_hedonic|stem|1b2bd5beab6260fa|1cca85841a21afe9|5c0f2542717788db|-740487572||t19803.7634912284s|1b4055467ba9a5ae|33561305|rds|local|vector|||27.2|Invalid .internal.selfref detected and fixed by taking a shallow copy of the data.table so that  can add this new column by reference. At an earlier point, this data.table has been copied by R or was created manually using structure or similar. Avoid names and attr which in R currently and oddly may copy the whole data.table. Use set syntax instead to avoid copying set, setnames and setattr. If this message doesnt help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.|
-WK_prepared_repeated|stem|857bed3c00214403|1c57f61f4580fbc3|2019ce6e5266d7da|197130981||t19797.5843464431s|e4d7e81207c95fbc|102022|fst_dt|local|vector|||20.11||
-WK_repeated_index|stem|ad7f0be0b983d11b|01b3e9c95ed264aa|1e4050a3cea76afb|-1811452666||t19795.1540400649s|a4aaff581694c125|13340|rds|local|vector|||6.56||
+WK_plot_combined|stem|9dca878e0e36a09e|26ab69022e8bbc5a|74c6810863baa6db|989498027||t19815.7173155895s|3bd8f66805fd112b|45|rds|local|vector|||1.82|Removed 1 rows containing nonfinite values stat_smooth.|
+WK_plot_split|stem|9dca878e0e36a09e|0fada761a53dd535|e2156ab2cea074c9|-1516642305||t19815.7183465491s|3bd8f66805fd112b|45|rds|local|vector|||5.99|Removed 29 rows containing nonfinite values stat_smooth.. Removed 29 rows containing nonfinite values stat_smooth.|
+WK_prepared_hedonic|stem|5838524daa2996f1|1cca85841a21afe9|6bc8478ec6c443af|-740487572||t19815.6090713247s|09b88b0aa38dcc35|32877089|rds|local|vector|||27.57|Invalid .internal.selfref detected and fixed by taking a shallow copy of the data.table so that  can add this new column by reference. At an earlier point, this data.table has been copied by R or was created manually using structure or similar. Avoid names and attr which in R currently and oddly may copy the whole data.table. Use set syntax instead to avoid copying set, setnames and setattr. If this message doesnt help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.|
+WK_prepared_repeated|stem|db4d3d7908023df3|1c57f61f4580fbc3|1ae82faaff334508|197130981||t19815.1218775457s|1f4562a6afcdb559|153676|fst_dt|local|vector|||16.09||
+WK_repeated_index|stem|4b4b87672a5210e5|01b3e9c95ed264aa|d632ec6be4b14c87|-1811452666||t19815.599718428s|49ea74f330ad8c6e|13141|rds|local|vector|||9.49||
 WK_req_data|stem|f2b4bce05e53d65c|9ed1f4794baecde2|52ee78a6b3dd58e5|2114630366||t19803.8787842359s|8494a092c91c9d7d|307706442|fst_dt|local|vector|||9.15||
-WK_split_index|stem|01f72613620ec0bc|264a29aa032d2b25|7e9d0c1ab2e59ddc|-351519584||t19795.8496858562s|7f8ce8865d7f5467|24559|rds|local|vector|||58.34|NAs durch Umwandlung erzeugt. NAs durch Umwandlung erzeugt|
-WM_classification|stem|302049847563b9f0|c4d167e39f5f6c39|9d5cd619ac39499c|-2010257911||t19796.2402495616s|c79da59e47d87031|1143583247|fst_dt|local|vector|||6.25||
-WM_classification_blid_1|stem|4f0c3c85b0e650a2|b686eacd1c5caceb|ba0ee1c890a2bb4f|-1419521087||t19809.1978732067s||28751099|fst_dt|local|vector|||531.55||i2 is 5 which is out of range 1,nrow4
-WM_classification_blid_10|stem|ac30001cebe5ed6f|815ad8d872c9418e|ba0ee1c890a2bb4f|-420499140||t19810.7718412618s|f9c57e8e3411ede5|2430206|fst_dt|local|vector|||369.18||
-WM_classification_blid_11|stem|63803a5f91bbd11f|3e9646fea54027c0|2403e28636410254|-1197550437||t19809.4840038177s|981c5329d26efd3b|109859160|fst_dt|local|vector|||23944.53||
-WM_classification_blid_12|stem|a1c3ca96efa3c79b|45f2669047e8cb6e|2403e28636410254|904711985||t19809.5503126356s|6f4937a0125ddb2d|24417262|fst_dt|local|vector|||5704.55||
-WM_classification_blid_13|stem|2e9359e30d7cc668|ebe22c189347a494|776209c7d4f55922|1670490746||t19800.7478863189s|c436017669f232f2|15408183|fst_dt|local|vector|||2656.17||
-WM_classification_blid_14|stem|968207ed9a3b7351|6ab55e5bc74afdf7|776209c7d4f55922|298780406||t19800.9906300193s|f05b63dacb715e45|155811766|fst_dt|local|vector|||20920.11||
-WM_classification_blid_15|stem|d790e81fba75838a|d6d0e264b9240ff2|776209c7d4f55922|1155296528||t19800.8250080731s|c47056bed23a5f3a|43444900|fst_dt|local|vector|||5858.26||
-WM_classification_blid_16|stem|c4747b82f41e8a17|9d687498dd222405|776209c7d4f55922|-49848993||t19800.8559389579s|3bed79ae01d18905|16996014|fst_dt|local|vector|||2621.34||
-WM_classification_blid_2|stem|50caed1b86328723|9e478ebf48fdeb10|776209c7d4f55922|387361573||t19800.9738477836s|ffcf3126fbdfab51|24510367|fst_dt|local|vector|||4761.64||
-WM_classification_blid_3|stem|b9b73c1f2b7ad1ce|49a22ccd66acf954|776209c7d4f55922|156241816||t19801.0949939489s|39565ed6301645aa|64110242|fst_dt|local|vector|||12907.28||
-WM_classification_blid_4|stem|4ee203def80ed5db|91172bccffd4a2e4|776209c7d4f55922|-218832158||t19800.9956329944s|04dd8c34dcb9b94b|11250714|fst_dt|local|vector|||1837.43||
-WM_classification_blid_5|stem|6ce6a91837541e81|6adf7e5a7def91e1|776209c7d4f55922|-457488785||t19801.783632457s|73d86e8f3593d2f2|291065734|fst_dt|local|vector|||68463.28||
-WM_classification_blid_6|stem|63be72e12c493c45|32636eb15e5a7c58|776209c7d4f55922|263822415||t19801.2182426958s|27670f4b6885eb1e|94942436|fst_dt|local|vector|||19192.93||
-WM_classification_blid_7|stem|bbd1dc4f0b5b1adb|86fb8adda338caae|776209c7d4f55922|527645634||t19801.1720558261s|8a88b4a4ebfef977|33343880|fst_dt|local|vector|||6614.79||
-WM_classification_blid_8|stem|e0221986c1d2d577|6525066b95976fe6|c7382848ff5228da|-319695168||t19808.781540828s||98348924|fst_dt|local|vector|||5608.77||i2 is 3 which is out of range 1,nrow2
-WM_classification_blid_9|stem|9b991862b14a707f|4f9bf8c4376323d9|2403e28636410254|-88575411||t19809.1178329277s|55cdb7ac0d426fe3|122994426|fst_dt|local|vector|||29030.77||
-WM_classified|stem|08e2f0e76082b901|3308efa7109bf22b|681c77ac7aae13a2|1136871167||t19797.5786093063s|10ec04bc536b85ed|1685190307|fst_dt|local|vector|||47.49||
-WM_export|stem|9dca878e0e36a09e|e269a1a04787b594|54fb62ff0da4ab4c|-513569705||t19802.8790556119s|3bd8f66805fd112b|45|rds|local|vector|||76.9||
+WK_split_index|stem|56e3abe0afb885a5|264a29aa032d2b25|3de862354c0f7abc|-351519584||t19815.7181545976s|278ed4a735fd8da3|48231|rds|local|vector|||57.66|NAs durch Umwandlung erzeugt. NAs durch Umwandlung erzeugt|
+WM_classification|stem|be4ba50583c7f3e9|c4d167e39f5f6c39|efe717931c7f0a23|-2010257911||t19816.2733783783s|52fed337ce6fae62|1146471567|fst_dt|local|vector|||6.22||
+WM_classification_blid_1|stem|64bb155eaa3a6efd|b686eacd1c5caceb|f6ed8e928d5e5fbd|-1419521087||t19814.6036447227s|5b1069cf953395d5|29253268|fst_dt|local|vector|||3996.22||
+WM_classification_blid_10|stem|ac30001cebe5ed6f|815ad8d872c9418e|f6ed8e928d5e5fbd|-420499140||t19814.56164757s|f9c57e8e3411ede5|2430206|fst_dt|local|vector|||369.3||
+WM_classification_blid_11|stem|ae678256e3dda4d1|3e9646fea54027c0|f6ed8e928d5e5fbd|-1197550437||t19814.7505743793s|c31150bca68836fa|112230731|fst_dt|local|vector|||16282.91||
+WM_classification_blid_12|stem|ee4a8cec7052614f|45f2669047e8cb6e|f6ed8e928d5e5fbd|904711985||t19814.6391703264s|f3fe16a73bfd3246|24818276|fst_dt|local|vector|||3032.9||
+WM_classification_blid_13|stem|d6d43cc723a770cd|ebe22c189347a494|f6ed8e928d5e5fbd|1670490746||t19814.6623077846s|99275c4dc19c24e3|15431864|fst_dt|local|vector|||1957.58||
+WM_classification_blid_14|stem|0d3000a2f9cab482|6ab55e5bc74afdf7|f6ed8e928d5e5fbd|298780406||t19814.858057709s|207a801d25d3d073|155931462|fst_dt|local|vector|||16873.27||
+WM_classification_blid_15|stem|5701ff78fe7e9737|d6d0e264b9240ff2|f6ed8e928d5e5fbd|1155296528||t19814.795524137s|fded1e386515fd3f|43464635|fst_dt|local|vector|||4492.31||
+WM_classification_blid_16|stem|8fb88d0e42c24090|9d687498dd222405|f6ed8e928d5e5fbd|-49848993||t19814.7735731625s|21fb726440177b8a|17020348|fst_dt|local|vector|||1945.21||
+WM_classification_blid_2|stem|6600fdff8e88081b|9e478ebf48fdeb10|f6ed8e928d5e5fbd|387361573||t19814.8166389906s|958cc5d97709e8b6|24566698|fst_dt|local|vector|||3673.83||
+WM_classification_blid_3|stem|fff1dd76bedbfc2e|49a22ccd66acf954|f6ed8e928d5e5fbd|156241816||t19814.9004512248s|80948590c4142dd4|64280407|fst_dt|local|vector|||9363.83||
+WM_classification_blid_4|stem|892cf8b0658dd481|91172bccffd4a2e4|f6ed8e928d5e5fbd|-218832158||t19814.8121520461s|79d660e08ad27e3d|11280183|fst_dt|local|vector|||1393.64||
+WM_classification_blid_5|stem|bf9aacb8ee692705|6adf7e5a7def91e1|f6ed8e928d5e5fbd|-457488785||t19816.2722208045s|d1b90436f1287ee4|292278502|fst_dt|local|vector|||48070.01||
+WM_classification_blid_6|stem|645c2a72b97e4f09|32636eb15e5a7c58|f6ed8e928d5e5fbd|263822415||t19814.9923165765s|a78ad73c52994e1b|95137887|fst_dt|local|vector|||15135.69||
+WM_classification_blid_7|stem|cc954696649903d7|86fb8adda338caae|f6ed8e928d5e5fbd|527645634||t19814.916191167s|f526b5eede390573|33418247|fst_dt|local|vector|||4976.21||
+WM_classification_blid_8|stem|6fd53aa565f35cdb|6525066b95976fe6|f6ed8e928d5e5fbd|-319695168||t19814.743029842s|1156015d8a957e6c|99964556|fst_dt|local|vector|||16038.73||
+WM_classification_blid_9|stem|3e0e21ca44d41050|4f9bf8c4376323d9|f6ed8e928d5e5fbd|-88575411||t19814.7914971542s|67baf57ea729b37e|125165710|fst_dt|local|vector|||20225.68||
+WM_classified|stem|198c7ad3f6d04d69|3308efa7109bf22b|eccf7fae57c0cbe3|1136871167||t19816.277035388s|ce5a44a0f47297b3|1684622770|fst_dt|local|vector|||38.68||
+WM_combined_index|stem|b4d733b872e2abd2|905147fbeefa54d2|32fd338a96639cd8|-161881360||t19816.2866153647s|0d87139cebaf8b24|3676|rds|local|vector|||167.82||
+WM_export|stem|9dca878e0e36a09e|9200b705043be408|dfbcd8546bde6980|-513569705||t19816.2843047157s|3bd8f66805fd112b|45|rds|local|vector|||84.28||
 WM_file_name|stem|fafdb37095bba87f|920dee7239dbf16e|25ef10b8382bc321|193940245||t19803.8465357829s|5c82a6b436969051|120|rds|local|vector|||0.74||
 WM_full_data|stem|f1e3bb7898e0988e|cfa644b90f12a9e6|f7c704ac29fb3cff|755498174||t19804.9244896606s|871d82bc105f3c5d|2596189970|rds|local|vector|||1307.46||
 WM_full_data_file|stem|37adf73ef74df76e|418d7637e32f5bea|2a1bf96b6638d8c7|-325195622|M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v9/WM_allVersions_ohneText.dta|t19580.2870615592s|392b1002d62069d0|12607005625|file|local|vector|||0||
-WM_hedonic_index|stem|8de4bea50da511ca|e7bfa5504860e056|a0b2fd79a3da4d66|-88321609||t19803.7636634635s|ec3b22b842896d60|5402864|rds|local|vector|||8.53||
-WM_hybrid_index|stem|3f78aff9285ca1b2|eff1de09461e6067|05997f27ae85bc06|688161209||t19803.7660663885s|8f385269e9e712ec|130128197|rds|local|vector|||137.98|Invalid .internal.selfref detected and fixed by taking a shallow copy of the data.table so that  can add this new column by reference. At an earlier point, this data.table has been copied by R or was created manually using structure or similar. Avoid names and attr which in R currently and oddly may copy the whole data.table. Use set syntax instead to avoid copying set, setnames and setattr. If this message doesnt help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.|
+WM_hedonic_index|stem|a6d07d257d6037da|e7bfa5504860e056|4c036e39c6bd6bbc|-88321609||t19816.2794241275s|e4e3542b310d893e|102558755|rds|local|vector|||9.16||
+WM_hybrid_index|stem|13d5e40dfb2ca0b2|eff1de09461e6067|d8fa7206486f3961|688161209||t19816.2825239712s|cd479b82a85c337a|162239913|rds|local|vector|||173.64|Invalid .internal.selfref detected and fixed by taking a shallow copy of the data.table so that  can add this new column by reference. At an earlier point, this data.table has been copied by R or was created manually using structure or similar. Avoid names and attr which in R currently and oddly may copy the whole data.table. Use set syntax instead to avoid copying set, setnames and setattr. If this message doesnt help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.|
 WM_indices|object|bf63aadd332ef81e|||||||||||||||
-WM_prepared_hedonic|stem|80dec8fe2816455a|46f2f006058c0c8a|317a3c8eac4191fa|-1543572173||t19803.762906155s|98b9782332b2ce7f|99329693|rds|local|vector|||57.3||
-WM_prepared_repeated|stem|2e2c8736228fab75|87ae51b0cb5e7fc6|11de2510e62efe15|806604513||t19797.5824642209s|581852c18fc84999|4230139|fst_dt|local|vector|||156.27||
-WM_repeated_index|stem|0d39d0d331f6ccbc|f92da5cffcf6140a|3fe0975f6baad555|565273011||t19797.5883408691s|14f2cedfa82f69db|11569|rds|local|vector|||288.38||
+WM_plot_combined|stem|9dca878e0e36a09e|4b8cd85239f26b29|ad3e5173168b6f1c|1389653502||t19816.2867736486s|3bd8f66805fd112b|45|rds|local|vector|||1.92|Removed 1 rows containing nonfinite values stat_smooth.|
+WM_plot_split|stem|9dca878e0e36a09e|9d1a2d7bd21df8fb|26b00460cc9a88eb|1255179132||t19816.2862831624s|3bd8f66805fd112b|45|rds|local|vector|||7.11||
+WM_prepared_hedonic|stem|b001ff97773a4091|46f2f006058c0c8a|8018c193670d90f8|-1543572173||t19816.2788146665s|6d65c439665aaadd|97352535|rds|local|vector|||56.58||
+WM_prepared_repeated|stem|edb84345c95e4437|87ae51b0cb5e7fc6|c086eb52b1d6ae3d|806604513||t19816.2794027708s|d630442ed18f1ce0|5652406|fst_dt|local|vector|||133.15||
+WM_repeated_index|stem|04d5d44e9a9154d6|f92da5cffcf6140a|28bb55c33fbf5787|565273011||t19816.2837181284s|14f2cedfa82f69db|11569|rds|local|vector|||358.77||
 WM_req_data|stem|1908833df0126dd8|cc0940cb7ac5d654|0f33cbcf9b5cff10|-1525491920||t19804.9275377842s|4c37368be40b759e|960471775|fst_dt|local|vector|||25.87||
+WM_split_index|stem|983af7891e0eeee6|144c38d4621b4fcf|0a5f134eccc452bd|1140137024||t19816.2860500325s|c6c7c591a0c061d6|48032|rds|local|vector|||168.54||
 wohnflaeche_e_o|object|1e0f541d83ff9de1|||||||||||||||
 wohnflaeche_eo_range|object|f99a1327195ec897|||||||||||||||
 wohnflaeche_r_o|object|e2570f7cd005b47c|||||||||||||||

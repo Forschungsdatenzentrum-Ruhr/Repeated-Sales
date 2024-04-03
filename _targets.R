@@ -153,7 +153,7 @@ markdown_path <- here::here("documentation", "markdown_")
 # output paths
 static_output_path <- here::here("output")
 
-output_path <- here::here("output", "curr")
+output_path <- here::here("output")
 
 for (i in static_RED_types) {
   if (!dir.exists(file.path(output_path, i))) {
@@ -333,6 +333,12 @@ classification_targets = rlang::list2(
 indices_targets <- rlang::list2(
   tar_eval(
     list(
+      tar_fst_dt(
+        RED_subset_classified,
+        subset_RED(
+          RED_classified
+        )
+      ),
       # further process needs the initial version of red with all columns since some are
       # used during regression but not during classification
       tar_fst_dt(
@@ -536,7 +542,6 @@ export_targets <- rlang::list2(
       export_classification,
       export_data(
         RED_classified,
-        data_version = RED_version,
         data_type = RED_types
       )
     ),

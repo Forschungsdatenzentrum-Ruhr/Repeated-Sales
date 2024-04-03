@@ -1,5 +1,5 @@
-custom_cross_tabyl <- function(combined_federal_states, arg1, arg2) {
-  cross_tabyl <- combined_federal_states |>
+custom_cross_tabyl <- function(data, arg1, arg2) {
+  cross_tabyl <- data |>
     tabyl(!!sym(arg1), !!sym(arg2)) |>
     adorn_totals("row") |>
     adorn_percentages("row") |>
@@ -14,9 +14,9 @@ custom_cross_tabyl <- function(combined_federal_states, arg1, arg2) {
   return(cross_tabyl)
 }
 
-datasummary_skim_numerical <- function(combined_federal_states) {
+datasummary_skim_numerical <- function(data) {
   modelsummary::datasummary_skim(
-    combined_federal_states,
+    data,
     type = "numeric",
     histogram = F,
     output = paste0(output_path, "/summary_skim_numeric.png"),
@@ -25,9 +25,9 @@ datasummary_skim_numerical <- function(combined_federal_states) {
   return(NULL)
 }
 
-datasummary_skim_categorical <- function(combined_federal_states) {
+datasummary_skim_categorical <- function(data) {
   modelsummary::datasummary_skim(
-    combined_federal_states,
+    data,
     type = "categorical",
     histogram = F,
     output = paste0(output_path, "/summary_skim_cat.png"),
@@ -36,8 +36,8 @@ datasummary_skim_categorical <- function(combined_federal_states) {
   return(NULL)
 }
 
-custom_threeway_tabyl <- function(combined_federal_states, arg1, arg2, arg3) {
-  cross_tabyl <- combined_federal_states |>
+custom_threeway_tabyl <- function(data, arg1, arg2, arg3) {
+  cross_tabyl <- data |>
     tabyl(!!sym(arg1), !!sym(arg2), !!sym(arg3)) |>
     adorn_totals("row") |>
     adorn_percentages("row") |>
