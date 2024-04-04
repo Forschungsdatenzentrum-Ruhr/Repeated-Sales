@@ -21,7 +21,7 @@ make_combined = function(repeated_index, hybrid_index, hedonic_index){
         purrr::imap(
             list(
                 "GRS" = GRS_index,
-                #"ARS" = ARS_index,
+                "ARS" = ARS_index,
                 "hybrid_index" = hybrid_index,
                 "hedonic_index" = hedonic_index
                 ),

@@ -188,6 +188,7 @@ static_RED_file_names <- glue::glue("{static_RED_types}_file_name")
 static_RED_full_data <- glue::glue("{static_RED_types}_full_data")
 static_RED_req_data <- glue::glue("{static_RED_types}_req_data")
 static_RED_classified <- glue::glue("{static_RED_types}_classified")
+static_RED_subset_classified <- glue::glue("{static_RED_types}_subset_classified") 
 static_RED_classification = glue::glue("{static_RED_types}_classification")
 static_prepared_hedonic = glue::glue("{static_RED_types}_prepared_hedonic")
 static_hedonic_index = glue::glue("{static_RED_types}_hedonic_index")
@@ -333,12 +334,6 @@ classification_targets = rlang::list2(
 indices_targets <- rlang::list2(
   tar_eval(
     list(
-      tar_fst_dt(
-        RED_subset_classified,
-        subset_RED(
-          RED_classified
-        )
-      ),
       # further process needs the initial version of red with all columns since some are
       # used during regression but not during classification
       tar_fst_dt(
@@ -348,11 +343,17 @@ indices_targets <- rlang::list2(
           RED_full_data
         )
       ),
+      tar_fst_dt(
+        RED_subset_classified,
+        subset_RED(
+          RED_classified
+        )
+      ),
       # do REDX-esque preperation of the hedonic data
       tar_target(
         prepared_hedonic,
         prepare_hedonic(
-          RED_classified,
+          RED_subset_classified,
           data_type = RED_types
         )
       ),
@@ -368,7 +369,7 @@ indices_targets <- rlang::list2(
       tar_fst_dt(
         prepared_repeated,
         prepare_repeated(
-          RED_classified,
+          RED_subset_classified,
           grouping_var = "gid2019"
         )
       ),
@@ -384,7 +385,7 @@ indices_targets <- rlang::list2(
       tar_target(
         hybrid_index,
         make_hybrid(
-          RED_classified,
+          RED_subset_classified,
           prepared_repeated,
           data_type = RED_types
         ),
@@ -411,6 +412,7 @@ indices_targets <- rlang::list2(
     ),
     values = rlang::list2(
       RED_types = static_RED_types,
+      RED_subset_classified = rlang::syms(static_RED_subset_classified),
       RED_classified = rlang::syms(static_RED_classified),
       RED_full_data = rlang::syms(static_RED_full_data),
       classification = rlang::syms(static_RED_classification),
