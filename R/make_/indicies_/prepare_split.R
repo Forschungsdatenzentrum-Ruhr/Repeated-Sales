@@ -1,4 +1,4 @@
-prepare_split <- function(single_index, single_index_name, grouping = c("date_quarter", "gid2019")) {
+prepare_split <- function(single_index, single_index_name, grouping) {
   if (!("date_quarter" %in% names(single_index))) {
     single_index <- make_date_quarter(single_index)
   } else {
@@ -11,8 +11,6 @@ prepare_split <- function(single_index, single_index_name, grouping = c("date_qu
       date_quarter = gid_date[[2]] |> as.Date("%Y-%m-%d"),
       index = as.numeric(index)
     )]
-    # # remove stuttgard
-    # single_index = single_index[gid2019 != 08111000]
   }
   
   single_index <- single_index[, .(mean_index = mean(na.omit(index), na.rm = T)), by = grouping][, index_type := single_index_name]

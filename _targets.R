@@ -82,6 +82,7 @@ suppressPackageStartupMessages({
 
 # Pipeline Settings ----------------------------------------------------------
 options(warn = 1)
+options(scipen=999)
 options("modelsummary_format_numeric_latex" = "plain")
 
 # target options
@@ -117,6 +118,9 @@ time_offset <- 6
 wohnflaeche_e_o <- 0.05
 etage_e_o <- 0
 zimmeranzahl_e_o <- 0.5
+
+# plot
+base_quarter = "2010-01-01"
 
 # settings export setup
 exportJSON <- data.table(

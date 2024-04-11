@@ -119,10 +119,10 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   # run regression
   hybrid_regression <- lm(Y ~ ., data = combined_hybrid)
   
-  pindex = (exp(predict(hybrid_regression, combined_hybrid))-1)*100
+  pindex = (exp(predict(hybrid_regression))-1)*100
 
   # add pindex to datas
-  combined_hybrid = combined_hybrid[, .(index = Y - pindex, counting_id)]
+  combined_hybrid = combined_hybrid[, .(index = pindex, counting_id)]
   out <- RED_classified[combined_hybrid, on = "counting_id"]
 
   #----------------------------------------------
