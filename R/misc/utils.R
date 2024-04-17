@@ -117,3 +117,22 @@ between_helper <- function(i_value, j_value, offset) {
   out <- (abs_diff < offset) | sapply(abs_diff, function(x){isTRUE(all.equal(x,offset))})
   return(out)
 }
+# ----------------------------------------------
+# Unit test helper functions
+empty_check = function(.data) {
+  # check if data is empty
+  tar_assert_true(
+    all(!dim(data) %in% c(0, NULL)),
+    glue::glue("{deparse(substitute(.data))} is empty.")
+  )
+  return(NULL)
+}
+
+input_check = function(.data,.class){
+  # check if data is of correct class
+  tar_assert_true(
+    inherits(.data, .class),
+    glue::glue("{deparse(substitute(.data))} must be a {.class}.")
+  )
+  return(NULL)
+}

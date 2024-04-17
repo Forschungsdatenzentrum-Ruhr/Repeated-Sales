@@ -105,7 +105,7 @@ plan(callr)
 
 # Globals -------------------------------------------------------------------
 
-static_RED_types <- c("WK", "WM") # "HK" not tried yet
+static_RED_types <- c("WK", "WM", "HK") #not tried yet
 RED_version <- "v9"
 
 ## similarity settings
@@ -315,6 +315,7 @@ federal_state_targets <- rlang::list2(
 RED_type_count = length(static_RED_types)
 WK_indices <- seq(to = length(dynamic_RED_req_data) / RED_type_count)
 WM_indices <- length(dynamic_RED_req_data) / RED_type_count + WK_indices
+HK_indices = length(dynamic_RED_req_data) / RED_type_count + WM_indices
 
 classification_targets = rlang::list2( 
    # combine last step of federal state targets together into single output
@@ -329,7 +330,13 @@ classification_targets = rlang::list2(
     federal_state_targets[[1]][WM_indices],
     command = bind_rows(!!!.x),
     format = "fst_dt"
-  )
+  ),
+  tar_combine(
+    HK_classification,
+    federal_state_targets[[1]][HK_indices],
+    command = bind_rows(!!!.x),
+    format = "fst_dt"
+  ),
 )
 
 ###########################################################################
