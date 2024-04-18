@@ -1,13 +1,14 @@
 make_hedonic_HK <- function(RED_classified) {
-  #' @title WIP
+  #' @title Make Hedonic Index for HK
   #'
-  #' @description WIP
-  #' @param WIP
-  #' @param WIP
-  #' @note
-  #'
-  #' @return WIP
+  #' @description Make the hedonic index for the HK data type
+  #' @param RED_classified data.table. Classified RED data
+  #' 
+  #' @return data.table. Hedonic index for HK data type
   #' @author Thorben Wiebe
+  #----------------------------------------------
+  # Input validation
+  input_check(RED_classified, "data.table")
   #----------------------------------------------
   
   # setup of regression
@@ -58,7 +59,7 @@ make_hedonic_HK <- function(RED_classified) {
     )
   )
   # type specific mutations
-  RED_HK = RED_HK[,
+  RED_HK[,
     ":="(
       plotarea_cat = fcase(
         grundstuecksflaeche <= 0, 0,
@@ -102,7 +103,10 @@ make_hedonic_HK <- function(RED_classified) {
       )
     )
   ]
-
+  #----------------------------------------------
+  # Unit test
+  empty_check(RED_HK)
+  tar_assert_true(all(names(RED_HK) %in% c(var_to_keep, "plotarea_cat", "type_cat")), msg = glue::glue("Not all variables are present in RED_HK. Missing: {setdiff(c(var_to_keep, 'plotarea_cat', 'type_cat'), names(RED_HK))}"))
   #----------------------------------------------
   return(RED_HK)
 }

@@ -1,13 +1,14 @@
 make_hedonic_WK <- function(RED_classified) {
-  #' @title WIP
+  #' @title Make Hedonic Index for WK
   #'
-  #' @description WIP
-  #' @param WIP
-  #' @param WIP
-  #' @note
+  #' @description Make the hedonic index for the WK data type
+  #' @param RED_classified data.table. Classified RED data
   #'
-  #' @return WIP
+  #' @return data.table. Hedonic index for WK data type
   #' @author Thorben Wiebe
+  #----------------------------------------------
+  # Input validation
+  input_check(RED_classified, "data.table")
   #----------------------------------------------
 
   # setup of regression
@@ -64,7 +65,7 @@ make_hedonic_WK <- function(RED_classified) {
   )
 
   # type specific mutations
-  RED_WK = RED_WK[,
+  RED_WK[,
     ":="(
       # wohngeld
       declared_wohngeld = fifelse(between(wohngeld, 0, 2500), 1, 0) |> factor(
@@ -116,7 +117,10 @@ make_hedonic_WK <- function(RED_classified) {
       )
     )
   ]
-
+  #----------------------------------------------
+  # Unit test
+  empty_check(RED_WK)
+  tar_assert_true(all(names(RED_WK) %in% c(var_to_keep, "declared_wohngeld", "num_floors", "floors_cat")), msg = glue::glue("Not all variables are present in RED_WK. Missing: {setdiff(c(var_to_keep, 'declared_wohngeld', 'num_floors', 'floors_cat'), names(RED_WK))}"))
   #----------------------------------------------
   return(RED_WK)
 }

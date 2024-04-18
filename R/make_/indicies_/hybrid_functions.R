@@ -1,3 +1,8 @@
+# These are helper functions to construct the regression strucutre outlined in Case and Quigley 1991
+# generally it decomposes the price indice into three components: X_1, X_2, X_3,
+# where each component deals with different data (hedonic, pure repeated sales, changed repeated sales).
+# This also entails that the data is transformed in different ways for each component, i.e., dummies/binaries and continous variables are treated differently.
+
 make_X_1 = function(hedonic, x_conts , x_binaries, t_month){
     # Case and Quigley 1991 -> hedonic (X_1)
 

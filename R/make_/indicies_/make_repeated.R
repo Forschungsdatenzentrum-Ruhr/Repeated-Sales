@@ -1,11 +1,21 @@
 make_repeated <- function(prepared_repeated, grouping_var) {
-  
-  
-
-  # Berlin plotting fix?
+  #' @title Make Repeated Sales Index
+  #' 
+  #' @description Make the repeated sales index for the given data type
+  #' @param prepared_repeated data.table. Prepared repeated sales data
+  #' @param grouping_var character. Variable to group by
+  #' 
+  #' @return data.table. Repeated sales index for the given data type
+  #' @author Thorben Wiebe
+  #----------------------------------------------
+  # Input validation
+  input_check(prepared_repeated, "data.table")
+  input_check(grouping_var, "character")
+  #----------------------------------------------
+  # prep
   prepared_repeated <- prepared_repeated[, c(grouping_var) := as.character(get(grouping_var))]
-  # taken from rsmatrix vignette
-  # see also ?rs_matrix
+  # NOTE: taken from rsmatrix vignette -> see also ?rs_matrix
+  # create matrices
   matrices <- with(
     prepared_repeated,
     rs_matrix(
@@ -18,7 +28,7 @@ make_repeated <- function(prepared_repeated, grouping_var) {
     )
   )
 
-  # Prep
+  # drag out matrices for easier access
   Z <- matrices("Z")
   y <- matrices("y")
   X <- matrices("X")
@@ -30,8 +40,10 @@ make_repeated <- function(prepared_repeated, grouping_var) {
   names_grs_b <- names(grs_b)
   
   GRS <- (exp(grs_b) * 100)
+  # bandaid solution for negative values and heavy outliers
   GRS[GRS<0 | GRS > 10000] = NA_integer_
 
+  # delta method for standard errors
   # GRS_vcov <- rs_var(y - Z %*% grs_b, Z) |>
   #   diag() |>
   #   sqrt()
@@ -45,15 +57,12 @@ make_repeated <- function(prepared_repeated, grouping_var) {
     t(Z) %*% Y
   )
   names_ars_b = rownames(ars_b)
-  # NA negative values -> why do these only occur in 14612000? 
-  # these just become 100 when exp() since they are almost 0
   
-  
-  #100/
   ARS <- (100/ars_b) |> as.vector()
+  # bandaid solution for negative values and heavy outliers
   ARS[ARS<0 | ARS > 10000] = NA_integer_
   
-  
+  # delta method for standard errors
   # vcov <- rs_var(Y - X %*% ars_b, Z, X) |>
   #   diag() |>
   #   sqrt()
@@ -65,6 +74,9 @@ make_repeated <- function(prepared_repeated, grouping_var) {
   # combined repeated indices
   repeated_indices <- rbind(dt_ARS, dt_GRS)
 
-  #--------------------------------s
+  #--------------------------------
+  # Unit test
+  empty_check(repeated_indices)
+  #--------------------------------
   return(repeated_indices)
 }

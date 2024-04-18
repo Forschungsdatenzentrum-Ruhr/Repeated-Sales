@@ -1,4 +1,17 @@
 prepare_repeated <- function(RED_classified, grouping_var) {
+  #' @title Prepare repeated
+  #' 
+  #' @description This function prepares the repeated sales index.
+  #' @param RED_classified data.table. RED classified data.
+  #' @param grouping_var character. Grouping variable.
+  #' 
+  #' @return data.table. Prepared repeated sales index.
+  #' @author Thorben Wiebe
+  # ----------------------------------------------
+  # Input validation
+  input_check(RED_classified, "data.table")
+  input_check(grouping_var, "character")
+  # ----------------------------------------------
   
   # declare which variables are used during preparation
   vars_needed <- c("rs_id", "emonths", "price_var", grouping_var)
@@ -25,13 +38,14 @@ prepare_repeated <- function(RED_classified, grouping_var) {
     (glue::glue("prev_{prev_cols}")) := mget(glue::glue("i.{prev_cols}"))
   ]|> drop_na()
   
-  a = 1
   # filter top bottom percent of price variables to catch incredible outlines
+  a = 1
+  # prepare percentiles for price
   upper_percentile <- quantile(prepared_repeated_prep[price_var >= 0, price_var], 1 - (a  / 100))
   lower_percentile <- quantile(prepared_repeated_prep[price_var >= 0, price_var], (a  / 100))
-  
-  prev_upper_percentile <- quantile(prepared_repeated_prep[price_var >= 0, prev_price_var], 1 - (a  / 100))
-  prev_lower_percentile <- quantile(prepared_repeated_prep[price_var >= 0, prev_price_var], (a  / 100))
+  # prepare percentiles for previous price
+  prev_upper_percentile <- quantile(prepared_repeated_prep[prev_price_var >= 0, prev_price_var], 1 - (a  / 100))
+  prev_lower_percentile <- quantile(prepared_repeated_prep[prev_price_var >= 0, prev_price_var], (a  / 100))
   
   # filter out outlines and single repeats
   prepared_repeated_prep = prepared_repeated_prep[
@@ -41,8 +55,12 @@ prepare_repeated <- function(RED_classified, grouping_var) {
     !rs_id %in% c(4144879)
     ][
     ,.SD[.N >= 2], by = "rs_id"]
+  
+  # ----------------------------------------------
   # Unit test
+  empty_check(prepared_repeated_prep)
+  # check if date month is in order such that no sale is before the previous sale
   tar_assert_true(prepared_repeated_prep[prev_date_month > date_month, .N] == 0, msg = "Date month is not in order")
-
+  # ----------------------------------------------
   return(prepared_repeated_prep)
 }

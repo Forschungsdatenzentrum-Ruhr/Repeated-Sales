@@ -1,14 +1,21 @@
 make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
-  # build by me based on Case and Quigley 1991
-  
-  # # Debugging:
-  # tar_load(WK_classified)
-  # RED_classified = WK_classified; rm(WK_classified)
-  # tar_load(WK_prepared_repeated)
-  # prepared_repeated = WK_prepared_repeated; rm(WK_prepared_repeated)
-  # data_type ="WK"
-
-
+  #' @title Make Hybrid Index
+  #' 
+  #' @description Make the hybrid index for the given data type
+  #' @param RED_classified data.table. Classified RED data
+  #' @param prepared_repeated data.table. Prepared repeated data
+  #' @param data_type character. Data type of the classified RED data
+  #' 
+  #' @note Build by me based on Case and Quigley 1991
+  #' 
+  #' @return data.table. Hybrid index for the given data type
+  #' @author Thorben Wiebe
+  #----------------------------------------------
+  # Input validation
+  input_check(RED_classified, "data.table")
+  input_check(prepared_repeated, "data.table")
+  input_check(data_type, "character")
+  #----------------------------------------------
   # prep, get some settings
   list_var <- make_var_list(data_type = data_type)
   depVar <- list_var$depVar
@@ -124,7 +131,9 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   # add pindex to datas
   combined_hybrid = combined_hybrid[, .(index = pindex, counting_id)]
   out <- RED_classified[combined_hybrid, on = "counting_id"]
-
+  #----------------------------------------------
+  # Unit test
+  empty_check(out)
   #----------------------------------------------
   return(out)
 }

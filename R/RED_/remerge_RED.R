@@ -23,7 +23,8 @@ remerge_RED <- function(classification, RED_full_data) {
   RED_classified <- RED_full_data[, !..names_diff][classification, on = "counting_id"]
 
   # subset to 15 biggest cities
-  big_fifteen <- c(
+  big_fifteen <- data.table(
+    gid2019 =c(
     "11000000", # Berlin
     "02000000", # Hamburg
     "09162000", # München
@@ -39,8 +40,27 @@ remerge_RED <- function(classification, RED_full_data) {
     "03241001", # Hannover
     "09564000", # Nürnberg
     "05112000" # Duisburg
-  ) |> as.numeric()
-  RED_classified <- RED_classified[gid2019 %in% big_fifteen]
+  ) |> as.numeric(),
+    gid_names = c(
+      "Berlin",
+      "Hamburg",
+      "München",
+      "Köln",
+      "Frankfurt",
+      "Stuttgart",
+      "Düsseldorf",
+      "Leipzig",
+      "Dortmund",
+      "Essen",
+      "Bremen",
+      "Dresden",
+      "Hannover",
+      "Nürnberg",
+      "Duisburg"
+    ) |> as.character()
+  )
+
+  RED_classified <- RED_classified[big_fifteen, on = "gid2019"]
 
   #----------------------------------------------
   # Unit test
