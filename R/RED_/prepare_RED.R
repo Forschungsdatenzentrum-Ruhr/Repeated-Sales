@@ -38,9 +38,8 @@ prepare_RED <- function(RED_full_data, var_of_interest) {
   # Unit test
   tar_assert_true(
     all(
-      var_of_interest %in% names(RED_req_columns),
+      var_of_interest %in% names(RED_req_columns)),
       msg = "Not all variables of interest are present in the data."
-    )
   )
   empty_check(RED_req_columns)
   #----------------------------------------------

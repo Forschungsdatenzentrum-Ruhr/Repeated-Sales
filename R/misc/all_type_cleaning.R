@@ -75,9 +75,8 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
   # Unit test
   tar_assert_true(
     all(
-      c("baujahr_cat", "first_occupancy", "ausstattung") %in% names(RED_cleaned),
+      c("baujahr_cat", "first_occupancy", "ausstattung") %in% names(RED_cleaned)),
       msg = "Not all essential variables are present in the data."
-    )
   )
   empty_check(RED_cleaned)
   #----------------------------------------------

@@ -45,10 +45,8 @@ read_RED <- function(RED_file_name) {
   #----------------------------------------------
   # Unit test
   tar_assert_true(
-    all(
-      c("latlon_utm", "amonths", "emonths", "price_var", "counting_id") %in% names(RED_full_data),
+    all(c("latlon_utm", "amonths", "emonths", "price_var", "counting_id") %in% names(RED_full_data)),
       msg = "Not all essential variables are present in the data."
-    )
   )
   empty_check(RED_full_data)
   #----------------------------------------------

@@ -66,9 +66,8 @@ remerge_RED <- function(classification, RED_full_data) {
   # Unit test
   tar_assert_true(
     all(
-      c("counting_id", names_diff) %in% names(RED_classified),
+      c("counting_id", names_diff) %in% names(RED_classified)),
       msg = "Not all essential variables are present in the data."
-    )
   )
   empty_check(RED_classified)
   #----------------------------------------------
