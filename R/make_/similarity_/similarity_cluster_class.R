@@ -31,7 +31,7 @@ cluster <- R6::R6Class("cluster",
                           centers = data.table()) {                 
       # calculation helpers
       self$cluster_names <- attr(cluster_options, "names")
-      self$cluster_options <- filter_unique_options(cluster_options, self$cluster_names)
+      self$cluster_options <- filter_unique_options(cluster_options)
       self$distance <- distance
       self$index <- cluster_options
       self$sequence <- seq_along(self$cluster_names)
@@ -79,6 +79,28 @@ cluster <- R6::R6Class("cluster",
           }
         }
       }
+    },
+    # consider moving to the class? why is this here?
+filter_unique_options <- function(unique_options, use_which = T) {
+  # error in this function which causes overflow in data.table???
+  if (!is.null(unique_options)) {
+    unique_options <- data.table::transpose(unique_options) |>
+      setnames(new = self$cluster_names)
+    unique_options <- unique(unique_options)
+
+    if (use_which) {
+      unique_options <- unique_options |>
+        is.na() |>
+        not() |>
+        apply(
+          1,
+          which,
+          simplify = F
+        )
     }
+
+    return(unique_options)
+  }
+}
   )
 )
