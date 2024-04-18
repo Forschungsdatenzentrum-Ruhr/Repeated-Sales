@@ -29,7 +29,7 @@ cluster <- R6::R6Class("cluster",
                           centers = data.table()) {
       # calculation helpers
       self$cluster_names <- attr(cluster_options, "names")
-      self$cluster_options <- filter_unique_options(cluster_options)
+      self$cluster_options <- self$filter_unique_options(cluster_options)
       self$distance <- distance
       self$index <- cluster_options
       self$sequence <- seq_along(self$cluster_names)
@@ -47,6 +47,25 @@ cluster <- R6::R6Class("cluster",
         "sim_index" = as.numeric(self$index_cluster_combinations[[parent_col]])
       )
       return(temps)
+    },
+    # NOTE: some legacy stuff here, clean up what isnt needed
+    filter_unique_options = function(unique_options) {
+      if (!is.null(unique_options)) {
+        unique_options <- data.table::transpose(unique_options) |>
+          setnames(new = self$cluster_names)
+        unique_options <- unique(unique_options)
+
+        unique_options <- unique_options |>
+          is.na() |>
+          not() |>
+          apply(
+            1,
+            which,
+            simplify = F
+          )
+
+        return(unique_options)
+      }
     },
     # actual cluster sequence
     determine_cluster_centers = function() {
@@ -78,25 +97,6 @@ cluster <- R6::R6Class("cluster",
         }
       }
       return(NULL)
-    },
-    # NOTE: some legacy stuff here, clean up what isnt needed
-    filter_unique_options <- function(unique_options) {
-      if (!is.null(unique_options)) {
-        unique_options <- data.table::transpose(unique_options) |>
-          setnames(new = self$cluster_names)
-        unique_options <- unique(unique_options)
-
-        unique_options <- unique_options |>
-          is.na() |>
-          not() |>
-          apply(
-            1,
-            which,
-            simplify = F
-          )
-
-        return(unique_options)
-      }
     }
   )
 )
