@@ -34,7 +34,7 @@ empty_check = function(.data) {
     all(!dim(data) %in% c(0, NULL)),
     glue::glue("{deparse(substitute(.data))} is empty.")
   )
-  return(NULL)
+  invisble(.data)
 }
 
 input_check = function(.data,.class){
@@ -43,7 +43,7 @@ input_check = function(.data,.class){
     inherits(.data, .class),
     glue::glue("{deparse(substitute(.data))} must be a {.class}.")
   )
-  return(NULL)
+  invisble(.data)
 }
 
 # ----------------------------------------------

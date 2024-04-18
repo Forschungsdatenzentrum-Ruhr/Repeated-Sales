@@ -8,7 +8,7 @@ export_data <- function(classification, data_type) {
   #' *WM = Wohnungsmiete/ Apartments for rent
   #' *HK = Hauskauf/ Houses for sale
   #'
-  #' @return WIP
+  #' @return NULL
   #' @author Thorben Wiebe
   #----------------------------------------------
   # Input validation

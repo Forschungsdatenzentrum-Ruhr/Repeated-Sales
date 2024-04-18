@@ -1,8 +1,6 @@
+# General notes:
 # have to treat rows and columns to matrices differently since scaled distance "from to" are not equal to "to from"
-# splitting this should also make it way less confusing
-
-
-# Cluster Class
+# this is class since it has a lot of attributes and constant self-references
 cluster <- R6::R6Class("cluster",
   public = list(
     # default values
@@ -14,7 +12,7 @@ cluster <- R6::R6Class("cluster",
     sequence = NULL,
     cluster_names = NULL,
     subset = NULL,
-    names_cluster_combinations  = NULL,
+    names_cluster_combinations = NULL,
     distance_cluster_combinations = NULL,
     index_cluster_combinations = NULL,
     unique_cluster_combinations = NULL,
@@ -28,18 +26,20 @@ cluster <- R6::R6Class("cluster",
                           sim_dist = data.table(),
                           sim_index = data.table(),
                           sequence = NULL,
-                          centers = data.table()) {                 
+                          centers = data.table()) {
       # calculation helpers
       self$cluster_names <- attr(cluster_options, "names")
       self$cluster_options <- filter_unique_options(cluster_options)
       self$distance <- distance
       self$index <- cluster_options
       self$sequence <- seq_along(self$cluster_names)
+
+      return(NULL)
     },
     make_cluster = function(unique_option) {
       # assign temp data.table
       parent <- attr(unique_option, "names")
-      parent_col = which(parent==self$names_cluster_combinations)
+      parent_col <- which(parent == self$names_cluster_combinations)
       temps <- data.table(
         "counting_id" = as.numeric(self$names_cluster_combinations),
         "parent" = as.numeric(parent),
@@ -68,39 +68,35 @@ cluster <- R6::R6Class("cluster",
           self$distance_cluster_combinations <- self$distance[self$subset, self$subset, with = F]
           self$index_cluster_combinations <- self$index[self$subset, self$subset, with = F]
           self$names_cluster_combinations <- attr(self$distance_cluster_combinations, "names")
-          # transposing is necessary since for scaled values distance AB is not equal to BA
-          #t_cluster_combinations <- data.table::transpose(self$distance_cluster_combinations) |> setnames(self$names_cluster_combinations)
           # identify exact duplicates in combinations (happens when all inputs are exactly the same)
           dups <- base::duplicated(self$distance_cluster_combinations, margin = 0)
           # and drop those duplicates so we only deal with unique_combinations
           unique_cluster_combinations <- self$distance_cluster_combinations[, !dups, with = F]
           for (cluster_combination in seq_along(unique_cluster_combinations)) {
-            self$centers = rbind(self$centers, self$make_cluster(unique_cluster_combinations[,cluster_combination, with = F]))
+            self$centers <- rbind(self$centers, self$make_cluster(unique_cluster_combinations[, cluster_combination, with = F]))
           }
         }
       }
+      return(NULL)
     },
-    # consider moving to the class? why is this here?
-filter_unique_options <- function(unique_options, use_which = T) {
-  # error in this function which causes overflow in data.table???
-  if (!is.null(unique_options)) {
-    unique_options <- data.table::transpose(unique_options) |>
-      setnames(new = self$cluster_names)
-    unique_options <- unique(unique_options)
+    # NOTE: some legacy stuff here, clean up what isnt needed
+    filter_unique_options <- function(unique_options) {
+      if (!is.null(unique_options)) {
+        unique_options <- data.table::transpose(unique_options) |>
+          setnames(new = self$cluster_names)
+        unique_options <- unique(unique_options)
 
-    if (use_which) {
-      unique_options <- unique_options |>
-        is.na() |>
-        not() |>
-        apply(
-          1,
-          which,
-          simplify = F
-        )
+        unique_options <- unique_options |>
+          is.na() |>
+          not() |>
+          apply(
+            1,
+            which,
+            simplify = F
+          )
+
+        return(unique_options)
+      }
     }
-
-    return(unique_options)
-  }
-}
   )
 )
