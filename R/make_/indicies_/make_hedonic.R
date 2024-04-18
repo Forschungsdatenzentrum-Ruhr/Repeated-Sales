@@ -1,6 +1,6 @@
 make_hedonic <- function(prepared_hedonic, data_type) {
   # centralized way of declaring the variables to make adjustments easier
-  list_var <- make_var(data_type = data_type)
+  list_var <- make_var_list(data_type = data_type)
   depVar <- list_var$depVar
   indepVar <- list_var$indepVar
   fixed_effects <- list_var$fixed_effects

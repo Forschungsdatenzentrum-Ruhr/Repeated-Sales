@@ -1,22 +1,6 @@
-#' Helper and Debug Functions, WIP-Section
-#'
-#' @description
-#' Universal functions used during different steps of pipeline aswell as WIP-
-#' Section and debugging
-#'
+# Utility functions
 
-output_path_json <- function(output_path) {
-  if (!dir.exists(output_path)) {
-    dir.create(output_path, recursive = T)
-  }
-
-  write_json(
-    exportJSON,
-    paste0(output_path, "/", "settings_used.json")
-  )
-}
-
-
+# consider moving to the class? why is this here?
 filter_unique_options <- function(unique_options, new_names, use_which = T) {
   # error in this function which causes overflow in data.table???
   if (!is.null(unique_options)) {

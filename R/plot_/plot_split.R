@@ -14,6 +14,7 @@ plot_split <- function(indicies, data_type) {
   # Input validation
   input_check(indicies, "data.table")
   input_check(data_type, "character")
+  tar_assert_true(data_type %in% c("WK", "WM", "HK"), "data_type must be one of WK, WM, HK")
   #----------------------------------------------
 
   for (single_index_type in unique(indicies$index_type)) {

@@ -1,4 +1,17 @@
 all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
+  #' @title Clean RED data for analysis same for all types
+  #' 
+  #' @description Clean RED data for analysis by replacing missing values with 0 and converting columns to factor.
+  #' @param RED_classified data.table. RED data set with classification data.
+  #' @param var_to_replace_missings character. Vector of variable names to be replaced.
+  #' 
+  #' @return data.table. RED data set with cleaned variables.
+  #' @author Thorben Wiebe
+  # ----------------------------------------------
+  # Input validation
+  input_check(RED_classified, "data.table")
+  input_check(var_to_replace_missings, "character")
+  #----------------------------------------------
   # this batch replaces all missings with zero and converts columns to factor
   RED_cleaned <- RED_classified[,
     (var_to_replace_missings) := lapply(.SD, function(x) {
@@ -6,11 +19,9 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
     }),
     .SDcols = var_to_replace_missings
   ][,
-    # paired mutations --------------------------------------------------------
+    ## paired mutations
     # this only split for readability, could be combined with single mutations
-    # redefine baujahr and letzte_modernisierung
     c("baujahr_cat") := lapply(.SD, function(x) {
-      # sort into categories
       fcase(
         x <= 0, 0,
         x < 1900, 1,
@@ -23,7 +34,6 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
         between(x, 2000, 2009), 8,
         x > 2010, 9
       ) |>
-        # label said categories
         factor(
           levels = 0:9,
           labels = c(
@@ -42,9 +52,7 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
     }),
     .SDcols = c("baujahr")
   ][
-
-    # single mutations --------------------------------------------------------
-    # objektzustand
+    ## single mutations
     , ":="(
       first_occupancy = fifelse(
         objektzustand == 1, 1, 0
@@ -55,7 +63,6 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
           "Not first occupancy"
         )
       ),
-      # ausstattung
       ausstattung = factor(
         ausstattung,
         0:4,
@@ -64,8 +71,15 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
     )
   ] |> drop_na(ausstattung, baujahr_cat)
 
-
-  
-
+  #----------------------------------------------
+  # Unit test
+  tar_assert_true(
+    all(
+      c("baujahr_cat", "first_occupancy", "ausstattung") %in% names(RED_cleaned),
+      msg = "Not all essential variables are present in the data."
+    )
+  )
+  empty_check(RED_cleaned)
+  #----------------------------------------------
   return(RED_cleaned)
 }

@@ -125,11 +125,13 @@ base_quarter = "2010-01-01"
 # settings export setup
 exportJSON <- data.table(
   "RED_version" = RED_version,
+  "RED_types" = static_RED_types,
   "categories" = categories,
   "etag_e_o" = etage_e_o,
   "wohnflaeche_e_o" = wohnflaeche_e_o,
   "zimmeranzahl_e_o" = zimmeranzahl_e_o,
-  "time_offset" = time_offset
+  "time_offset" = time_offset,
+  "base_quarter" = base_quarter
 )
 
 # Setup Misc --------------------------------------------------------------
@@ -223,8 +225,9 @@ RED_targets <- rlang::list2(
   # dump settings as json file to make results reproducible
   tar_target(
     settings_used,
-    output_path_json(
-      output_path
+    jsonlite::write_json(
+      exportJSON,
+      paste0(output_path, "/", "settings_used.json")
     ),
     deployment = "main"
   ),
@@ -236,7 +239,9 @@ RED_targets <- rlang::list2(
         make_RED_file_name(
           data_version = RED_version,
           data_type = RED_types
-        )
+        ),
+        deployment = "worker",
+        format = "rds"
       ),
       # read stata file, removes labels and mutate some variables
       tar_file_read(

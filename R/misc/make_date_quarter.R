@@ -1,4 +1,15 @@
 make_date_quarter <- function(input_data) {
+  #' @title Make date quarter
+  #' 
+  #' @description Make date quarter from emonths.
+  #' @param input_data data.table. Data set with emonths.
+  #' 
+  #' @return data.table. Data set with date_quarter.
+  #' @author Thorben Wiebe
+  # ----------------------------------------------
+  # Input validation
+  input_check(input_data, "data.table")
+  #----------------------------------------------
   # reverse year to month conversion done during initial reading since subsequent functions require dates
   out <- copy(input_data)[
     ,
@@ -7,7 +18,7 @@ make_date_quarter <- function(input_data) {
       month = emonths - ((emonths %/% 12) * 12)
     )
   ][
-    # december is converted to an additional year, is this already a problem before this?
+    # december is converted to an additional year
     # maybe use yearmon from zoo instead, shouldnt be a big change
     month == 0,
     ":="(
@@ -34,6 +45,11 @@ make_date_quarter <- function(input_data) {
         month = NULL,
         emonths = NULL
       )
-    ] #
+    ]
+  #----------------------------------------------
+  # Unit test
+  tar_assert_true("date_quarter" %in% names(out), "date_quarter column not found.")
+  empty_check(out)
+  #----------------------------------------------
   return(out)
 }

@@ -11,7 +11,7 @@ make_hedonic_WK <- function(RED_classified) {
   #----------------------------------------------
 
   # setup of regression
-  list_var <- make_var(data_type = "WK")
+  list_var <- make_var_list(data_type = "WK")
   depVar <- list_var$depVar
   indepVar <- list_var$indepVar
   fixed_effects <- list_var$fixed_effects

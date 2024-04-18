@@ -11,7 +11,7 @@ make_hedonic_HK <- function(RED_classified) {
   #----------------------------------------------
   
   # setup of regression
-  list_var <- make_var(data_type = "HK")
+  list_var <- make_var_list(data_type = "HK")
   depVar <- list_var$depVar
   indepVar <- list_var$indepVar
   fixed_effects <- list_var$fixed_effects

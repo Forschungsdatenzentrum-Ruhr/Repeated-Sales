@@ -14,6 +14,7 @@ plot_combined <- function(combined_indices, data_type) {
   # Input validation
   input_check(combined_indices, "data.table")
   input_check(data_type, "character")
+  tar_assert_true(data_type %in% c("WK", "WM", "HK"), "data_type must be one of WK, WM, HK")
   #----------------------------------------------
 
   # default

@@ -10,7 +10,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
 
 
   # prep, get some settings
-  list_var <- make_var(data_type = data_type)
+  list_var <- make_var_list(data_type = data_type)
   depVar <- list_var$depVar
   fixed_effects <- list_var$fixed_effects
   binary_names = list_var$binary_names

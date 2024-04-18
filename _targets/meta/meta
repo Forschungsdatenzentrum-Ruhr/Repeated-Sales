@@ -43,7 +43,7 @@ final_cutoff|object|8cbe1afa12de9337|||||||||||||||
 function_name|function|7f751aef04cd03cd|||||||||||||||
 geo_grouped_data|object|aed897e62d4512f0|||||||||||||||
 high_cutoff|object|cc7577d4ebeecf8a|||||||||||||||
-HK_classification_blid_10|stem||ea73fabd6acdce86|3664e8b17bd9c068|-1900619447||t19830.5210576453s||0|fst_dt|local|vector|||0.35||Fehlender Wert, wo TRUEFALSE nötig ist
+HK_classification_blid_10|stem||ea73fabd6acdce86|3664e8b17bd9c068|-1900619447||t19830.5210576453s||0|fst_dt|local|vector|||0.35||Fehlender Wert, wo TRUEFALSE nï¿½tig ist
 HK_file_name|stem|d0a39adec4353848|dadbca2839569dd6|25ef10b8382bc321|-1966923195||t19830.5008368724s|5c82a6b436969051|120|rds|local|vector|||5.58||
 HK_full_data|stem|d63b3a15fa279e68|b099625d38993e6a|c44105486c67abc8|1981758067||t19830.5193305473s|fd53ffd2345d8324|1651912297|rds|local|vector|||805.24||
 HK_full_data_file|stem|57b640966dcd39e8|7ab217ce5efa6510|7e028aa673186709|195538907|M:/_FDZ/RWI-GEO/RWI-GEO-RED/daten/On-site/v9/HK_allVersions_ohneText.dta|t19580.2811975147s|da7e8bc413dcc750|14239253258|file|local|vector|||0||
@@ -68,7 +68,7 @@ make_repeated|function|541025a748d2d875|||||||||||||||
 make_sensitivity|function|b6ce4fea1867062f|||||||||||||||
 make_similarity_lists|function|e8ea5490de9f75d5|||||||||||||||
 make_split|function|086fcc03f1a0fe56|||||||||||||||
-make_var|function|478bf39696c9f08f|||||||||||||||
+make_var_list|function|478bf39696c9f08f|||||||||||||||
 make_X_1|function|3f59483c014d815d|||||||||||||||
 make_X_2|function|3c4136f6e7929d65|||||||||||||||
 make_X_3|function|d71e5d9613f717a3|||||||||||||||
