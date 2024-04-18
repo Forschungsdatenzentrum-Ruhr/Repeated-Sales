@@ -17,13 +17,12 @@ make_similarity_lists <- function(combinations, occurence_ids) {
 
   # increase etage by one to avoid scaling around 0
   # consider just increasing ground floor by one; see what changes
-  combinations = combinations[, etage := etage + 1]
-  
+  combinations <- combinations[, etage := etage + 1]
+
   ## similiarity calculations
   for (i in 1:nrow(combinations)) {
-
     # percentage of rooms scaled values are allowed to be off
-    # e.g. what percentage of 8 rooms is 0.5 rooms 
+    # e.g. what percentage of 8 rooms is 0.5 rooms
     # NOTE: this feels way to complicated
     scaled_zimmeranzahl_e_o <- combinations[
       ,
@@ -37,15 +36,15 @@ make_similarity_lists <- function(combinations, occurence_ids) {
       ,
       .(fcase(
         ## exact repeat [small percentage deviation acceptable]
-          between_helper(1,wohnflaeche,wohnflaeche_e_o)&
-          between_helper(1,zimmeranzahl,scaled_zimmeranzahl_e_o)&
-          between_helper(1,etage,etage_e_o),
+        between_helper(1, wohnflaeche, wohnflaeche_e_o) &
+          between_helper(1, zimmeranzahl, scaled_zimmeranzahl_e_o) &
+          between_helper(1, etage, etage_e_o),
         0,
         # no matches
         default = NA
       ))
     ] |> as.matrix()
-  # calculate similarity distance, i.e. euclidean distance between scaled values
+    # calculate similarity distance, i.e. euclidean distance between scaled values
     similarity_dist_list[[i]] <- as.matrix(dist(data_to_similarity, method = "euclidean"))[i, ]
   }
 

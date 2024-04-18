@@ -1,10 +1,10 @@
 non_list_classification <- function(parent_grouped_data, data_end_date) {
   #' @title Classify listings based on non-listing duration
-  #' 
+  #'
   #' @description This function classifies listings based on their non-listing duration
   #' @param parent_grouped_data data.table. Data set with grouped data
   #' @param data_end_date numeric. End date of data
-  #' 
+  #'
   #' @return data.table. Data set with classified listings
   #' @author Thorben Wiebe
   # ------------------------------------------------
@@ -49,7 +49,7 @@ non_list_classification <- function(parent_grouped_data, data_end_date) {
   # consider catching cluster that have no sales or are single observations (should only happen at the very recent end of the data)
   # these are dropped anyway but look confusing since they are NA
   # first_sold_id = parent_grouped_data_non_list["Sold", first(counting_id), on = "non_list_reason", with = T]
-  
+
   # parent_grouped_data_connected <- parent_grouped_data_non_list[
   #   !"Miss",
   #   c("start_position", "end_position") := which_range(non_list_reason),

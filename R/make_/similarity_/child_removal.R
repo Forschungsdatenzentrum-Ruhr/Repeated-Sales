@@ -1,11 +1,11 @@
 child_removal_f <- function(parent_gains, winner_ids, unique_clustering_centers) {
   #' @title Child removal function
-  #' 
+  #'
   #' @description This function removes children from the unique_clustering_centers data.table
   #' @param parent_gains data.table. Data set with parent gains
   #' @param winner_ids data.table. Data set with winner ids
   #' @param unique_clustering_centers data.table. Data set with unique clustering centers
-  #' 
+  #'
   #' @return data.table. Data set with removed children
   #' @author Thorben Wiebe
   # ------------------------------------------------
