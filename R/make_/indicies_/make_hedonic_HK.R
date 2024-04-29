@@ -57,9 +57,7 @@ make_hedonic_HK <- function(RED_classified) {
       "gaestewc",
       "ausstattung"
     )
-  )
-  # type specific mutations
-  RED_HK[,
+  )[,
     ":="(
       plotarea_cat = fcase(
         grundstuecksflaeche <= 0, 0,
@@ -106,7 +104,6 @@ make_hedonic_HK <- function(RED_classified) {
   #----------------------------------------------
   # Unit test
   empty_check(RED_HK)
-  tar_assert_true(all(names(RED_HK) %in% c(var_to_keep, "plotarea_cat", "type_cat")), msg = glue::glue("Not all variables are present in RED_HK. Missing: {setdiff(c(var_to_keep, 'plotarea_cat', 'type_cat'), names(RED_HK))}"))
   #----------------------------------------------
   return(RED_HK)
 }

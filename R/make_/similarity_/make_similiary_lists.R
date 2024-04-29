@@ -3,14 +3,14 @@ make_similarity_lists <- function(combinations, occurence_ids) {
   #'
   #' @description This function calculates the similarity index and distance for each combination. Helper function for similarity_classification
   #' @param combinations data.table. Data set with combinations of listings to be compared
-  #' @param occurence_ids vector. Vector with occurence ids
+  #' @param occurence_ids numeric. Vector with occurence ids
   #'
   #' @return list. List with similarity index and distance
   #' @author Thorben Wiebe
   #----------------------------------------------
   # Input validation
   input_check(combinations, "data.table")
-  input_check(occurence_ids, "character")
+  input_check(occurence_ids, "integer")
   #----------------------------------------------
   # declare lists to filled during loop
   similarity_index_list <- similarity_dist_list <- list()

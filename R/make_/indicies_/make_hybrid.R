@@ -34,6 +34,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
     hybrid_type = fifelse(rs_id %in% all_rs, "repeat", "hedonic"),
     depVar = exp(get(depVar))
   )]
+  tar_assert_true(all(c("hybrid_type","depVar") %in% names(RED_classified)), msg = "Missing variables")
 
   # to split repeat into pure and changed, figure out which listings have changed within id
   # this means however that between pairs quality changed, so for that listing pair
@@ -126,7 +127,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   # run regression
   hybrid_regression <- lm(Y ~ ., data = combined_hybrid)
   
-  pindex = (exp(predict(hybrid_regression))-1)*100
+  pindex = predict(hybrid_regression)
 
   # add pindex to datas
   combined_hybrid = combined_hybrid[, .(index = pindex, counting_id)]

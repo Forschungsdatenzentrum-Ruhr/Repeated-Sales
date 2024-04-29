@@ -81,7 +81,7 @@ suppressPackageStartupMessages({
 })
 
 # Pipeline Settings ----------------------------------------------------------
-options(warn = 1)
+#options(warn = 1)
 options(scipen=999)
 options("modelsummary_format_numeric_latex" = "plain")
 

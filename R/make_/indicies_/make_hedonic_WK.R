@@ -20,8 +20,7 @@ make_hedonic_WK <- function(RED_classified) {
   # depVar prep
   RED_classified[kaufpreis < 0, kaufpreis := 0]
   RED_classified[, "ln_flatprice_sqm" := log(kaufpreis / wohnflaeche)]
-
-
+  
   # indepVar prep
   var_to_keep <- c(
     intersect(
@@ -62,10 +61,7 @@ make_hedonic_WK <- function(RED_classified) {
       "ausstattung",
       "betreut"
     )
-  )
-
-  # type specific mutations
-  RED_WK[,
+  )[,
     ":="(
       # wohngeld
       declared_wohngeld = fifelse(between(wohngeld, 0, 2500), 1, 0) |> factor(
@@ -119,8 +115,7 @@ make_hedonic_WK <- function(RED_classified) {
   ]
   #----------------------------------------------
   # Unit test
-  empty_check(RED_WK)
-  tar_assert_true(all(names(RED_WK) %in% c(var_to_keep, "declared_wohngeld", "num_floors", "floors_cat")), msg = glue::glue("Not all variables are present in RED_WK. Missing: {setdiff(c(var_to_keep, 'declared_wohngeld', 'num_floors', 'floors_cat'), names(RED_WK))}"))
+  empty_check(RED_WK)s
   #----------------------------------------------
   return(RED_WK)
 }

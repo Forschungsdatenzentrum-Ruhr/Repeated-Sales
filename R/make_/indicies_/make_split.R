@@ -40,7 +40,7 @@ make_split = function(repeated_index, hybrid_index, hedonic_index){
     base_values =  indicies[date_quarter == base_quarter, .(base_index = mean_index), by = c("gid2019","index_type")]
     
     # Unit test: check if all gid2019 are present in the base_values
-    tar_assert_true(nrow(base_values) == uniqueN(indicies$gid2019)*length(all_indices))
+    tar_assert_true(nrow(base_values) == uniqueN(indicies$gid2019)*length(all_indices), msg = "Not all indices have a base value")
     
     # calculate based index
     indicies = indicies[base_values, on = c("gid2019","index_type")][, based_index := (mean_index/base_index)*100]

@@ -31,7 +31,7 @@ between_helper <- function(i_value, j_value, offset) {
 empty_check = function(.data) {
   # check if data is empty
   tar_assert_true(
-    all(!dim(data) %in% c(0, NULL)),
+    all(!dim(.data) %in% c(0, NULL)),
     glue::glue("{deparse(substitute(.data))} is empty.")
   )
   invisible(.data)
@@ -41,7 +41,7 @@ input_check = function(.data,.class){
   # check if data is of correct class
   tar_assert_true(
     inherits(.data, .class),
-    glue::glue("{deparse(substitute(.data))} must be a {.class}.")
+    glue::glue("{deparse(substitute(.data))} must be {single_quote(.class)}. Is {single_quote(class(.data))} instead.")
   )
   invisible(.data)
 }

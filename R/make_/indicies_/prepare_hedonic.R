@@ -14,7 +14,7 @@ prepare_hedonic <- function(RED_classified, data_type) {
   # Input validation
   input_check(RED_classified, "data.table")
   input_check(data_type, "character")
-  tar_assert_true(data_type %in% c("WK", "WM", "HK"))
+  tar_assert_true(data_type %in% c("WK", "WM", "HK"), msg = "data_type must be one of WK, WM, HK")
   #---------------------------------------------
   if (data_type == "WK") {
     prepared_hedonic <- make_hedonic_WK(RED_classified)

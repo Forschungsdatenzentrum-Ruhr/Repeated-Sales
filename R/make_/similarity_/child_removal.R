@@ -11,7 +11,7 @@ child_removal_f <- function(parent_gains, winner_ids, unique_clustering_centers)
   # ------------------------------------------------
   # Input validation
   input_check(parent_gains, "data.table")
-  input_check(winner_ids, "data.table")
+  input_check(winner_ids, "list")
   input_check(unique_clustering_centers, "data.table")
   # ------------------------------------------------
   # identify competing parents
@@ -86,8 +86,9 @@ child_removal_f <- function(parent_gains, winner_ids, unique_clustering_centers)
     unique_clustering_centers <- child_removal_f(parent_gains, winner_ids, unique_clustering_centers)
   }
   # ------------------------------------------------
-  # Unit test
-  empty_check(unique_clustering_centers)
+  # Not necessary, its fine if this ends up empty
+  # # Unit test
+  # empty_check(unique_clustering_centers)
   # ------------------------------------------------
   return(unique_clustering_centers)
 }

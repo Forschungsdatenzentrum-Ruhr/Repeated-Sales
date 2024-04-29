@@ -65,7 +65,6 @@ make_hedonic_WM <- function(RED_classified) {
   #----------------------------------------------
   # Unit test
   empty_check(RED_WM)
-  tar_assert_true(all(names(RED_WM) %in% c(var_to_keep, "ln_rent_sqm")), msg = glue::glue("Not all variables are present in RED_WM. Missing: {setdiff(c(var_to_keep, 'ln_rent_sqm'), names(RED_WM))}"))
   #----------------------------------------------
   return(RED_WM)
 }

@@ -132,7 +132,7 @@ make_var_list <- function(data_type) {
   list_var <- list(depVar = depVar, indepVar = indepVar, fixed_effects = fixed_effects, binary_names = binary_names, cont_names = cont_names)
   #----------------------------------------------
   # Unit test
-  null_check = lapply(list_var, is.null)
+  null_check = sapply(list_var, is.null)
   tar_assert_true(!all(null_check), "{names(null_check)[which(null_check)]} is empty.")
   #---------------------------------------------- 
   return(list_var)
