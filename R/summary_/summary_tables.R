@@ -1,3 +1,21 @@
+custom_single_tabyl <- function(data, arg1, data_type) {
+  cross_tabyl <- data |>
+    tabyl(!!sym(arg1)) |>
+    adorn_totals("row") |>
+    adorn_percentages("row") |>
+    adorn_pct_formatting(digits = 2) |>
+    adorn_ns()
+  
+  # save to file
+  cross_tabyl |>
+    htmlTable(rnames = F) |>
+    kableExtra::save_kable(paste0(output_path, "/", arg1,"_",data_type, ".png"))
+  
+  return(cross_tabyl)
+}
+
+
+
 custom_cross_tabyl <- function(data, arg1, arg2) {
   cross_tabyl <- data |>
     tabyl(!!sym(arg1), !!sym(arg2)) |>

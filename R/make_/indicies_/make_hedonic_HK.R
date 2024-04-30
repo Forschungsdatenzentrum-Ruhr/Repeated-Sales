@@ -39,15 +39,10 @@ make_hedonic_HK <- function(RED_classified) {
   
   # drop extreme values of variables
   # this is exclusive in REDX and inclusive here
-  upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
-  lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
+  
   
   # do rule based cleanup and drop all unsed variables to reduce RAM
-  RED_classified = RED_classified[
-      zimmeranzahl < 15 &
-      kaufpreis %between% c(0, 5000000) &
-      wohnflaeche %between% c(lower_percentile, upper_percentile),
-      grundstuecksflaeche > 2500, ..var_to_keep]
+  RED_classified = RED_classified[,..var_to_keep]
 
 
   # clean data with procedure identical for all data_types
@@ -60,7 +55,7 @@ make_hedonic_HK <- function(RED_classified) {
   )[,
     ":="(
       plotarea_cat = fcase(
-        grundstuecksflaeche <= 0, 0,
+        grundstuecksflaeche <= 0 | is.na(grundstuecksflaeche), 0,
         between(grundstuecksflaeche, 1, 200), 1,
         between(grundstuecksflaeche, 201, 400), 2,
         between(grundstuecksflaeche, 401, 600), 3,
@@ -86,9 +81,9 @@ make_hedonic_HK <- function(RED_classified) {
         kategorie_Haus %in% c(4,5,6), 3,
         kategorie_Haus %in% c(9,10), 4,
         kategorie_Haus %in% c(11,12), 5,
-        TRUE, 6
+        default =  6
       ) |> factor(
-        0:7,
+        0:6,
         c(
           "MISSING",
           "typ_freistehend",
@@ -99,8 +94,8 @@ make_hedonic_HK <- function(RED_classified) {
           "typ_other"
         )
       )
-    )
-  ]
+    ) 
+  ][!is.na(plotarea_cat)] # I have no idea how there could still be NAs
   #----------------------------------------------
   # Unit test
   empty_check(RED_HK)

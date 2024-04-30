@@ -69,7 +69,7 @@ all_type_cleaning <- function(RED_classified, var_to_replace_missings) {
         c("MISSING", "Simple", "Normal", "Sophisticated", "Deluxe")
       )
     )
-  ][!is.na(ausstattung) | !is.na(baujahr_cat)]
+  ][!is.na(ausstattung) & !is.na(baujahr_cat)]
 
   #----------------------------------------------
   # Unit test

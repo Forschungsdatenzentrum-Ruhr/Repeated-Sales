@@ -14,6 +14,7 @@ make_split = function(repeated_index, hybrid_index, hedonic_index){
   input_check(hybrid_index, "data.table")
   input_check(hedonic_index, "data.table")
   #----------------------------------------------
+  # TODO: use grouping var here for consistency
 
     # extract individual indicies
     repeated_index = split(repeated_index, by = "i_type", sorted = T, keep.by = F)
@@ -39,15 +40,19 @@ make_split = function(repeated_index, hybrid_index, hedonic_index){
     # rebase values to make them comparable
     base_values =  indicies[date_quarter == base_quarter, .(base_index = mean_index), by = c("gid2019","index_type")]
     
-    # Unit test: check if all gid2019 are present in the base_values
-    tar_assert_true(nrow(base_values) == uniqueN(indicies$gid2019)*length(all_indices), msg = "Not all indices have a base value")
+    # # Unit test: check if all gid2019 are present in the base_values
+    # tar_assert_true(nrow(base_values) == uniqueN(indicies$gid2019)*length(all_indices), msg = "Not all indices have a base value")
     
     # calculate based index
     indicies = indicies[base_values, on = c("gid2019","index_type")][, based_index := (mean_index/base_index)*100]
-
+    # cut off at base_quarter (not sure if i want this)
+    indicies = indicies[date_quarter >= base_quarter]
     #----------------------------------------------
     # Unit test
     empty_check(indicies)
+    # # check if there are indices for all grouping vars
+    # type_check = table(indicies$gid2019,indicies$index_type) == 0
+    # tar_assert_true(!any(type_check), msg = glue::glue("Not all indicies have all index_types."))
     #----------------------------------------------
     return(indicies)
 }

@@ -30,9 +30,7 @@ make_var_list <- function(data_type) {
       "zimmeranzahl",
       
       # mutated
-      "declared_wohngeld",
       "baujahr_cat",
-      "first_occupancy",
       "num_floors",
       "floors_cat"
     )
@@ -49,10 +47,9 @@ make_var_list <- function(data_type) {
       "aufzug", 
       "keller", 
       "betreut", 
-      "ausstattung", 
-      "declared_wohngeld", 
+      "ausstattung",
+      # mutated
       "baujahr_cat", 
-      "first_occupancy", 
       "num_floors", 
       "floors_cat"
     )
@@ -72,8 +69,7 @@ make_var_list <- function(data_type) {
       "zimmeranzahl",
       
       # mutated
-      "baujahr_cat",
-      "first_occupancy"
+      "baujahr_cat"
     )
     fixed_effects <- c("gid2019", "ejahr")
     
@@ -85,8 +81,7 @@ make_var_list <- function(data_type) {
       "aufzug", 
       "keller", 
       "ausstattung",
-      "baujahr_cat", 
-      "first_occupancy" 
+      "baujahr_cat"
     )
     cont_names <- c("zimmeranzahl")
     
@@ -105,7 +100,6 @@ make_var_list <- function(data_type) {
       
       # mutated
       "baujahr_cat",
-      "first_occupancy",
       "plotarea_cat",
       "type_cat"
     )
@@ -121,7 +115,6 @@ make_var_list <- function(data_type) {
       
       # mutated
       "baujahr_cat",
-      "first_occupancy",
       "plotarea_cat",
       "type_cat" 
     )

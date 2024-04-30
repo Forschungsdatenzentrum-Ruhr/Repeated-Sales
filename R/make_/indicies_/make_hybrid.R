@@ -1,18 +1,18 @@
-make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
+make_hybrid <- function(RED_subset_classified, prepared_repeated, data_type) {
   #' @title Make Hybrid Index
-  #' 
+  #'
   #' @description Make the hybrid index for the given data type
-  #' @param RED_classified data.table. Classified RED data
+  #' @param RED_subset_classified data.table. Classified RED data
   #' @param prepared_repeated data.table. Prepared repeated data
   #' @param data_type character. Data type of the classified RED data
-  #' 
+  #'
   #' @note Build by me based on Case and Quigley 1991
-  #' 
+  #'
   #' @return data.table. Hybrid index for the given data type
   #' @author Thorben Wiebe
   #----------------------------------------------
   # Input validation
-  input_check(RED_classified, "data.table")
+  input_check(RED_subset_classified, "data.table")
   input_check(prepared_repeated, "data.table")
   input_check(data_type, "character")
   #----------------------------------------------
@@ -20,8 +20,9 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   list_var <- make_var_list(data_type = data_type)
   depVar <- list_var$depVar
   fixed_effects <- list_var$fixed_effects
-  binary_names = list_var$binary_names
-  cont_names = list_var$cont_names
+  binary_names <- list_var$binary_names
+  cont_names <- list_var$cont_names
+  indepVar <- c(paste0("pre_", c(cont_names, binary_names)), paste0("sub_", c(cont_names, binary_names)))
 
   # declare variables to keep
   var_to_keep <- c(binary_names, cont_names, "rs_id", "emonths", "depVar", "counting_id")
@@ -29,18 +30,17 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   # get ids of all listings that are classified as repeat sales (pure or changed)
   all_rs <- prepared_repeated[["rs_id"]] |> unique()
   # split into repeat and hedonic
-  # something in here causes a data.table warning: Invalid .internal.selfref detected 
-  RED_classified <- prepare_hedonic(RED_classified, data_type)[, ":="(
+  RED_subset_classified <- prepare_hedonic(RED_subset_classified, data_type)[, ":="(
     hybrid_type = fifelse(rs_id %in% all_rs, "repeat", "hedonic"),
     depVar = exp(get(depVar))
   )]
-  tar_assert_true(all(c("hybrid_type","depVar") %in% names(RED_classified)), msg = "Missing variables")
+  tar_assert_true(all(c("hybrid_type", "depVar") %in% names(RED_subset_classified)), msg = "Missing variables")
 
   # to split repeat into pure and changed, figure out which listings have changed within id
   # this means however that between pairs quality changed, so for that listing pair
 
   # reduce listings to only repeats and set missings to zero
-  pure_rs <- RED_classified[
+  pure_rs <- RED_subset_classified[
     hybrid_type == "repeat",
     ..var_to_keep
   ]
@@ -57,7 +57,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
 
   # Unit test
   tar_assert_true(length(changed_boolean) == nrow(pure_rs), "Length of changed_boolean does not match pure_rs")
-  
+
   pure_rs[, changed_to := changed_boolean][, changed_from := lead(changed_to, 1), by = rs_id]
 
 
@@ -69,7 +69,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   changed_pairs <- pure_rs[changed_to == TRUE | changed_from == TRUE]
 
   # smaple 3 hedonic
-  hedonic_listings <- RED_classified[hybrid_type == "hedonic", ..var_to_keep]
+  hedonic_listings <- RED_subset_classified[hybrid_type == "hedonic", ..var_to_keep]
 
   # type specific setups, mostly for readability
   # hedonic
@@ -83,7 +83,7 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
   pure_t_month <- pure_pairs[["emonths"]]
   pure_T_month <- pure_pairs[, lag(emonths, 1), by = "rs_id"][, rs_id := NULL][["V1"]]
   pure_counting_id <- pure_pairs[["counting_id"]]
-  
+
   # changed
   changed_V_t <- changed_pairs[["depVar"]]
   changed_V_T <- changed_pairs[, lag(depVar, 1), by = "rs_id"][, rs_id := NULL][["V1"]]
@@ -115,23 +115,49 @@ make_hybrid <- function(RED_classified, prepared_repeated, data_type) {
     )
   )
   # combine Z and Y and add counting_id
-  combined_hybrid <- cbind(Z, Y)[, counting_id := c(hedonic_counting_id, pure_counting_id, changed_counting_id)] |> na.omit()
+  combined_hybrid <- cbind(Z, Y)[, ":="(counting_id = c(
+    hedonic_counting_id,
+    pure_counting_id, 
+    changed_counting_id
+  ),
+  # testing 
+  id_type = c(rep("hedonic", length(hedonic_counting_id)),
+              rep("pure", length(pure_counting_id)),
+              rep("changed", length(changed_counting_id))
+              
+              )
+  )
+  ] |> na.omit()
+  custom_single_tabyl(combined_hybrid, "id_type", data_type)
+
+
+  #combined_hybrid = combined_hybrid[id_type %in% c("changed")]
 
   # remerge fixed effects -> used for the pindex
   var_to_keep <- c(fixed_effects, "counting_id")
-  combined_hybrid <- combined_hybrid[RED_classified[, .SD, .SDcols = var_to_keep], on = c("counting_id")]
+  combined_hybrid <- combined_hybrid[RED_subset_classified[, .SD, .SDcols = var_to_keep], on = "counting_id"]
 
-  # final clean up -> these shouldnt really happend beforehand
-  combined_hybrid <- combined_hybrid[pre_zimmeranzahl != -Inf & sub_zimmeranzahl != -Inf & Y > 0]
+  # final clean up
+  combined_hybrid <- combined_hybrid[is.finite(pre_zimmeranzahl) & is.finite(sub_zimmeranzahl) & Y != 0]
 
-  # run regression
-  hybrid_regression <- lm(Y ~ ., data = combined_hybrid)
-  
-  pindex = predict(hybrid_regression)
+  # construct regression formula
+  f = regression_function(indepVar, "Y")
+  hybrid_regression = lm(f, data = combined_hybrid)
 
-  # add pindex to datas
-  combined_hybrid = combined_hybrid[, .(index = pindex, counting_id)]
-  out <- RED_classified[combined_hybrid, on = "counting_id"]
+  # export regression to modelsummary
+  modelsummary::modelsummary(
+    hybrid_regression,
+    stars = c("***" = .01, "**" = .05, "*" = .1),
+    fmt = 4,
+    output = glue::glue("{output_path}/{data_type}/hybrid_regression.txt") # ,
+    # gof_map = c("nobs", "r.squared", "adj.r.squared")
+  )
+
+  pindex = (exp(predict(hybrid_regression))-1) * 100
+
+  combined_hybrid <- combined_hybrid[, .(index = pindex, counting_id)]
+  out <- RED_subset_classified[combined_hybrid, on = "counting_id"]
+
   #----------------------------------------------
   # Unit test
   empty_check(out)

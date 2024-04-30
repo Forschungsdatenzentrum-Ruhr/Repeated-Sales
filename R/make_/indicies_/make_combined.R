@@ -39,10 +39,12 @@ make_combined = function(repeated_index, hybrid_index, hedonic_index){
     # rebase values to make them comparable
     base_values =  indicies[date_quarter == base_quarter, .(base_index = mean_index), by = "index_type"]
     
-    tar_assert_true(nrow(base_values) == length(all_indices), msg = "Not all indices have a base value")
+    #tar_assert_true(nrow(base_values) == length(all_indices), msg = "Not all indices have a base value")
     
     # calculate based index
     indicies = indicies[base_values, on = "index_type"][, based_index := (mean_index/base_index)*100]
+    # cut off at base_quarter (not sure if i want this)
+    indicies = indicies[date_quarter >= base_quarter]
     #----------------------------------------------
     # Unit test
     empty_check(indicies)

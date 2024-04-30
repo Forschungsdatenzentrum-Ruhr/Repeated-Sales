@@ -38,16 +38,10 @@ make_hedonic_WM <- function(RED_classified) {
     "emonths",
     "counting_id"
   )
-  # drop extreme values of variables
-  # this is exclusive in REDX and inclusive here
-  upper_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], 1 - (0.5 / 100))
-  lower_percentile <- quantile(RED_classified[wohnflaeche >= 0, wohnflaeche], (0.5 / 100))
 
 
   # do rule based cleanup and drop all unsed variables to reduce RAM
-  RED_classified = RED_classified[zimmeranzahl < 8 &
-      mietekalt %between% c(0, 5000) &
-      wohnflaeche %between% c(lower_percentile, upper_percentile), ..var_to_keep]
+  RED_classified = RED_classified[, ..var_to_keep]
 
   # clean data with procedure identical for all data_types
   RED_WM <- all_type_cleaning(

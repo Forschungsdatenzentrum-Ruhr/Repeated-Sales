@@ -1,10 +1,10 @@
 make_hedonic <- function(prepared_hedonic, data_type) {
   #' @title Make Hedonic Index
-  #' 
+  #'
   #' @description Make the hedonic index for the given data type
   #' @param prepared_hedonic data.table. Prepared hedonic data
   #' @param data_type character. Data type of the prepared hedonic data
-  #' 
+  #'
   #' @return data.table. Hedonic index for the given data type
   #' @author Thorben Wiebe
   #----------------------------------------------
@@ -25,13 +25,22 @@ make_hedonic <- function(prepared_hedonic, data_type) {
     depVar = depVar,
     fixed_effects = fixed_effects
   )
+  # export regression to modelsummary
+  modelsummary::modelsummary(
+    hedonic_coef,
+    stars = c("***" = .01, "**" = .05, "*" = .1),
+    fmt = 4,
+    output = glue::glue("{output_path}/{data_type}/hedonic_regression.txt")#,
+    #gof_map = c("nobs", "r.squared", "adj.r.squared")
+  )
   # NOTE: really feel like this should be possible with data.table but cant find it
   # drop ids that were removed during regression and assign index
   removed_ids <- hedonic_coef$obs_selection$obsRemoved
-  pindex <- (exp(hedonic_coef$sumFE) - 1) * 100
+  pindex <- (exp(hedonic_coef$sumFE) -1) * 100
   if (length(removed_ids) > 0) {
     prepared_hedonic <- dplyr::slice(prepared_hedonic, removed_ids * -1)
   }
+  
   out <- prepared_hedonic[, index := pindex]
   #----------------------------------------------
   # Unit test

@@ -18,16 +18,15 @@ feols_regression = function(RED_data,indepVar, depVar, fixed_effects){
   #----------------------------------------------
 
   # Unit test: check if all variables are in the data
-  tar_assert_true(all(indepVar %in% names(RED_data)), msg = paste0("Missing: ", setdiff(indepVar, names(RED_data))))
+  all_vars = c(indepVar,depVar,fixed_effects)
+  tar_assert_true(all(all_vars %in% names(RED_data)), msg = paste0("Missing: ", setdiff(all_vars, names(RED_data))))
 
   # Unit test: check for NAs that got through cleaning
-  NA_check = RED_data[,lapply(.SD, function(x){anyNA(x)}), .SDcols = c(indepVar,fixed_effects)] |> unlist()
+  NA_check = RED_data[,lapply(.SD, function(x){anyNA(x)}), .SDcols = all_vars] |> unlist()
   tar_assert_true(!any(NA_check), msg = glue::glue("NAs in data, columns: {names(NA_check)[NA_check]}"))
   
   # construct regression formula
-  rhs <- indepVar |> paste(collapse = " + ")
-  f <- sprintf("%s ~ %s | %s", depVar, rhs, paste0(fixed_effects, collapse = "^")) |>
-    as.formula()
+  f = regression_function(indepVar, depVar, fixed_effects)
   
   # run regression
   hedonic <- feols(f, RED_data, combine.quick = F, mem.clean = T)
