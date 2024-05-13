@@ -102,3 +102,20 @@ custom_progress_bar <- function(classification_type, .GRP, .GRPN, mod = 1000) {
 #     return(NULL)
 #   }
 # }
+
+own_theme <- theme(
+  axis.text.x = element_text(size = 14),
+  axis.text.y = element_text(size = 14),
+  axis.title.x = element_blank(),
+  axis.title.y = element_text(size = 17, vjust = 2),
+  panel.grid.major = element_line(linewidth = 0.3, linetype = "solid", color = "lightgrey"),
+  panel.background = element_rect(color = "white", fill = "white"),
+  axis.line = element_line(linewidth = 0.3, linetype = "solid", color = "black"),
+  legend.key.size = unit(1, "cm"),
+  legend.text = element_text(size = 14),
+  axis.ticks.length = unit(0.25, "cm"),
+  legend.key = element_blank(),
+  legend.position = "right",
+  legend.background = element_blank(),
+  legend.title = element_blank()
+)

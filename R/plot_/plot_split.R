@@ -64,25 +64,30 @@ plot_split <- function(indicies, data_type) {
     plot1 <- ggplot(single_index, aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
       geom_line(aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
       coord_cartesian(expand = FALSE) +
-      theme_bw()
-    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_gid_indicies.png"), plot1, width = 10, height = 10)
+      ylab("Index Value") + 
+      own_theme
+    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_gid_indicies.png"), plot1)
 
     # smooth
     plot2 <- ggplot(single_index, aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
       stat_smooth(aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +
       coord_cartesian(expand = FALSE) +
-      theme_bw()
-    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_smooth_gid_indicies.png"), plot2, width = 10, height = 10)
+      ylab("Index Value") + 
+      own_theme
+    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_smooth_gid_indicies.png"), plot2)
+    # NOTE: Im pretty sure the values for the municipalites get swapped somewhere in the hybrid code -> i.e. Bremen becomes 
+    # Berlin and vice versa - their indicies inversely match those in hedonic. No idea where/how though
     
-    #subset
-    subset_gid2019 = big_fifteen[c("Berlin","Munich","Frankfurt"), on = "gid_names"]
-    subset_single_index = single_index[subset_gid2019, on = "gid2019"]
-    
-    plot3 = ggplot(subset_single_index, aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
-      geom_line(aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
-      coord_cartesian(expand = FALSE) +
-      theme_bw()
-    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_subset_gid_indicies.png"), plot3, width = 10, height = 10)
+    # #subset
+    # subset_gid2019 = big_fifteen[c("Berlin","Munich","Bremen"), on = "gid_names"]
+    # subset_single_index = single_index[subset_gid2019, on = "gid2019"]
+    # 
+    # plot3 = ggplot(subset_single_index, aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
+    #   stat_smooth(aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +
+    #   coord_cartesian(expand = FALSE) +
+    #   ylab("Index Value") + 
+    #   own_theme
+    # ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_subset_gid_indicies.png"), plot3)
     
   }
   # ----------------------------------------------
