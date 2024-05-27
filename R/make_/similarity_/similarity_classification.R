@@ -73,7 +73,6 @@ similarity_classification <- function(geo_grouped_data, curr_latlon_log) {
   # remerge non-duplicates to clustering results
   id_key <- geo_grouped_data[clustering$centers, on = "counting_id"][, counting_id := NULL]
 
-  # NOTE: should this also allow deviations?
   id_combinations <- combinations[id_key,
     on = .(wohnflaeche, zimmeranzahl, etage),
     allow.cartesian = TRUE

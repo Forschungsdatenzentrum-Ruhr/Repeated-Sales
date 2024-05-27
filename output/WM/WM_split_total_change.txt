@@ -1,0 +1,7 @@
+index_type,gid_names,based_index_start,based_index_end,total_change
+GRS,Berlin,100,179.81,79.81
+GRS,Frankfurt,100,137.8,37.8
+GRS,Munich,100,154.81,54.81
+Hedonic,Berlin,100,199.45,99.45
+Hedonic,Frankfurt,100,146.77,46.77
+Hedonic,Munich,100,170.23,70.23

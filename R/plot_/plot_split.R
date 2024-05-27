@@ -85,10 +85,16 @@ plot_split <- function(indicies, data_type) {
     # Berlin and vice versa - their indicies inversely match those in hedonic. No idea where/how though
     
   }
-  
   #subset
   subset_gid2019 = big_fifteen[c("Berlin","Munich","Frankfurt"), on = "gid_names"]
   subset_indicies = indicies[subset_gid2019, on = "gid2019"][index_type %in% c("Hedonic","GRS","Hybrid")]
+
+  # ----------------------------------------------
+  # write total points changes to file
+  start_values = subset_indicies[date_quarter == min(date_quarter), .(index_type, based_index, gid_names)]
+  end_values = subset_indicies[date_quarter == max(date_quarter), .(index_type, based_index, gid_names)]
+  write_total_point_change(start_values, end_values, data_type)
+  # ----------------------------------------------
   
   plot3 = ggplot(subset_indicies, aes(x = date_quarter, y = based_index, color = gid_names, linetype = index_type)) +
     stat_smooth(aes(x = date_quarter, y = based_index, color = gid_names, linetype = index_type), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +

@@ -23,6 +23,13 @@ plot_combined <- function(combined_indices, data_type) {
     index_type == "hybrid_index", "Hybrid",
     index_type == "hedonic_index", "Hedonic"
   )]
+  #----------------------------------------------
+  # write total points changes to file
+  start_values = combined_indices[date_quarter == min(date_quarter), .(index_type, based_index)]
+  end_values = combined_indices[date_quarter == max(date_quarter), .(index_type, based_index)]
+  write_total_point_change(start_values, end_values, data_type, split_bool = FALSE)
+  #----------------------------------------------
+
   # default
   plot1 <- ggplot(combined_indices) +
     geom_line(aes(x = date_quarter, y = based_index, color = index_type, group = index_type)) +

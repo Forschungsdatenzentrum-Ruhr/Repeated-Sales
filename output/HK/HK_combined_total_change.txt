@@ -1,0 +1,4 @@
+index_type,based_index_start,based_index_end,total_change
+ARS,100,183.72,83.72
+GRS,100,206.56,106.56
+Hedonic,100,251.03,151.03
