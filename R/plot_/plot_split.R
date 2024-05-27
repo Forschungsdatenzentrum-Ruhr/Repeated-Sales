@@ -73,15 +73,14 @@ plot_split <- function(indicies, data_type) {
       coord_cartesian(expand = FALSE) +
       ylab("Index Value") + 
       own_theme
-    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_gid_indicies.png"), plot1)
+    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_gid_indicies.png"), plot1, dpi = 300)
 
     # smooth
     plot2 <- ggplot(single_index, aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
       stat_smooth(aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +
-      coord_cartesian(expand = FALSE) +
       ylab("Index Value") + 
       own_theme
-    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_smooth_gid_indicies.png"), plot2)
+    ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_smooth_gid_indicies.png"), plot2, dpi = 300)
     # NOTE: Im pretty sure the values for the municipalites get swapped somewhere in the hybrid code -> i.e. Bremen becomes 
     # Berlin and vice versa - their indicies inversely match those in hedonic. No idea where/how though
     
@@ -93,10 +92,9 @@ plot_split <- function(indicies, data_type) {
   
   plot3 = ggplot(subset_indicies, aes(x = date_quarter, y = based_index, color = gid_names, linetype = index_type)) +
     stat_smooth(aes(x = date_quarter, y = based_index, color = gid_names, linetype = index_type), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +
-    coord_cartesian(expand = FALSE) +
     ylab("Index Value") +
     own_theme
-  ggsave(glue::glue("output/{data_type}/{data_type}_subset_indicies.png"), plot3)
+  ggsave(glue::glue("output/{data_type}/{data_type}_subset_indicies.png"), plot3, dpi = 300)
   # ----------------------------------------------
   return(NULL)
 }

@@ -115,7 +115,7 @@ own_theme <- theme(
   legend.text = element_text(size = 14),
   axis.ticks.length = unit(0.25, "cm"),
   legend.key = element_blank(),
-  legend.position = "right",
+  legend.position = "bottom",
   legend.background = element_blank(),
   legend.title = element_blank()
 )

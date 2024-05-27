@@ -26,18 +26,16 @@ plot_combined <- function(combined_indices, data_type) {
   # default
   plot1 <- ggplot(combined_indices) +
     geom_line(aes(x = date_quarter, y = based_index, color = index_type, group = index_type)) +
-    coord_cartesian(expand = FALSE) +
     ylab("Index Value") + 
     own_theme
-  ggsave(glue::glue("output/{data_type}/{data_type}_combined_indicies.png"), plot1)
+  ggsave(glue::glue("output/{data_type}/{data_type}_combined_indicies.png"), plot1, dpi = 300)
 
   # smooth
   plot2 <- ggplot(combined_indices) +
     stat_smooth(aes(x = date_quarter, y = based_index, color = index_type, group = index_type), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +
-    coord_cartesian(expand = FALSE) +
     ylab("Index Value") + 
     own_theme
-  ggsave(glue::glue("output/{data_type}/{data_type}_smooth_combined_indicies.png"), plot2)
+  ggsave(glue::glue("output/{data_type}/{data_type}_smooth_combined_indicies.png"), plot2, dpi = 300)
 
   #----------------------------------------------
   return(NULL)
