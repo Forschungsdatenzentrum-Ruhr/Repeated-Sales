@@ -7,7 +7,7 @@ if(!is.null(fixed_effects)){
     f <- sprintf("%s ~ %s | %s", depVar, rhs, paste0(fixed_effects, collapse = "^")) |>
       as.formula()
   } else {
-    f <- sprintf("%s ~ %s + %s - 1", depVar, rhs, paste0(fixed_effects, collapse = "+")) |>
+    f <- sprintf("%s ~ %s + %s", depVar, rhs, paste0(fixed_effects, collapse = "+")) |>
       as.formula()
   }
   

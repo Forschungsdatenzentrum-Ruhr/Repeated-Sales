@@ -16,11 +16,6 @@ plot_combined <- function(combined_indices, data_type) {
   input_check(data_type, "character")
   tar_assert_true(data_type %in% c("WK", "WM", "HK"), "data_type must be one of WK, WM, HK")
   #----------------------------------------------
-  # plotting settings
-  data_type_long = switch(data_type,
-                          "WK" = "Apartments for sale",
-                          "WM" = "Apartments for rent",
-                          "HK" = "Houses for sale")
   # prettify the types
   combined_indices[, index_type := fcase(
     index_type == "ARS", "ARS",

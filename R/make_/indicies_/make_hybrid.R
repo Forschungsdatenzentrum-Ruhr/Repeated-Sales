@@ -19,7 +19,7 @@ make_hybrid <- function(RED_subset_classified, prepared_repeated, data_type) {
   # prep, get some settings
   list_var <- make_var_list(data_type = data_type)
   depVar <- list_var$depVar
-  fixed_effects <- list_var$fixed_effects
+
   binary_names <- list_var$binary_names
   cont_names <- list_var$cont_names
   indepVar <- c(paste0("pre_", c(cont_names, binary_names)), paste0("sub_", c(cont_names, binary_names)))
@@ -34,7 +34,6 @@ make_hybrid <- function(RED_subset_classified, prepared_repeated, data_type) {
     hybrid_type = fifelse(rs_id %in% all_rs, "repeat", "hedonic"),
     depVar = exp(get(depVar))
   )]
-  tar_assert_true(all(c("hybrid_type", "depVar") %in% names(RED_subset_classified)), msg = "Missing variables")
 
   # to split repeat into pure and changed, figure out which listings have changed within id
   # this means however that between pairs quality changed, so for that listing pair
@@ -120,7 +119,6 @@ make_hybrid <- function(RED_subset_classified, prepared_repeated, data_type) {
     pure_counting_id, 
     changed_counting_id
   ),
-  # testing 
   id_type = c(rep("hedonic", length(hedonic_counting_id)),
               rep("pure", length(pure_counting_id)),
               rep("changed", length(changed_counting_id))
@@ -129,17 +127,10 @@ make_hybrid <- function(RED_subset_classified, prepared_repeated, data_type) {
   )
   ] |> na.omit()
   custom_single_tabyl(combined_hybrid, "id_type", data_type)
-
-
-  #combined_hybrid = combined_hybrid[id_type %in% c("changed")]
-
-  # remerge fixed effects -> used for the pindex
-  var_to_keep <- c(fixed_effects, "counting_id")
-  combined_hybrid <- combined_hybrid[RED_subset_classified[, .SD, .SDcols = var_to_keep], on = "counting_id"]
-
+  
   # final clean up
   combined_hybrid <- combined_hybrid[is.finite(pre_zimmeranzahl) & is.finite(sub_zimmeranzahl) & Y != 0]
-
+  
   # construct regression formula
   f = regression_function(indepVar, "Y")
   hybrid_regression = lm(f, data = combined_hybrid)
@@ -153,7 +144,7 @@ make_hybrid <- function(RED_subset_classified, prepared_repeated, data_type) {
     # gof_map = c("nobs", "r.squared", "adj.r.squared")
   )
 
-  pindex = (exp(predict(hybrid_regression))-1) * 100
+  pindex = (exp(predict(hybrid_regression))-1)
 
   combined_hybrid <- combined_hybrid[, .(index = pindex, counting_id)]
   out <- RED_subset_classified[combined_hybrid, on = "counting_id"]

@@ -16,6 +16,13 @@ plot_split <- function(indicies, data_type) {
   input_check(data_type, "character")
   tar_assert_true(data_type %in% c("WK", "WM", "HK"), "data_type must be one of WK, WM, HK")
   #----------------------------------------------
+  # prettify the types
+  indicies[, index_type := fcase(
+    index_type == "ARS", "ARS",
+    index_type == "GRS", "GRS",
+    index_type == "hybrid_index", "Hybrid",
+    index_type == "hedonic_index", "Hedonic"
+  )]
   # replace ids with names for plotting
   big_fifteen <- data.table(
     gid2019 =c(
@@ -78,18 +85,18 @@ plot_split <- function(indicies, data_type) {
     # NOTE: Im pretty sure the values for the municipalites get swapped somewhere in the hybrid code -> i.e. Bremen becomes 
     # Berlin and vice versa - their indicies inversely match those in hedonic. No idea where/how though
     
-    # #subset
-    # subset_gid2019 = big_fifteen[c("Berlin","Munich","Bremen"), on = "gid_names"]
-    # subset_single_index = single_index[subset_gid2019, on = "gid2019"]
-    # 
-    # plot3 = ggplot(subset_single_index, aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names)) +
-    #   stat_smooth(aes(x = date_quarter, y = based_index, color = gid_names, group = gid_names), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +
-    #   coord_cartesian(expand = FALSE) +
-    #   ylab("Index Value") + 
-    #   own_theme
-    # ggsave(glue::glue("output/{data_type}/{data_type}_{single_index_type}_subset_gid_indicies.png"), plot3)
-    
   }
+  
+  #subset
+  subset_gid2019 = big_fifteen[c("Berlin","Munich","Frankfurt"), on = "gid_names"]
+  subset_indicies = indicies[subset_gid2019, on = "gid2019"][index_type %in% c("Hedonic","GRS","Hybrid")]
+  
+  plot3 = ggplot(subset_indicies, aes(x = date_quarter, y = based_index, color = gid_names, linetype = index_type)) +
+    stat_smooth(aes(x = date_quarter, y = based_index, color = gid_names, linetype = index_type), formula = y ~ s(x, bs = "cs"), method = "gam", se = F) +
+    coord_cartesian(expand = FALSE) +
+    ylab("Index Value") +
+    own_theme
+  ggsave(glue::glue("output/{data_type}/{data_type}_subset_indicies.png"), plot3)
   # ----------------------------------------------
   return(NULL)
 }

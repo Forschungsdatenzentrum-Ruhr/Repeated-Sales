@@ -25,7 +25,7 @@ make_split = function(repeated_index, hybrid_index, hedonic_index){
     all_indices = list(
       "GRS" = GRS_index,
       "ARS" = ARS_index,
-      "hybrid_index" = hybrid_index,
+      #"hybrid_index" = hybrid_index,
       "hedonic_index" = hedonic_index
     )
     # prepare split index
