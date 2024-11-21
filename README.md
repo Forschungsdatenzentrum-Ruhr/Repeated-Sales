@@ -1,1 +1,3 @@
-# repeated-sales
+# Repeated Sales
+
+This repository includes the code for underlying the "Repeated-Sales Algorithm for Germany" by Thorben Wiebe and Philipp Breidenbach. This repeated-sales algorithm is tailored for the German real estate market, addressing the lack of such data. Utilizing the dataset RWI-GEO-RED from FDZ Ruhr at RWI, which exploits data from ImmobilienScout24.de, the algorithm classifies repeat-sales and repeat-rent listings, overcoming challenges like measurement errors and deviations in property characteristics. The methodology, based on nearest centroid classification, ensures accurate clustering of similar listings. 
