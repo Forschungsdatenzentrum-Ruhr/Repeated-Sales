@@ -9,4 +9,14 @@
 .Rhistory
 _targets/*
 data/*
-.Rhistory
+documentation/
+.Rprofile
+*.Rproj
+output/WK/Thumbs.db
+output/WM/Thumbs.db
+.vscode
+_targets/meta/meta
+_targets/.gitignore
+_targets/objects/*
+_targets/user/*
+/_targets
