@@ -105,7 +105,7 @@ plan(callr)
 
 # Globals -------------------------------------------------------------------
 
-static_RED_types <- c("WK", "WM", "HK") #not tried yet
+static_RED_types <- c("WK", "WM", "HK")
 RED_version <- "v9"
 
 ## similarity settings
