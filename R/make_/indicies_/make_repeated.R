@@ -13,7 +13,10 @@ make_repeated <- function(prepared_repeated, grouping_var) {
   input_check(grouping_var, "character")
   #----------------------------------------------
   # prep
-  prepared_repeated <- prepared_repeated[, c(grouping_var) := format(get(grouping_var), scientific = F, trim = T)]
+  if(grouping_var != "grouping_dummy"){
+    prepared_repeated <- prepared_repeated[, c(grouping_var) := format(get(grouping_var), scientific = F, trim = T)]
+  }
+  
   # NOTE: taken from rsmatrix vignette -> see also ?rs_matrix
   # create matrices
   matrices <- with(
